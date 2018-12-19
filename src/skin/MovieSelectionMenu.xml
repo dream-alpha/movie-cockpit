@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2018 by dream_alpha
+-->
+<screen name="MVCSelectionMenu" position="center,center" size="840,730" title="">
+	<widget enableWrapAround="1" position="10,10" render="Listbox"
+		itemHeight="45" scrollbarMode="showOnDemand" size="820,630"
+		source="menu">
+		<convert type="StringList" />
+	</widget>
+</screen>
