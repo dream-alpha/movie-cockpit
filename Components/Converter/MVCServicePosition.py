@@ -25,7 +25,7 @@ from Components.Element import cached
 import time
 
 
-class MVCServicePosition(ServicePosition):
+class MVCServicePosition(ServicePosition, object):
 	def __init__(self, ptype):
 		ServicePosition.__init__(self, ptype)
 
@@ -71,8 +71,7 @@ class MVCServicePosition(ServicePosition):
 				t = time.localtime(t + l)
 				if self.showNoSeconds:
 					return "%02d:%02d" % (t.tm_hour, t.tm_min)
-				else:
-					return "%02d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
+				return "%02d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
 
 			if self.negate:
 				l = -l
@@ -82,17 +81,14 @@ class MVCServicePosition(ServicePosition):
 				if self.showHours:
 					if self.showNoSeconds:
 						return "%+d:%02d" % (l / 3600, l % 3600 / 60)
-					else:
-						return "%+d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60)
+					return "%+d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60)
 				else:
 					if self.showNoSeconds:
 						return "%+d" % (l / 60)
-					else:
-						return "%+d:%02d" % (l / 60, l % 60)
+					return "%+d:%02d" % (l / 60, l % 60)
 			else:
 				if self.showHours:
 					return "%+d:%02d:%02d:%03d" % ((l / 3600 / 90000), (l / 90000) % 3600 / 60, (l / 90000) % 60, (l % 90000) / 90)
-				else:
-					return "%+d:%02d:%03d" % ((l / 60 / 90000), (l / 90000) % 60, (l % 90000) / 90)
+				return "%+d:%02d:%03d" % ((l / 60 / 90000), (l / 90000) % 60, (l % 90000) / 90)
 
 	text = property(getText)

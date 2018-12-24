@@ -82,6 +82,11 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 
 	### Override from InfoBarGenerics.py
 
+	def zapToService(self, service):
+		if not service is None:
+			self.servicelist.setCurrentSelection(service) #select the service in servicelist
+			self.servicelist.zap()
+
 	def downloadCuesheet(self):
 		print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
 		self.cut_list = CutList(self.service.getPath()).getCutList()
@@ -203,16 +208,16 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 				self.showAfterSeek()
 
 	def getSeekPlayPosition(self):
-		print("MVC: InfoBarSupport: getSeekPlayPosition")
+		#print("MVC: InfoBarSupport: getSeekPlayPosition")
 		try:
 			# InfoBarCueSheetSupport
 			return self.cueGetCurrentPosition() or 0
 		except Exception as e:
 			print("MVC: InfoBarSupport: getSeekPlayPosition: exception:\n" + str(e))
-			return 0
+		return 0
 
 	def getSeekLength(self):
-		print("MVC: InfoBarSupport: getSeekLength")
+		#print("MVC: InfoBarSupport: getSeekLength")
 		length = 0
 		try:
 			# Call private InfoBarCueSheetSupport function

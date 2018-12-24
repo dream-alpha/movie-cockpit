@@ -33,7 +33,7 @@ META_IDX_FILESIZE = 6
 
 
 # http://git.opendreambox.org/?p=enigma2.git;a=blob;f=doc/FILEFORMAT
-class MetaFile(object):
+class ParserMetaFile(object):
 
 	def __init__(self, path=None):
 		self.meta_file = None

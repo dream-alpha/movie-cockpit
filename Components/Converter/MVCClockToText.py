@@ -57,41 +57,37 @@ class MVCClockToText(Converter, object):
 		time = self.source.time
 		if not time or time > 169735005176 or time < 11:
 			return ""
-
 		if self.text_type == self.IN_MINUTES:
 			mins = time / 60
 			if time % 60 > 30:
 				mins += 1
 			return "%d min" % mins
-		elif self.text_type == self.AS_LENGTH:
+		if self.text_type == self.AS_LENGTH:
 			return "%d:%02d" % (time / 60, time % 60)
-		elif self.text_type == self.TIMESTAMP:
+		if self.text_type == self.TIMESTAMP:
 			return str(time)
 
 		if time > (31 * 24 * 60 * 60):
-		# No Recording should be longer than 1 month :-)
+			# No Recording should be longer than 1 month :-)
 			t = localtime(time)
 		else:
 			t = gmtime(time)
 
 		if self.text_type == self.WITH_SECONDS:
 			return "%2d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
-		elif self.text_type == self.DEFAULT:
+		if self.text_type == self.DEFAULT:
 			return "%02d:%02d" % (t.tm_hour, t.tm_min)
-		elif self.text_type == self.DATE:
+		if self.text_type == self.DATE:
 			if config.osd.language.value == "de_DE":
 				return strftime("%A, %d. %B %Y", t)
-			else:
-				return strftime("%A %B %d, %Y", t)
-		elif self.text_type == self.FORMAT:
+			return strftime("%A %B %d, %Y", t)
+		if self.text_type == self.FORMAT:
 			spos = self.fmt_string.find('%')
 			if spos > -1:
 				s1 = self.fmt_string[:spos]
 				s2 = strftime(self.fmt_string[spos:], t)
 				return str(s1 + s2)
-			else:
-				return strftime(self.fmt_string, t)
-		else:
-			return "???"
+			return strftime(self.fmt_string, t)
+		return "???"
 
 	text = property(getText)

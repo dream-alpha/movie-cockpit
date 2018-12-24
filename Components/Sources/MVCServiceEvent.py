@@ -24,7 +24,7 @@ from Components.Element import cached
 from Components.Sources.ServiceEvent import ServiceEvent
 
 
-class MVCServiceEvent(ServiceEvent):
+class MVCServiceEvent(ServiceEvent, object):
 	def __init__(self, servicecenter):
 		ServiceEvent.__init__(self)
 		self.servicecenter = servicecenter

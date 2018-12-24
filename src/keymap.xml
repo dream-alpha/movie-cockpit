@@ -67,7 +67,7 @@
 		<key id="KEY_8" mapto="8" flags="m" />
 		<key id="KEY_9" mapto="9" flags="m" />
 	</map>
-	<map context="MovieTMDBInfo">
+	<map context="MovieInfoTMDB">
 		<key id="KEY_EXIT" mapto="MVCEXIT" flags="m" />
 		<key id="KEY_OK" mapto="MVCOK" flags="m" />
 		<key id="KEY_INFO" mapto="MVCINFO" flags="b" />

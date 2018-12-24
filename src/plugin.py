@@ -31,85 +31,54 @@ from Version import VERSION
 from SkinUtils import getSkinPath
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
-
-gSession = None
-
-
-def startup():
-	print("MVC: plugin: +++")
-	print("MVC: plugin: +++ Version: " + VERSION + " starts...")
-	print("MVC: plugin: +++")
-
-	ConfigScreen.setEPGLanguage()
-	MovieCache.getInstance()
-	RecordingControl()
-	Trashcan.getInstance()
-	loadSkin(getSkinPath("MediaCenterLCD.xml"))
-
-
-def shutdown():
-	print("MVC: plugin: ---")
-	print("MVC: plugin: --- shutdown")
-	print("MVC: plugin: ---")
-
-	MovieCache.getInstance().close()
-
-
-def showMovieSelection(*__):
-	from MovieSelection import MovieSelection
-	gSession.openWithCallback(showMovieSelectionCallback, MovieSelection)
-
-
-def showMediaCenter(*args):
-	from MediaCenter import MediaCenter
-	gSession.openWithCallback(showMediaCenterCallback, MediaCenter, *args)
-
-
-def showMovieSelectionCallback(*args):
-	if args:
-		showMediaCenter(*args)
-
-
-def showMediaCenterCallback(reopen, *args):
-	if reopen:
-		showMovieSelection(*args)
+from Tools.BoundFunction import boundFunction
 
 
 def openSettings(session):
+	print("MVC: plugin: openSettings")
 	session.open(ConfigScreen)
 
 
 def openMovieSelection(session):
+	print("MVC: plugin: openMovieSelection")
 	from MovieSelection import MovieSelection
-	session.openWithCallback(showMovieSelectionCallback, MovieSelection)
+	session.open(MovieSelection)
 
 
 def autostart(reason, **kwargs):
-	if reason == 0:  # start
+	print("MVC: plugin: autostart: reason: %s" % reason)
+	if reason == 0:  # startup
 		if "session" in kwargs:
-			global gSession
-			gSession = kwargs["session"]
-			startup()
-
+			session = kwargs["session"]
 			if not config.MVC.ml_disable.value:
 				launch_key = config.MVC.movie_launch.value
 				if launch_key == "showMovies":
-					InfoBar.showMovies = showMovieSelection
+					InfoBar.showMovies = boundFunction(openMovieSelection, session)
 				elif launch_key == "showTv":
-					InfoBar.showTv = showMovieSelection
+					InfoBar.showTv = boundFunction(openMovieSelection, session)
 				elif launch_key == "showRadio":
-					InfoBar.showRadio = showMovieSelection
+					InfoBar.showRadio = boundFunction(openMovieSelection, session)
 				elif launch_key == "openQuickbutton":
-					InfoBar.openQuickbutton = showMovieSelection
+					InfoBar.openQuickbutton = boundFunction(openMovieSelection, session)
 				elif launch_key == "startTimeshift":
-					InfoBar.startTimeshift = showMovieSelection
+					InfoBar.startTimeshift = boundFunction(openMovieSelection, session)
+
+			print("MVC: plugin: +++ Version: " + VERSION + " starts...")
+			ConfigScreen.setEPGLanguage()
+			MovieCache.getInstance()
+			RecordingControl()
+			Trashcan.getInstance()
+			loadSkin(getSkinPath("MediaCenterLCD.xml"))
+
 	elif reason == 1:  # shutdown
-		shutdown()
+		print("MVC: plugin: --- shutdown")
+		MovieCache.getInstance().close()
 	else:
 		print("MVC: plugin: autostart: reason not handled: %s" % reason)
 
 
 def Plugins(**__):
+	print("MVC: plugin: +++ Plugins")
 	ConfigInit()
 
 	descriptors = []

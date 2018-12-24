@@ -46,7 +46,7 @@ from ServiceCenter import ServiceCenter
 from MediaTypes import sidDVB
 from RecordingUtils import isRecording, getRecording
 from SkinUtils import getSkinPath
-from MovieEventInfo import MovieEventInfo
+from MovieInfoEPG import MovieInfoEPG
 from FileUtils import readFile
 from MovieCover import MovieCover
 
@@ -72,6 +72,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		CutList.__init__(self)
 		MovieCover.__init__(self)
 
+		self.session = session
 		self.selected_subtitle = None
 
 		self.skinName = "MediaCenter"
@@ -101,7 +102,6 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 
 		self.skip = -1
 		self.service = service
-
 		self.allowPiP = True
 		self.allowPiPSwap = False
 		self.realSeekLength = None
@@ -116,7 +116,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 	def infoMovie(self):
 		evt = self.getCurrentEvent()
 		if evt:
-			self.session.open(MovieEventInfo, evt, ServiceReference(self.service))
+			self.session.open(MovieInfoEPG, evt, ServiceReference(self.service))
 
 	def __onShow(self):
 		self.evEOF()  # begin playback
@@ -148,7 +148,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 				10
 			)
 
-	def leavePlayer(self, reopen=True):
+	def leavePlayer(self, reopen=True, zap_service_ref=None):
 		print("MVC: MediaCenter: leavePlayer: %s" % reopen)
 
 		self.setSubtitleState(False)
@@ -166,11 +166,12 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 					"MVCCloseAllAndZap"
 				)
 
+		print("MVC: MediaCenter: leavePlayer: stopping service")
 		self.session.nav.stopService()
 
 		# [Cutlist.Workaround]
 		# Always make a backup-copy when recording is running and we stopped the playback
-		if reopen and self.service and self.service.type == sidDVB:
+		if self.service and self.service.type == sidDVB:
 			path = self.service.getPath()
 			if isRecording(path):
 				backupCutsFile(path + ".cuts")
@@ -181,7 +182,9 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(cut_list))
 			cut_list = cuts.reloadCutListFromFile()
 			print("MVC: MediaCenter: leavePlayer: cut_list after  reload: " + str(cut_list))
-		self.close(reopen)
+
+		print("MVC: MediaCenter: leavePlayer: zap_service_ref: %s" % zap_service_ref)
+		self.close(reopen, zap_service_ref)
 
 	### support functions for converters: MVCServicePosition and MVCRecordingPosition
 
@@ -217,14 +220,14 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		seek = self.getSeek()
 		if seek is not None:
 			pos = seek.getPlayPosition()
-			print("MVC: MediaCenter: getPosition: getPlayPosition(): %s" % pos)
+#			print("MVC: MediaCenter: getPosition: getPlayPosition(): %s" % pos)
 			if not pos[0]:
 				position = pos[1]
 		if self.skip:
 			position = 0
 		if self.skip > 0:
 			self.skip -= 1
-		print("MVC: MediaCenter: getPosition: position: %s" % position)
+#		print("MVC: MediaCenter: getPosition: position: %s" % position)
 		return position
 
 	### Audio and Subtitles
@@ -384,6 +387,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 	### functions for InfoBarGenerics.py
 	# InfoBarShowMovies
 	def showMovies(self):
+		print("MVC: MediaCenter: showMovies")
 		return
 
 	def doEofInternal(self, playing):
@@ -392,10 +396,14 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			if self.service.type != sidDVB:
 				self.updateServiceCutList(self.service)
 
-			val = config.MVC.record_eof_zap.value
-			if val == "0" or val == "1" and isRecording(self.service.getPath()):
-				self.service = None
-				self.leavePlayer(reopen=False)
+			if int(config.MVC.record_eof_zap.value) < 2:
+				timer = isRecording(self.service.getPath())
+				zap_service_ref = None
+				if timer:
+					zap_service_ref = timer.service_ref.ref
+				print("MVC: MediaCenter: doEofInternal: zap_service_ref: %s" % zap_service_ref.toString())
+				self.zapToService(zap_service_ref)
+				self.leavePlayer(reopen=False, zap_service_ref=zap_service_ref)
 			else:
 				self.evEOF()
 

@@ -23,8 +23,8 @@ import os
 from __init__ import _
 from sqlite3 import dbapi2 as sqlite
 import datetime
-from EitFile import EitFile
-from MetaFile import MetaFile
+from ParserEitFile import ParserEitFile
+from ParserMetaFile import ParserMetaFile
 from CutListUtils import readCutsFile, unpackCutList, ptsToSeconds, getCutListLength
 from Components.config import config
 from Bookmarks import Bookmarks
@@ -229,7 +229,7 @@ class MovieCache(Bookmarks, object):
 
 				cuts = readCutsFile(path + ".cuts")
 
-				eit = EitFile(path)
+				eit = ParserEitFile(path)
 				if eit:
 					eit_name = eit.getName()
 					if eit_name:
@@ -246,7 +246,7 @@ class MovieCache(Bookmarks, object):
 				else:
 					length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-				meta = MetaFile(path)
+				meta = ParserMetaFile(path)
 				if meta:
 					service_reference = meta.getServiceReference()
 					tags = meta.getTags()
@@ -355,9 +355,9 @@ class MovieCache(Bookmarks, object):
 		path = os.path.splitext(path)[0]
 		filename = os.path.basename(path)
 		directory = os.path.dirname(path)
-		sql = "DELETE FROM recordings WHERE directory='%s' AND filename='%s'" % (directory, filename)
+		sql = 'DELETE FROM recordings WHERE directory=? AND filename=?'
 		#print("MVC: MovieCache: delete: sql = " + sql)
-		self.cursor.execute(sql)
+		self.cursor.execute(sql, (directory, filename))
 		self.sql_conn.commit()
 
 		# delete from memory cache as well

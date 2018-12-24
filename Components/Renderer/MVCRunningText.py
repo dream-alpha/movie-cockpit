@@ -28,6 +28,7 @@
 # - fixed left / right scrolling , fixed nowrap-mode
 # take a look at the discussion: http://board.dreambox-tools.info/showthread.php?6050-Erweiterung-Running-Text-render
 ################################################################################
+# change made by dream-apha: support for 2 texts/smaller or bigger text area
 
 from Renderer import Renderer
 from skin import parseColor, parseFont
@@ -55,6 +56,7 @@ BLOCK = 3
 class MVCRunningText(Renderer):
 	def __init__(self):
 		Renderer.__init__(self)
+		self.skinAttributes = None
 		self.type = NONE
 		self.txfont = gFont("Regular", 14)
 		self.soffset = (0, 0)
@@ -75,10 +77,6 @@ class MVCRunningText(Renderer):
 	GUI_WIDGET = eWidget
 
 	def postWidgetCreate(self, instance):
-		for (attrib, value) in self.skinAttributes:
-			if attrib == "size":
-				x, y = value.split(',')
-				self.W, self.H = int(x), int(y)
 		self.instance.move(ePoint(0, 0))
 		self.instance.resize(eSize(self.W, self.H))
 		self.scroll_label = eLabel(instance)
@@ -133,6 +131,9 @@ class MVCRunningText(Renderer):
 					self.txtflags |= {"left": RT_HALIGN_LEFT, "center": RT_HALIGN_CENTER, "right": RT_HALIGN_RIGHT, "block": RT_HALIGN_BLOCK}[value]
 				elif attrib == "noWrap":
 					setWrapFlag(attrib, value)
+				elif attrib == "size2":
+					w, h = value.split(',')
+					self.W2, self.H2 = int(w), int(h)
 				elif attrib == "options":
 					options = value.split(',')
 					for o in options:
@@ -170,7 +171,13 @@ class MVCRunningText(Renderer):
 							self.mPageLength = retValue(val, 0, self.mPageLength)
 				else:
 					attribs.append((attrib, value))
-					if attrib == "backgroundColor":
+					if attrib == "position":
+						x, y = value.split(',')
+						self.xpos, self.ypos = int(x), int(y)
+					elif attrib == "size":
+						w, h = value.split(',')
+						self.W1, self.H1 = int(w), int(h)
+					elif attrib == "backgroundColor":
 						self.scroll_label.setBackgroundColor(parseColor(value))
 					elif attrib == "transparent":
 						self.scroll_label.setTransparent(int(value))
@@ -228,8 +235,27 @@ class MVCRunningText(Renderer):
 	def moveLabel(self, X, Y):
 		self.scroll_label.move(ePoint(X - self.soffset[0], Y - self.soffset[1]))
 
+	def adjustWidgetSizePosition(self):
+		self.W = self.W1
+		self.H = self.H1
+		self.y_offset = 0
+		self.txtext = ""
+		if self.source.text:
+			texts = self.source.text.split("|")
+			self.txtext = texts[1]
+			if texts[0]:
+				# two texts, small area
+				self.y_offset = self.H1 - self.H2
+				self.H = self.H2
+			self.instance.move(ePoint(self.xpos, self.ypos + self.y_offset))
+			self.instance.resize(eSize(self.W, self.H))
+			self.scroll_label.resize(eSize(self.W, self.H))
+			self.moveLabel(self.X, self.Y)
+
 	def calcMoving(self):
 		self.X = self.Y = 0
+		self.adjustWidgetSizePosition()
+		#print("MVC: MVCRunningText: calcMoving: X: %s, Y: %s, H: %s, W: %s" % (self.X, self.Y, self.H, self.W))
 		if not (self.txtflags & RT_WRAP):
 			self.txtext = self.txtext.replace("\xe0\x8a", " ").replace(chr(0x8A), " ").replace("\n", " ").replace("\r", " ")
 

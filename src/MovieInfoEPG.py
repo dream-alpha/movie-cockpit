@@ -25,7 +25,7 @@ from Components.Button import Button
 from Screens.EventView import EventViewSimple
 
 
-class MovieEventInfo(EventViewSimple, object):
+class MovieInfoEPG(EventViewSimple, object):
 
 	def __init__(self, session, event, service_reference, callback=None, similar_epg_cb=None):
 		EventViewSimple.__init__(self, session, event, service_reference, callback, similar_epg_cb)

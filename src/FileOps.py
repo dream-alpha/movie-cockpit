@@ -24,9 +24,9 @@ from Components.config import config
 from MovieCover import MovieCover
 from Bookmarks import Bookmarks
 from MountPoints import MountPoints
-from TMDB import TMDB
+from MovieTMDB import MovieTMDB
 
-class FileOps(TMDB, MountPoints, Bookmarks, object):
+class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 
 	def execFileDelete(self, c, path, file_type):
 		print("MVC: FileOps: execFileDelete: path: %s, file_type: %s" % (path, file_type))

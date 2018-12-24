@@ -34,21 +34,21 @@ SELECTION_TYPE = 2 # movie or tvshow
 SELECTION_URL = 4 # partial cover url
 INFO_COVER_URL = 6 # full cover url
 
-class TMDB(Bookmarks, object):
+class MovieTMDB(Bookmarks, object):
 
 	def getInfoPath(self, path):
-		print("MVC: TMDB: getInfoPath: path: " + path)
+		print("MVC: MovieTMDB: getInfoPath: path: " + path)
 		file_formats = "(.ts|.avi|.mkv|.divx|.f4v|.flv|.img|.iso|.m2ts|.m4v|.mov|.mp4|.mpeg|.mpg|.mts|.vob|.asf|.wmv|.stream|.webm)"
 		info_path = re.sub(file_formats + "$", '.txt', path, flags=re.IGNORECASE)
 		if config.MVC.cover_flash.value:
 			bookmark = self.getBookmark(info_path)
 			if bookmark:
 				info_path = config.MVC.cover_bookmark.value + info_path[len(bookmark):]
-		print("MVC: TMDB: getInfoPath: info_path: " + info_path)
+		print("MVC: MovieTMDB: getInfoPath: info_path: " + info_path)
 		return info_path
 
 	def saveInfo(self, info_path, info):
-		print("MVC: TMDB: saveInfo: path: %s, info: %s" % (info_path, info))
+		print("MVC: MovieTMDB: saveInfo: path: %s, info: %s" % (info_path, info))
 		if info:
 			if config.MVC.cover_replace_existing.value and os.path.isfile(info_path):
 				os.remove(info_path)
@@ -78,7 +78,7 @@ class TMDB(Bookmarks, object):
 				jsonresponse = urlopen(request).read()
 				response = json.loads(jsonresponse)
 			except Exception as e:
-				print("MVC: TMDB: fetchData: exception: " + str(e))
+				print("MVC: MovieTMDB: fetchData: exception: " + str(e))
 				retry += 1
 				sleep(0.1)
 		return response
@@ -91,7 +91,7 @@ class TMDB(Bookmarks, object):
 			if response:
 				movies = response["results"]
 				for movie in movies:
-					print("MVC: TMDB: getMovieList: movie: " + str(movie))
+					print("MVC: MovieTMDB: getMovieList: movie: " + str(movie))
 					if movie["poster_path"]:
 						movielist.append((movie["title"].encode('utf-8') + " - " + _("Movies"), movie["id"], "movie", movie["release_date"].encode('utf-8'), movie["poster_path"].encode('utf-8')))
 			return movielist
@@ -102,7 +102,7 @@ class TMDB(Bookmarks, object):
 			if response:
 				tvshows = response["results"]
 				for tvshow in tvshows:
-					print("MVC: TMDB: getMovieList: tvshow: " + str(tvshow))
+					print("MVC: MovieTMDB: getMovieList: tvshow: " + str(tvshow))
 					if tvshow["poster_path"]:
 						tvshowslist.append((tvshow["name"].encode('utf-8') + " - " + _("TV Shows"), tvshow["id"], "tvshow", tvshow["first_air_date"].encode('utf-8'), tvshow["poster_path"].encode('utf-8')))
 			return tvshowslist
@@ -186,7 +186,7 @@ class TMDB(Bookmarks, object):
 			response = self.fetchData("http://api.themoviedb.org/3/tv/" + str(p_id) + "?api_key=3b6703b8734fee1b598de9ed7bbd3b47&language=" + lang)
 
 		if response:
-			print("MVC: TMDB: getTMDBInfo: response:" + str(response))
+			print("MVC: MovieTMDB: getMovieTMDBInfo: response:" + str(response))
 			blurb, runtime, genres, countries, releasedate, vote, cover_url = parseMovieData(response, cat)
 			if cover_url is not None:
 				cover_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.cover_size.value, cover_url)

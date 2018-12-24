@@ -27,7 +27,7 @@ from ServiceCenter import ServiceCenter
 from MovieListGUI import MovieListGUI
 from MovieCache import MovieCache,\
 	TYPE_ISDIR, TYPE_ISLINK, TYPE_ISBOOKMARK,\
-	FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_LENGTH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
+	FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_DESCRIPTION, FILE_IDX_LENGTH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
 from MediaTypes import extVideo, plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
 from datetime import datetime
 
@@ -197,9 +197,9 @@ class MovieList(MovieListGUI, object):
 
 	def indexIsPlayable(self, index):
 		return self.getExtOfIndex(index) in extVideo
-#
-# 	def getCurrentSelName(self):
-# 		return self.getListEntry(self.getCurrentIndex())[FILE_IDX_NAME]
+
+ 	def getCurrentSelDescription(self):
+ 		return self.getListEntry(self.getCurrentIndex())[FILE_IDX_DESCRIPTION]
 
 	def getList(self):
 		return self.list

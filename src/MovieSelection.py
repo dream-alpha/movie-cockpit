@@ -122,7 +122,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 	def getInstance():
 		return instance
 
-	def __init__(self, session):
+	def __init__(self, session, *__):
 		print("MVC: MovieSelection: __init__: self.return_path: %s" % self.return_path)
 
 		global instance
@@ -132,6 +132,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		MiniTV.__init__(self, session)
 		MovieCover.__init__(self)
 
+		self.session = session
 		self.skinName = ["MVCSelection"]
 		self.skin = readFile(self.getSkin())
 
@@ -223,14 +224,14 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.moveToMovieHome, # KEY_FUNC_HOME
 			self.deleteMovies, # KEY_FUNC_DELETE
 			self.moveMovies, # KEY_FUNC_MOVE
-			self.movieTMDBInfo, # KEY_FUNC_COVER_SEARCH
+			self.movieInfoTMDB, # KEY_FUNC_COVER_SEARCH
 			self.copyMovies, # KEY_FUNC_COPY
 			self.openBookmarks, # KEY_FUNC_BOOKMARKS
 			self.toggleCover, # KEY_FUNC_TOGGLE_COVER
 			self.toggleSortMode, # KEY_FUNC_SORT_MODE
 			self.toggleSortOrder, # KEY_FUNC_SORT_ORDER
 			self.movieEventInfo, # KEY_FUNC_EVENT_INFO
-			self.movieTMDBInfo, # KEY_FUNC_TMDB_INFO
+			self.movieInfoTMDB, # KEY_FUNC_TMDB_INFO
 			self.disabledFunction, # KEY_FUNC_DISABLED
 		]
 
@@ -411,23 +412,23 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.reloadList(self["list"].getCurrentDir())
 
 	def movieEventInfo(self):
-		from MovieEventInfo import MovieEventInfo
+		from MovieInfoEPG import MovieInfoEPG
 		path = self["list"].getCurrentPath()
 		print("MVC: MovieSelection: infoFunc: path: %s" % path)
 		if self["list"].currentSelIsPlayable():
 			evt = self["list"].getCurrentEvent()
 			if evt:
 				service = self["list"].getServiceOfPath(path)
-				self.session.open(MovieEventInfo, evt, ServiceReference(service))
+				self.session.open(MovieInfoEPG, evt, ServiceReference(service))
 
-	def movieTMDBInfo(self):
-		from MovieTMDBInfo import MovieTMDBInfo
+	def movieInfoTMDB(self):
+		from MovieInfoTMDB import MovieInfoTMDB
 		if self["list"].currentSelIsPlayable():
 			path = self["list"].getCurrentPath()
 			name = self["list"].getNameOfService(path)
-			self.session.openWithCallback(self.movieTMDBInfoCallback, MovieTMDBInfo, path, name)
+			self.session.openWithCallback(self.movieInfoTMDBCallback, MovieInfoTMDB, path, name)
 
-	def movieTMDBInfoCallback(self):
+	def movieInfoTMDBCallback(self):
 		self.updateInfo()
 
 	def changeDir(self, path):
@@ -471,6 +472,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		if path and not self["list"].serviceBusy(path):
 			current_service = self["list"].getServiceOfPath(path)
 			self["Service"].newService(current_service)
+
 		if self.cover:
 			self.showCover(path)
 
@@ -620,6 +622,19 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 ### Player
 ###
 
+	def playerCallback(self, reload, zap_service_ref):
+		print("MVC: MovieSelection: playerCallback")
+		if not reload:
+			if zap_service_ref is not None:
+				# zap to tv service of recordings
+				self.session.nav.playService(zap_service_ref)
+			self.exit()
+		else:
+			self.return_path = self["list"].getCurrentPath()
+			self.reloadList(self["list"].getCurrentDir())
+			self.updateInfo()
+		return
+
 	def openPlayer(self, path):
 		print("MVC: MovieSelection: openPlayer: path: %s" % path)
 		self.resetInfo()
@@ -627,7 +642,13 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		# Start Player
 		print("MVC: MovieSelection: openPlayer: self.close: self.last_service_reference: %s" % (self.last_service_reference.toString() if self.last_service_reference else None))
 		print("MVC: MovieSelection: openPlayer: self.close: self.return_path: %s" % self.return_path)
-		self.close(self["list"].getServiceOfPath(path))
+		from MediaCenter import MediaCenter
+		self.session.openWithCallback(
+                        self.playerCallback,
+                        MediaCenter,
+                        self["list"].getServiceOfPath(path)
+                )
+		return
 
 ###
 ### Selection Menu

@@ -84,7 +84,7 @@ def getRecording(path, include_margin_before=True):
 			recording_start = ServiceCenter.getInstance().info(service).getStartTime()
 			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
 			delta = recording_start - timer.begin
-			if delta > 0 and delta < config.recording.margin_before.value * 60:
+			if delta > 0 and delta < config.recording.margin_before.value * 60:  # includes 5 seconds contingency
 				#print("MVC: RecordingUtils: getRecording: late recording but within margin_before")
 				rec_start = recording_start - (config.recording.margin_before.value - delta)
 			elif delta > config.recording.margin_before.value * 60:
@@ -97,15 +97,11 @@ def getRecording(path, include_margin_before=True):
 			recording_start = int(os.stat(path).st_ctime)  # timestamp from file
 			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
 			delta = recording_start - timer.begin
-			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
-			if delta > 0 and delta < config.recording.margin_before.value * 60:
-				#print("MVC: RecordingUtils: getRecording: late recording but within margin_before")
-				rec_start = timer.begin + config.recording.margin_before.value
-			elif delta > config.recording.margin_before.value * 60:
+			if delta > config.recording.margin_before.value * 60:
 				#print("MVC: RecordingUtils: getRecording: late recording")
 				rec_start = recording_start
 			else:
-				#print("MVC: RecordingUtils: getRecording: ontime recording")
+				#print("MVC: RecordingUtils: getRecording: ontime recording or within margin before")
 				rec_start = timer.begin + config.recording.margin_before.value * 60
 		rec_end = timer.end - config.recording.margin_after.value * 60
 		recording = (rec_start, rec_end, timer.service_ref.ref)

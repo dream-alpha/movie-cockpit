@@ -26,7 +26,7 @@ from enigma import iServiceInformation
 from ServiceReference import ServiceReference
 
 
-class MVCMovieInfo(MovieInfo):
+class MVCMovieInfo(MovieInfo, object):
 	def __init__(self, ptype):
 		MovieInfo.__init__(self, ptype)
 
@@ -41,8 +41,7 @@ class MVCMovieInfo(MovieInfo):
 					descr = info.getInfoString(service, iServiceInformation.sDescription)
 					if descr == "":
 						return event.getShortDescription()
-					else:
-						return descr
+					return descr
 			elif self.type == self.MOVIE_META_DESCRIPTION:
 				return info.getInfoString(service, iServiceInformation.sDescription)
 			elif self.type == self.MOVIE_REC_SERVICE_NAME:
@@ -55,8 +54,7 @@ class MVCMovieInfo(MovieInfo):
 					if filesize > 0:
 						if filesize < 1000:
 							return "%d MB" % filesize
-						else:
-							return "%d GB" % (filesize / 1024)
+						return "%d GB" % (filesize / 1024)
 		return ""
 
 	text = property(getText)

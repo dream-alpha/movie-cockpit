@@ -28,13 +28,13 @@ from Components.config import config
 from Bookmarks import Bookmarks
 from MovieCache import MovieCache, FILE_IDX_FILENAME, FILE_IDX_EXT, FILE_IDX_NAME, FILE_IDX_PATH
 from MediaTypes import plyAll
-from TMDB import TMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, INFO_COVER_URL
+from MovieTMDB import MovieTMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, INFO_COVER_URL
 from MovieCover import MovieCover
 
 substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", ""), ("h264", ""), ("1080i", ""), ("AC3", "")]
 
 
-class MovieCoverDownload(TMDB, Bookmarks, object):
+class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 	def __init__(self, session=None):
 		self.cover_size = config.MVC.cover_size.value
 		self.session = session

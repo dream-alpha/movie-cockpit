@@ -72,10 +72,10 @@ Copyright (C) 2018 by dream_alpha
 		<convert type="MVCEventName">Description</convert>
 	</widget>
 	<widget source="Service" render="MVCRunningText"
-		position="1235,615" size="560,240" font="Regular;26"
-		foregroundColor="grey"
+		position="1235,555" size="560,300" size2="560,240"
+		font="Regular;26" foregroundColor="grey"
 		options="movetype=swimming, direction=top, startpoint=0, startdelay=4000, wrap=1, always=0, repeat=1, oneshot=1, steptime=100">
-		<convert type="MVCEventName">ExtendedDescription</convert>
+		<convert type="MVCEventName">ShortAndExtendedDescription</convert>
 	</widget>
 	<eLabel backgroundColor="#818181" position="10,875" size="1780,1" />
 	<widget font="Regular;26" halign="left" name="space_info"
