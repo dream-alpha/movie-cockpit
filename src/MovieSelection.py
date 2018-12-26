@@ -493,7 +493,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 	def updateTitle(self):
 		title = "MovieCockpit: "
 		# Display the current path
-		if self["list"].getCurrentDir() == config.MVC.movie_trashcan_path.value:
+		if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
 			title += _("trashcan")
 		else:
 			title += _("Recordings")
@@ -666,7 +666,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		elif function == FUNC_MOVE:
 			self.moveMovies()
 		elif function == FUNC_OPEN_TRASHCAN:
-			self.changeDir(config.MVC.movie_trashcan_path.value)
+			self.changeDir(self["list"].getCurrentDir() + "/trashcan")
 		elif function == FUNC_DELETE_PERMANENTLY or function == FUNC_DELETE:
 			self.deleteMovies(function == FUNC_DELETE_PERMANENTLY)
 		elif function == FUNC_DIR_UP:
@@ -774,8 +774,8 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			if path:
 				directory = os.path.dirname(path)
 				delete_permanently |= not config.MVC.movie_trashcan_enable.value
-				delete_permanently |= directory == config.MVC.movie_trashcan_path.value
-				delete_permanently |= self.isMountPoint(directory) != self.isMountPoint(config.MVC.movie_trashcan_path.value)
+				delete_permanently |= os.path.basename(directory) == "trashcan"
+				delete_permanently |= not os.path.exists(self.getBookmark(path) + "/trashcan")
 			return delete_permanently
 
 		selection_list = self.getSelectionList()
@@ -859,11 +859,11 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			if self.delete_link_list:
 				self.execMovieOp("delete_link", self.delete_link_list)
 			if self.trashcan_file_list:
-				self.execMovieOp("move_file", self.trashcan_file_list, config.MVC.movie_trashcan_path.value)
+				self.execMovieOp("move_file", self.trashcan_file_list, "trashcan")
 			if self.trashcan_dir_list:
-				self.execMovieOp("move_dir", self.trashcan_dir_list, config.MVC.movie_trashcan_path.value)
+				self.execMovieOp("move_dir", self.trashcan_dir_list, "trashcan")
 			if self.trashcan_link_list:
-				self.execMovieOp("move_link", self.trashcan_link_list, config.MVC.movie_trashcan_path.value)
+				self.execMovieOp("move_link", self.trashcan_link_list, "trashcan")
 
 	def deleteCallback(self, path):
 		print("MVC: MovieSelection: deleteCallback: path: %s" % path)
@@ -952,8 +952,8 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		from Trashcan import Trashcan
 		if answer:
 			Trashcan.getInstance().purgeTrashcan(empty_trash=True, callback=self.updateSpaceInfo)
-			if self["list"].getCurrentDir() == config.MVC.movie_trashcan_path.value:
-				self.reloadList(config.MVC.movie_trashcan_path.value)
+			if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
+				self.reloadList(self["list"].getCurrentDir() + "/trashcan")
 
 	### Bookmark
 
@@ -1019,7 +1019,6 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 				c = []
 				if op in delete_ops:
 					file_type = op.split("_")[1]
-					# direct delete from the trashcan or network mount (no copy to trashcan from different mountpoint)
 					print("MVC: MovieSelection: execMovieOp: delete: directDelete")
 					c = self.execFileDelete(c, path, file_type)
 					cmd.append(c)
@@ -1033,6 +1032,8 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 					file_type = op.split("_")[1]
 					free = 0
 					size = 0
+					if target_path == "trashcan":
+						target_path = self.getBookmark(path) + "/trashcan"
 					if file_type != "file":
 						_count, size = MovieCache.getInstance().getCountSize(path)
 						free = self.getMountPointSpaceFree(target_path)

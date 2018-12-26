@@ -24,7 +24,7 @@ from __init__ import _
 from time import time
 from CutListUtils import ptsToSeconds, getCutListLast, unpackCutList
 from MovieCache import MovieCache, TYPE_ISLINK, str2date
-from MediaTypes import extTS, extVideo, plyAll
+from MediaTypes import extTS, extVideo
 from Bookmarks import Bookmarks
 from SkinUtils import getSkinPath
 from Components.config import config
@@ -167,7 +167,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 			if w is None:
 				w = self.width - x - self.MVCDateWidth - self.MVCSpacer
 
-			if ext in plyAll and (config.MVC.movie_progress.value == "PB" or config.MVC.movie_progress.value == "P"):
+			if ext in extVideo and (config.MVC.movie_progress.value == "PB" or config.MVC.movie_progress.value == "P"):
 				w = w - self.MVCBarSize.width() - self.MVCSpacer
 
 			self.res.append(MultiContentEntryText((x, y), (w, self.l.getItemSize().height()), font=self.usedFont, flags=RT_HALIGN_LEFT, text=title, color=color, color_sel=self.FrontColorSel))
@@ -201,14 +201,14 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 				self.startHPos = x + self.MVCIconSize.width() + self.MVCSpacer
 			return selnumtxt
 
-		def createPicon(service_reference):
+		def createPicon(service_reference, ext):
 			#print("MVC: MovieListGUI: buildMovieListEntry: createPicon: startHPos: %s" % self.startHPos)
 			x = self.startHPos
 			y = yPos(self.l.getItemSize().height(), self.MVCPiconSize.height())
 
-			piconpath = getPiconPath(service_reference)
-
-			self.res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, self.MVCPiconSize.width(), self.MVCPiconSize.height(), loadPNG(piconpath), None, None))
+			if ext in extTS:
+				piconpath = getPiconPath(service_reference)
+				self.res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, self.MVCPiconSize.width(), self.MVCPiconSize.height(), loadPNG(piconpath), None, None))
 			self.startHPos = x + self.MVCPiconSize.width() + self.MVCSpacer
 
 		def createDateText(datetext, color, recording):
@@ -248,7 +248,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 					datetext = "(%s/%s)" % (counttext, sizetext)
 
 			if info_value == "D":
-				if path == config.MVC.movie_trashcan_path.value:
+				if os.path.basename(path) == "trashcan":
 					datetext = _("trashcan")
 				elif config.MVC.directories_ontop.value:
 					datetext = _("Collection")
@@ -274,7 +274,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 				if config.MVC.directories_info.value == "D":
 					datetext = _("Bookmark")
 
-			elif filetype == TYPE_ISDIR and path == config.MVC.movie_trashcan_path.value:
+			elif filetype == TYPE_ISDIR and os.path.basename(path) == "trashcan":
 				if config.MVC.movie_trashcan_enable.value:
 					count, datetext = getDateText(path, config.MVC.movie_trashcan_info.value, filetype)
 					if count > 0:
@@ -396,7 +396,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 			or (config.MVC.movie_hide_delete.value and self.serviceDeleting(path))
 			or (config.MVC.movie_hide_copy.value and self.serviceCopying(path))):
 			#print("MVC: MovieListGUI: buildMovieListEntry: let's start with startHPos: %s" % self.startHPos)
-			if filetype == TYPE_ISFILE and ext in plyAll:
+			if filetype == TYPE_ISFILE and ext in extVideo:
 				#print("MVC: MovieListGUI: buildMovieListEntry: adjusted startHPos: %s" % self.startHPos)
 				datetext, pixmap, color, progress, recording = getFileValues(path, date_string, length, cuts)
 
@@ -404,8 +404,8 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 				if not selnumtxt and config.MVC.movie_icons.value:
 					createIcon(pixmap)
 
-				if ext in extTS and config.MVC.movie_picons.value:
-					createPicon(service_reference)
+				if config.MVC.movie_picons.value:
+					createPicon(service_reference, ext)
 
 				createTitle(name, ext, color)
 

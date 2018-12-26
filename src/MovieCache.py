@@ -70,8 +70,8 @@ def str2date(date_string):
 	#print("MVC: MovieCache: str2date: " + date_string)
 	try:
 		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-	except ValueError as e:
-		print("MVC: MovieCache: str2date: exception: \n" + str(e))
+	except ValueError:
+		#print("MVC: MovieCache: str2date: exception: " + date_string)
 		pass
 	return date
 
@@ -150,22 +150,23 @@ class MovieCache(Bookmarks, object):
 		self.loadDatabaseDirs(self.bookmarks)
 
 	def __loadCache(self, dirs):
-		#print("MVC: MovieCache: __loadCache: " + str(dirs))
+		print("MVC: MovieCache: __loadCache: dirs: %s" % dirs)
 		# check for dirs not loaded in self.list yet
 		not_loaded_dirs = []
+		print("MVC: MovieCache: __loadCache:     loaded_dirs: %s" % self.loaded_dirs)
 		for d in dirs:
 			if d not in self.loaded_dirs and os.path.basename(d) != "..":
 				not_loaded_dirs.append(d)
-		#print("MVC: MovieCache: __loadCache: not_loaded_dirs: " + str(not_loaded_dirs))
+		print("MVC: MovieCache: __loadCache: not_loaded_dirs: %s" % not_loaded_dirs)
 
 		if not_loaded_dirs:
 			# WHERE clause
 			sql = "SELECT * FROM recordings WHERE "
 			or_op = ""
-			for directory in dirs:
+			for directory in not_loaded_dirs:
 				sql += or_op + "directory = \"" + directory + "\""
 				or_op = " OR "
-			#print("MVC: MovieCache: __loadCache: " + sql)
+			print("MVC: MovieCache: __loadCache: " + sql)
 
 			# do it
 			self.cursor.execute(sql)
@@ -173,7 +174,7 @@ class MovieCache(Bookmarks, object):
 			self.sql_conn.commit()
 			#print("MVC: MovieCache: __loadCache: len(filelist): " + str(len(filelist)))
 			self.loaded_dirs += not_loaded_dirs
-			#print("MVC: MovieCache: __loadCache: loaded_dirs after merge: " + str(self.loaded_dirs))
+			print("MVC: MovieCache: __loadCache: loaded_dirs after merge: " + str(self.loaded_dirs))
 			self.filelist += filelist
 			#print("MVC: MovieCache: __loadCache: len(self.filelist): " + str(len(self.filelist)))
 
@@ -201,6 +202,7 @@ class MovieCache(Bookmarks, object):
 			if ext in extVideo:
 				# Media file found
 				date = None
+				name = filename
 				fdate = str2date(parseDate(os.path.basename(path)))
 				#print("MVC: MovieCache: loadDatabaseFile: file date: " + str(fdate))
 				if fdate:
@@ -218,7 +220,6 @@ class MovieCache(Bookmarks, object):
 				if not date:
 					date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 
-				name = filename
 				if ext in extTS:
 					name_splits = name.split(" - ")
 					if name_splits[2]:
@@ -229,27 +230,29 @@ class MovieCache(Bookmarks, object):
 
 				cuts = readCutsFile(path + ".cuts")
 
-				eit = ParserEitFile(path)
-				if eit:
-					eit_name = eit.getName()
-					if eit_name:
-						name = eit_name
-						cutno, _filename = parseCutNo(filename)
-						if cutno:
-							name = "%s (%s)" % (name, cutno)
+				if ext in extTS:
+					eit = ParserEitFile(path)
+					if eit:
+						eit_name = eit.getName()
+						if eit_name:
+							name = eit_name
+							cutno, _filename = parseCutNo(filename)
+							if cutno:
+								name = "%s (%s)" % (name, cutno)
 
-					if length == 0:
-						length = eit.getLengthInSeconds()
+						if length == 0:
+							length = eit.getLengthInSeconds()
 
-					description = eit.getShortDescription()
-					extended_description = eit.getExtendedDescription()
+						description = eit.getShortDescription()
+						extended_description = eit.getExtendedDescription()
 				else:
 					length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-				meta = ParserMetaFile(path)
-				if meta:
-					service_reference = meta.getServiceReference()
-					tags = meta.getTags()
+				if ext in extTS:
+					meta = ParserMetaFile(path)
+					if meta:
+						service_reference = meta.getServiceReference()
+						tags = meta.getTags()
 
 				size = os.path.getsize(path)
 
@@ -272,7 +275,7 @@ class MovieCache(Bookmarks, object):
 		try:
 			walk_listdir = os.listdir(movie_dir)
 		except OSError as e:
-			print("MVC: MovieCache: OS Error:\n" + str(e))
+			#print("MVC: MovieCache: OS Error:\n" + str(e))
 			return
 
 		for walk_name in walk_listdir:
@@ -292,7 +295,7 @@ class MovieCache(Bookmarks, object):
 			elif os.path.isdir(path):
 				#print("MVC: MovieCache: loadDatabaseDir: dir:" + path)
 				date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
-				if path == config.MVC.movie_trashcan_path.value:
+				if os.path.basename(path) == "trashcan":
 					name = _(os.path.basename(path))
 				else:
 					name = convertToUtf8(os.path.basename(path))
@@ -312,8 +315,8 @@ class MovieCache(Bookmarks, object):
 			self.loadDatabaseDir(directory)
 
 	def getFileList(self, dirs, include_dirs=False):
-		#print("MVC: MovieCache: getFileList: dirs = " + str(dirs))
-		#print("MVC: MovieCache: getFileList: loaded_dirs: " + str(self.loaded_dirs))
+		print("MVC: MovieCache: getFileList:    get_dirs: %s" % dirs)
+		print("MVC: MovieCache: getFileList: loaded_dirs: %s" % self.loaded_dirs)
 
 		extMovie = extVideo - extBlu
 
@@ -321,13 +324,27 @@ class MovieCache(Bookmarks, object):
 		if set(dirs).issubset(set(self.bookmarks)):
 			dirs = self.bookmarks
 
-		self.__loadCache(dirs)
+		# use all trashcan dirs if list was requested for one
+		more_dirs = []
+		for adir in dirs:
+			if os.path.basename(adir) == "trashcan":
+				for bookmark in self.bookmarks:
+					trashcan_dir = bookmark + "/trashcan"
+					if trashcan_dir not in more_dirs:
+						more_dirs.append(trashcan_dir)
+			else:
+				more_dirs.append(adir)
+
+		print("MVC: MovieCache: getFileList:   more__dirs: %s" % more_dirs)
+
+		self.__loadCache(more_dirs)
 
 		filelist = []
 		for filedata in self.filelist:
 			#print("MVC: MovieCache: getFileList: dir: " + filedata[FILE_IDX_DIR] + ", filename: " + filedata[FILE_IDX_FILENAME] + ", ext: " + filedata[FILE_IDX_EXT])
-			if (filedata[FILE_IDX_DIR] in dirs and filedata[FILE_IDX_TYPE] == TYPE_ISFILE and filedata[FILE_IDX_EXT] in extMovie) \
-				or (include_dirs and filedata[FILE_IDX_TYPE] > TYPE_ISFILE and filedata[FILE_IDX_PATH] != config.MVC.movie_trashcan_path.value and filedata[FILE_IDX_FILENAME] != ".."):
+			is_trashcan = filedata[FILE_IDX_TYPE] == TYPE_ISDIR and os.path.basename(filedata[FILE_IDX_PATH]) == "trashcan"
+			if (filedata[FILE_IDX_DIR] in more_dirs and filedata[FILE_IDX_TYPE] == TYPE_ISFILE and filedata[FILE_IDX_EXT] in extMovie) \
+				or (include_dirs and filedata[FILE_IDX_TYPE] > TYPE_ISFILE and not is_trashcan and filedata[FILE_IDX_FILENAME] != ".."):
 				filelist.append(filedata)
 
 		return filelist
@@ -338,7 +355,7 @@ class MovieCache(Bookmarks, object):
 
 		subdirlist = []
 		for filedata in self.filelist:
-			if filedata[FILE_IDX_TYPE] > TYPE_ISFILE and filedata[FILE_IDX_PATH] != config.MVC.movie_trashcan_path.value and filedata[FILE_IDX_FILENAME] != "..":
+			if filedata[FILE_IDX_TYPE] > TYPE_ISFILE and os.path.basename(filedata[FILE_IDX_PATH]) != "trashcan" and filedata[FILE_IDX_FILENAME] != "..":
 				subdirlist.append(filedata)
 		return subdirlist
 
@@ -483,17 +500,18 @@ class MovieCache(Bookmarks, object):
 			#print("MVC: MovieCache: dump: =========== cache dump =================")
 
 		for directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags in rows:
-			print("MVC: MovieCache: dump: media: %s|%s|%s|%s|%s" % (directory, filetype, path, filename, ext))
+			#print("MVC: MovieCache: dump: media: %s|%s|%s|%s|%s" % (directory, filetype, path, filename, ext))
 			if detailed:
-				print("MVC: MovieCache: dump: - name : %s" % name)
-				print("MVC: MovieCache: dump: - date : %s" % date)
-				print("MVC: MovieCache: dump: - len  : %s" % length)
-				print("MVC: MovieCache: dump: - desc : %s" % description)
-				print("MVC: MovieCache: dump: - ext  : %s" % extended_description)
-				print("MVC: MovieCache: dump: - sref : %s" % service_reference)
-				print("MVC: MovieCache: dump: - size : %s" % size)
-				print("MVC: MovieCache: dump: - cuts : %s" % unpackCutList(cuts))
-				print("MVC: MovieCache: dump: - tags : %s" % tags)
+				#print("MVC: MovieCache: dump: - name : %s" % name)
+				#print("MVC: MovieCache: dump: - date : %s" % date)
+				#print("MVC: MovieCache: dump: - len  : %s" % length)
+				#print("MVC: MovieCache: dump: - desc : %s" % description)
+				#print("MVC: MovieCache: dump: - ext  : %s" % extended_description)
+				#print("MVC: MovieCache: dump: - sref : %s" % service_reference)
+				#print("MVC: MovieCache: dump: - size : %s" % size)
+				#print("MVC: MovieCache: dump: - cuts : %s" % unpackCutList(cuts))
+				#print("MVC: MovieCache: dump: - tags : %s" % tags)
+				pass
 
 # 			if os.path.isfile(path):
 #				#print("MVC: MovieCache: dump: file exists")
@@ -530,7 +548,7 @@ class MovieCache(Bookmarks, object):
 			if path and filetype > TYPE_ISFILE and directory.find(in_path) == 0 and filename != "..":
 				self.__getCountSize(path)
 
-		#print("MVC: MovieCache: __getCountSize: %s, %s, %s" % (in_path, self.count, self.size))
+		print("MVC: MovieCache: __getCountSize: %s, %s, %s" % (in_path, self.count, self.size))
 
 	def close(self):
 		#print("MVC: MovieCache: close: closing database")

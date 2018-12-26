@@ -301,7 +301,7 @@ class MovieList(MovieListGUI, object):
 		# Insert these entries always at last
 		if path == os.path.realpath(config.MVC.movie_homepath.value):
 			if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_show.value:
-				customlist.append(MovieCache.getInstance().getFile(config.MVC.movie_trashcan_path.value))
+				customlist.append(MovieCache.getInstance().getFile(self.getBookmark(path) + "/trashcan"))
 
 			if config.MVC.bookmarks.value:
 				bookmarks = self.getBookmarks()

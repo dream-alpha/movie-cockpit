@@ -26,21 +26,19 @@ from MovieCache import MovieCache, TYPE_ISDIR, FILE_IDX_PATH
 from MediaTypes import extVideo
 from FileOps import FileOps
 from MountPoints import MountPoints
+from Bookmarks import Bookmarks
 from Tasker import mvcTasker
 
-RC_TRASHCAN_WRONG_PATH = 1
-RC_TRASHCAN_CREATE_DIR_FAILED = 2
+RC_TRASHCAN_CREATE_DIR_FAILED = 1
 
 instance = None
 
 
-class Trashcan(FileOps, MountPoints, object):
+class Trashcan(FileOps, MountPoints, Bookmarks, object):
 
 	def __init__(self):
-		if self.trashcanExists():
+		if config.MVC.movie_trashcan_enable.value:
 			self.__schedulePurge()
-		else:
-			config.MVC.movie_trashcan_enable.value = False
 		config.MVC.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
 
 	@staticmethod
@@ -59,34 +57,26 @@ class Trashcan(FileOps, MountPoints, object):
 			DelayedFunction(5000, self.purgeTrashcan)
 			print("MVC: Trashcan: scheduleCleanup: next trashcan cleanup in %s minutes" % (seconds / 60))
 
-	def trashcanExists(self):
-		afile = MovieCache.getInstance().getFile(config.MVC.movie_trashcan_path.value)
-		exists = config.MVC.movie_trashcan_enable.value and afile[FILE_IDX_PATH] != ""
-		print("MVC: Trashcan: trashcanExists: exists: %s" % exists)
-		return exists
-
 	def createTrashcan(self):
 		import datetime
 		print("MVC: Trashcan: createTrashcan")
-		path = config.MVC.movie_trashcan_path.value
-		if os.path.realpath(path) in os.path.realpath(config.MVC.movie_homepath.value):
-			config.MVC.movie_trashcan_enable.value = False
-			return RC_TRASHCAN_WRONG_PATH
-		else:
-			try:
-				os.makedirs(path)
-				MovieCache.getInstance().add(
-					(path, TYPE_ISDIR, path, _(os.path.basename(path)), "", _(os.path.basename(path)),
-					str(datetime.datetime.fromtimestamp(os.stat(path).st_mtime))[0:19], 0, "", "", "", 0, "", "")
-				)
-			except Exception:
-				config.MVC.movie_trashcan_enable.value = False
-				return RC_TRASHCAN_CREATE_DIR_FAILED
+		for bookmark in self.getBookmarks():
+			path = bookmark + "/trashcan"
+			if not os.path.exists(path):
+				try:
+					os.makedirs(path)
+					MovieCache.getInstance().add(
+						(path, TYPE_ISDIR, path, _(os.path.basename(path)), "", _(os.path.basename(path)),
+						str(datetime.datetime.fromtimestamp(os.stat(path).st_mtime))[0:19], 0, "", "", "", 0, "", "")
+					)
+				except Exception:
+					config.MVC.movie_trashcan_enable.value = False
+					return RC_TRASHCAN_CREATE_DIR_FAILED
 		return 0
 
 	def enableTrashcan(self):
 		print("MVC: Trashcan: enable")
-		if not self.trashcanExists():
+		if not config.MVC.movie_trashcan_enable.value:
 			self.createTrashcan()
 
 	def purgeTrashcan(self, empty_trash=False, callback=None):
@@ -94,13 +84,17 @@ class Trashcan(FileOps, MountPoints, object):
 		print("MVC: Trashcan: purgeTrashcan: empty_trash: %s" % empty_trash)
 		cmd = []
 		now = time.localtime()
-		filelist = MovieCache.getInstance().getFileList([config.MVC.movie_trashcan_path.value])
+		trashcan_dirs = []
+		for bookmark in self.getBookmarks():
+			trashcan_dirs.append(bookmark + "/trashcan")
+		print("MVC: Trashcan: purgeTrashcan: trashcan_dirs: %s" % trashcan_dirs)
+		filelist = MovieCache.getInstance().getFileList(trashcan_dirs)
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			# Only check media files
 			ext = os.path.splitext(path)[1]
 			if ext in extVideo and os.path.exists(path):
-				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.movie_trashcan_limit.value)):
+				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.movie_trashcan_retention.value)):
 					print("MVC: Trashcan: purgeTrashcan: path: " + path)
 					cmd = self.execFileDelete(cmd, path, "file")
 					print("MVC: Trashcan: purgeTrashcan: cmd: %s" % cmd)

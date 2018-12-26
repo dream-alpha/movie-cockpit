@@ -36,7 +36,7 @@ from enigma import eServiceEvent
 from FileUtils import readFile
 from Version import VERSION
 from SkinUtils import getSkinPath
-from Trashcan import Trashcan, RC_TRASHCAN_WRONG_PATH, RC_TRASHCAN_CREATE_DIR_FAILED
+from Trashcan import Trashcan
 
 
 class ConfigScreen(ConfigListScreen, Screen, object):
@@ -190,12 +190,11 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Download cover automatically for recording")    , config.MVC.cover_auto_download      , None                  , None                  , 0     , []          , _("Help Cover auto download")),
 			(self.section                                       , _("TRASHCAN")                       , None                  , None                  , 0     , []          , ""),
 			(_("Enable trashcan")                               , config.MVC.movie_trashcan_enable    , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
-			(_("Trashcan path")                                 , config.MVC.movie_trashcan_path      , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Trashcan path")),
-			(_("Show trashcan directory")                       , config.MVC.movie_trashcan_show      , None                  , None                  , 0     , [-2]        , _("Help Show trashcan directory")),
-			(_("Show trashcan information")                     , config.MVC.movie_trashcan_info      , None                  , None                  , 0     , [-3, -1]    , _("Help Dynamic trashcan")),
-			(_("Delete validation")                             , config.MVC.movie_delete_validation  , None                  , None                  , 0     , [-4]        , _("Help Delete validation")),
-			(_("Enable auto trashcan cleanup")                  , config.MVC.movie_trashcan_clean     , None                  , None                  , 0     , [-5]        , _("Help Enable auto trashcan cleanup")),
-			(_("File retention period in trashcan")             , config.MVC.movie_trashcan_limit     , None                  , None                  , 0     , [-6, -1]    , _("Help How many days files may remain in trashcan")),
+			(_("Show trashcan directory")                       , config.MVC.movie_trashcan_show      , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
+			(_("Show trashcan information")                     , config.MVC.movie_trashcan_info      , None                  , None                  , 0     , [-2, -1]    , _("Help Dynamic trashcan")),
+			(_("Delete validation")                             , config.MVC.movie_delete_validation  , None                  , None                  , 0     , [-3]        , _("Help Delete validation")),
+			(_("Enable auto trashcan cleanup")                  , config.MVC.movie_trashcan_clean     , None                  , None                  , 0     , [-4]        , _("Help Enable auto trashcan cleanup")),
+			(_("File retention period in trashcan")             , config.MVC.movie_trashcan_retention , None                  , None                  , 0     , [-5, -1]    , _("Help How many days files may remain in trashcan")),
 			(self.section                                       , _("LANGUAGE")                       , None                  , None                  , 1     , []          , ""),
 			(_("Preferred EPG language")                        , config.MVC.epglang                  , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
 			(_("Enable playback auto-subtitling")               , config.MVC.autosubs                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
@@ -361,10 +360,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		if element:
 			rc = Trashcan.getInstance().enableTrashcan()
 			if rc > 0:
-				if rc == RC_TRASHCAN_WRONG_PATH:
-					msg = _("Cannot create trashcan") + "\n" + _("Movie Home path is equal to or a subfolder of the trashcan")
-				elif rc == RC_TRASHCAN_CREATE_DIR_FAILED:
-					msg = _("Cannot create trashcan") + "\n" + _("Check mounts and permissions")
+				msg = _("Cannot create trashcan") + "\n" + _("Check mounts and permissions")
 				self.session.open(MessageBox, msg, MessageBox.TYPE_INFO, 10)
 
 	def needsRestart(self, _element=None):

@@ -52,6 +52,7 @@ class ParserMetaFile(object):
 		return path
 
 	def __readFile(self, path):
+		lines = None
 		if os.path.isfile(path):
 			lines = readFile(path).splitlines()
 
@@ -80,10 +81,10 @@ class ParserMetaFile(object):
 #		return self.meta_mtime
 
 	def getServiceReference(self):
-		return self.meta[META_IDX_SERVICE]
+		return self.meta and self.meta[META_IDX_SERVICE]
 
 	def getName(self):
-		return self.meta[META_IDX_NAME]
+		return self.meta and self.meta[META_IDX_NAME]
 
 #	def getDescription(self):
 #		try:
@@ -93,21 +94,21 @@ class ParserMetaFile(object):
 #				self.meta[self.DESC] = self.meta[META_IDX_DESC].decode("cp1252").encode("utf-8")
 #			except UnicodeDecodeError:
 #				self.meta[self.DESC] = self.meta[META_IDX_DESC].decode("iso-8859-1").encode("utf-8")
-#		return self.meta[self.DESC]
+#		return self.meta and self.meta[self.DESC]
 
 #	def getRecordingTime(self):
 #		# Time in seconds since 1970
-#		return self.__mk_int(self.meta[META_IDX_RECTIME])
+#		return self.meta and self.__mk_int(self.meta[META_IDX_RECTIME])
 
 	def getTags(self):
-		return self.meta[META_IDX_TAGS]
+		return self.meta and self.meta[META_IDX_TAGS]
 
 
 #	def getLength(self):
-#		return self.__ptsToSeconds(self.__mk_int(self.meta[META_IDX_LENGTH]))
+#		return self.meta and self.__ptsToSeconds(self.__mk_int(self.meta[META_IDX_LENGTH]))
 
 #	def getFileSize(self):
-#		return self.__mk_int(self.meta[META_IDX_FILESIZE])
+#		return self.meta and self.__mk_int(self.meta[META_IDX_FILESIZE])
 
 #	def getDate(self):
 #		return self.__secondsToDate(self.getRecordingTime())

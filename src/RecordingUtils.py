@@ -101,7 +101,7 @@ def getRecording(path, include_margin_before=True):
 				#print("MVC: RecordingUtils: getRecording: late recording")
 				rec_start = recording_start
 			else:
-				#print("MVC: RecordingUtils: getRecording: ontime recording or within margin before")
+				#print("MVC: RecordingUtils: getRecording: ontime recording or within margin_before")
 				rec_start = timer.begin + config.recording.margin_before.value * 60
 		rec_end = timer.end - config.recording.margin_after.value * 60
 		recording = (rec_start, rec_end, timer.service_ref.ref)

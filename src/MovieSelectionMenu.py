@@ -79,7 +79,7 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 			self.menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
 			self.menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
 
-			if config.MVC.movie_trashcan_enable.value and os.path.exists(config.MVC.movie_trashcan_path.value):
+			if config.MVC.movie_trashcan_enable.value:
 				self.menu.append((_("Delete permanently"), boundFunction(self.close, FUNC_DELETE_PERMANENTLY)))
 				self.menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
 				self.menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))

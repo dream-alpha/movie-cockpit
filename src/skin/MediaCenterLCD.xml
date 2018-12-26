@@ -15,7 +15,7 @@ Copyright (C) 2018 by dream_alpha
 		</widget>
 		<eLabel backgroundColor="white" position="10,145" size="380,2" />
 		<widget font="Display;75" position="5,160" render="Label"
-			size="210,75" source="parent.Service" transparent="1" valign="center">
+			size="300,75" source="parent.Service" transparent="1" valign="center">
 			<convert type="MVCMovieInfo">FileSize</convert>
 		</widget>
 		<widget font="Display;75" halign="right" position="225,160"

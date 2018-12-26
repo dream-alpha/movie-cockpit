@@ -35,7 +35,7 @@ class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 			c.append('rm -f "' + path + '."*')     # name.*
 			cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
 			info_path = self.getInfoPath(path)
-			if config.MVC.cover_flash.value and path.find(config.MVC.movie_trashcan_path.value) == 0:
+			if config.MVC.cover_flash.value and path.startswith(self.getBookmark(path) + "/trashcan"):
 				cover_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".jpg"
 				info_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".txt"
 			print("MVC: FileOps: execFileDelete: cover_path: %s, info_path: %s" % (cover_path, info_path))
@@ -52,16 +52,18 @@ class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 		print("MVC: FileOps: execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(c, path, target_path)
 		path, _ext = os.path.splitext(path)
+		if target_path == "trashcan":
+			target_path = self.getBookmark(path) + "/trashcan"
 		if file_type == "file":
-			if target_path == config.MVC.movie_trashcan_path.value:
+			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '."*')
 			c.append('mv "' + path + '."* "' + target_path + '/"')
 		elif file_type == "dir":
-			if target_path == config.MVC.movie_trashcan_path.value:
+			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path)
 			c.append('mv "' + path + '" "' + target_path + '"')
 		elif file_type == "link":
-			if target_path == config.MVC.movie_trashcan_path.value:
+			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path)
 			c.append('mv "' + path + '" "' + target_path + '"')
 		print("MVC: FileOps: execFileMove: c: %s" % c)
