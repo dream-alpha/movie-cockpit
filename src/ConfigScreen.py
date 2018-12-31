@@ -134,7 +134,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Show settings in extensions menu")              , config.MVC.extmenu_plugin           , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
 			(_("Show plugin in extensions menu")                , config.MVC.extmenu_list             , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
 			(_("Movie home at start")                           , config.MVC.start_home               , None                  , None                  , 0     , []          , _("Help Movie home at start")),
-			(_("Movie home path")                               , config.MVC.movie_homepath           , self.validatePath     , self.openLocationBox  , 0     , []          , _("Help Movie home home path")),
 			(_("Default sort mode")                             , config.MVC.movie_sort               , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
 			(self.section                                       , _("KEYMAPPING")                     , None                  , None                  , 0     , []          , ""),
 			(_("Bouquet buttons behavior")                      , config.MVC.bqt_keys                 , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
@@ -163,7 +162,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Hide movies being deleted")                     , config.MVC.movie_hide_delete        , None                  , None                  , 1     , []          , _("Help Hide movies being deleted")),
 			(_("Hide movies being copied")                      , config.MVC.movie_hide_copy          , None                  , None                  , 1     , []          , _("Help Hide movies being copied")),
 			(_("Cursor predictive move after selection")        , config.MVC.moviecenter_selmove      , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
-			(_("Show bookmarks in movie list")                  , config.MVC.bookmarks                , None                  , None                  , 0     , []          , _("Help Show Bookmarks in movielist")),
 			(_("Description field update delay")                , config.MVC.movie_description_delay  , None                  , None                  , 2     , []          , _("Help Description field update delay")),
 			(self.section                                       , _("SKIN-SETTINGS")                  , None                  , None                  , 0     , []          , ""),
 			(_("Show miniTV")                                   , config.MVC.mini_tv                  , self.needsReload      , None                  , 0     , []          , _("Help Show MiniTV")),
@@ -353,7 +351,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 	@staticmethod
 	def setEPGLanguage():
 		if config.MVC.epglang.value:
-			print("MVC: plugin: Setting EPG language: %s" % config.MVC.epglang.value)
+			#print("MVC: plugin: Setting EPG language: %s" % config.MVC.epglang.value)
 			eServiceEvent.setEPGLanguage(config.MVC.epglang.value)
 
 	def activateTrashcan(self, element):
@@ -377,7 +375,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 				LocationBox,
 				windowTitle=_("Select Location"),
 				text=_("Select directory"),
-				currDir=str(path) + "/",
+				currDir=path + "/",
 				bookmarks=config.movielist.videodirs,
 				autoAdd=False,
 				editDir=True,

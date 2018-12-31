@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -55,11 +55,11 @@ class Trashcan(FileOps, MountPoints, Bookmarks, object):
 			DelayedFunction(1000 * seconds, self.__schedulePurge)
 			# Execute trash cleaning
 			DelayedFunction(5000, self.purgeTrashcan)
-			print("MVC: Trashcan: scheduleCleanup: next trashcan cleanup in %s minutes" % (seconds / 60))
+			print("MVC-I: Trashcan: scheduleCleanup: next trashcan cleanup in %s minutes" % (seconds / 60))
 
 	def createTrashcan(self):
 		import datetime
-		print("MVC: Trashcan: createTrashcan")
+		print("MVC-I: Trashcan: createTrashcan")
 		for bookmark in self.getBookmarks():
 			path = bookmark + "/trashcan"
 			if not os.path.exists(path):
@@ -75,35 +75,32 @@ class Trashcan(FileOps, MountPoints, Bookmarks, object):
 		return 0
 
 	def enableTrashcan(self):
-		print("MVC: Trashcan: enable")
+		print("MVC-I: Trashcan: enable")
 		if not config.MVC.movie_trashcan_enable.value:
 			self.createTrashcan()
 
 	def purgeTrashcan(self, empty_trash=False, callback=None):
 		import time
-		print("MVC: Trashcan: purgeTrashcan: empty_trash: %s" % empty_trash)
+		print("MVC-I: Trashcan: purgeTrashcan: empty_trash: %s" % empty_trash)
 		cmd = []
 		now = time.localtime()
-		trashcan_dirs = []
-		for bookmark in self.getBookmarks():
-			trashcan_dirs.append(bookmark + "/trashcan")
-		print("MVC: Trashcan: purgeTrashcan: trashcan_dirs: %s" % trashcan_dirs)
-		filelist = MovieCache.getInstance().getFileList(trashcan_dirs)
+		filelist = MovieCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			# Only check media files
 			ext = os.path.splitext(path)[1]
 			if ext in extVideo and os.path.exists(path):
 				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.movie_trashcan_retention.value)):
-					print("MVC: Trashcan: purgeTrashcan: path: " + path)
+					#print("MVC: Trashcan: purgeTrashcan: path: " + path)
 					cmd = self.execFileDelete(cmd, path, "file")
-					print("MVC: Trashcan: purgeTrashcan: cmd: %s" % cmd)
+					#print("MVC: Trashcan: purgeTrashcan: cmd: %s" % cmd)
 					MovieCache.getInstance().delete(path)
 		if cmd:
 			association = []
 			if callback is not None:
 				association.append(callback)
-			print("MVC: Trashcan: purgeTrashcan: deleting...")
+			print("MVC-I: Trashcan: purgeTrashcan: deleting...")
 			mvcTasker.shellExecute(cmd, association)
 		else:
-			print("MVC: Trashcan: purgeTrashcan: nothing to delete")
+			print("MVC-I: Trashcan: purgeTrashcan: nothing to delete")
+			pass

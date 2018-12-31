@@ -83,24 +83,24 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 	### Override from InfoBarGenerics.py
 
 	def zapToService(self, service):
-		if not service is None:
+		if service is not None:
 			self.servicelist.setCurrentSelection(service) #select the service in servicelist
 			self.servicelist.zap()
 
 	def downloadCuesheet(self):
-		print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
+		#print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
 		self.cut_list = CutList(self.service.getPath()).getCutList()
-		print("MVC: InfoBarSupport: downloadCuesheet: cut_list: %s" % self.cut_list)
+		#print("MVC: InfoBarSupport: downloadCuesheet: cut_list: %s" % self.cut_list)
 
 	def uploadCuesheet(self):
-		print("MVC: InfoBarSupport: uploadCuesheet: self.service: %s" % (self.service.getPath() if self.service else None))
-		print("MVC: InfoBarSupport: uploadCuesheet: cut_list: %s" % self.cut_list)
+		#print("MVC: InfoBarSupport: uploadCuesheet: self.service: %s" % (self.service.getPath() if self.service else None))
+		#print("MVC: InfoBarSupport: uploadCuesheet: cut_list: %s" % self.cut_list)
 		CutList(self.service.getPath()).setCutList(self.cut_list)
 
 	# InfoBarCueSheetSupport
 	def __serviceStarted(self):
 		if not self.is_closing:
-			print("MVC: InfoBarSupport: __serviceStarted: new service started, trying to download cuts")
+			#print("MVC: InfoBarSupport: __serviceStarted: new service started, trying to download cuts")
 			self.downloadCuesheet()
 
 			if config.usage.on_movie_start.value == "beginning" and config.MVC.movie_jump_first_mark.value:
@@ -213,7 +213,8 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			# InfoBarCueSheetSupport
 			return self.cueGetCurrentPosition() or 0
 		except Exception as e:
-			print("MVC: InfoBarSupport: getSeekPlayPosition: exception:\n" + str(e))
+			print("MVC-E: InfoBarSupport: getSeekPlayPosition: exception:\n" + str(e))
+			pass
 		return 0
 
 	def getSeekLength(self):
@@ -223,7 +224,8 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			# Call private InfoBarCueSheetSupport function
 			seek = InfoBarCueSheetSupport._InfoBarCueSheetSupport__getSeekable(self)
 		except Exception as e:
-			print("MVC: InfoBarSupport: getSeekLength: exception:\n" + str(e))
+			print("MVC-E: InfoBarSupport: getSeekLength: exception:\n" + str(e))
+			pass
 		if seek is not None:
 			__len = seek.getLength()
 			if not __len[0]:

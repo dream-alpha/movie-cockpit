@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -23,7 +23,7 @@ def readFile(path):
 	try:
 		return file(path).read()
 	except IOError:
-		print("MVC: FileUtils: readFile: failed to read %s" % path)
+		#print("MVC: FileUtils: readFile: failed to read %s" % path)
 		return ""
 
 def writeFile(path, text):

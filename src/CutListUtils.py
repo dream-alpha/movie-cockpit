@@ -85,7 +85,8 @@ def deleteCutsFile(path):
 	try:
 		os.remove(path)
 	except Exception as e:
-		print("MVC: CutListUtils: deleteCutsFile:exception:\n" + str(e))
+		print("MVC-E: CutListUtils: deleteCutsFile:exception:\n" + str(e))
+		pass
 
 def verifyCutList(cut_list):
 	if config.MVC.movie_ignore_firstcuts.value:

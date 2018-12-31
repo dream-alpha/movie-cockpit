@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -25,12 +25,13 @@ from MovieCover import MovieCover
 from Bookmarks import Bookmarks
 from MountPoints import MountPoints
 from MovieTMDB import MovieTMDB
+from MovieCache import TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK
 
 class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 
 	def execFileDelete(self, c, path, file_type):
-		print("MVC: FileOps: execFileDelete: path: %s, file_type: %s" % (path, file_type))
-		if file_type == "file":
+		#print("MVC: FileOps: execFileDelete: path: %s, file_type: %s" % (path, file_type))
+		if file_type == TYPE_ISFILE:
 			path, _ext = os.path.splitext(path)
 			c.append('rm -f "' + path + '."*')     # name.*
 			cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
@@ -38,47 +39,50 @@ class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 			if config.MVC.cover_flash.value and path.startswith(self.getBookmark(path) + "/trashcan"):
 				cover_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".jpg"
 				info_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".txt"
-			print("MVC: FileOps: execFileDelete: cover_path: %s, info_path: %s" % (cover_path, info_path))
+			#print("MVC: FileOps: execFileDelete: cover_path: %s, info_path: %s" % (cover_path, info_path))
 			c.append('rm -f "' + cover_path + '"') # name.jpg
-			c.append('rm -f "' + info_path + '"') # name.txt
-		elif file_type == "dir":
+			c.append('rm -f "' + info_path + '"')  # name.txt
+		elif file_type == TYPE_ISDIR:
 			c.append('rm -rf "' + path + '"')
-		elif file_type == "link":
+		elif file_type == TYPE_ISLINK:
 			c.append('rm -f "' + path + '"')
-		print("MVC: FileOps: execFileDelete: c: %s" % c)
+		#print("MVC: FileOps: execFileDelete: c: %s" % c)
 		return c
 
 	def execFileMove(self, c, path, target_path, file_type):
-		print("MVC: FileOps: execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+		#print("MVC: FileOps: execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(c, path, target_path)
 		path, _ext = os.path.splitext(path)
-		if target_path == "trashcan":
-			target_path = self.getBookmark(path) + "/trashcan"
-		if file_type == "file":
+		if file_type == TYPE_ISFILE:
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '."*')
 			c.append('mv "' + path + '."* "' + target_path + '/"')
-		elif file_type == "dir":
+		elif file_type == TYPE_ISDIR:
 			if os.path.basename(target_path) == "trashcan":
-				c.append('touch "' + path)
+				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
-		elif file_type == "link":
+		elif file_type == TYPE_ISLINK:
 			if os.path.basename(target_path) == "trashcan":
-				c.append('touch "' + path)
+				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
-		print("MVC: FileOps: execFileMove: c: %s" % c)
+		#print("MVC: FileOps: execFileMove: c: %s" % c)
 		return c
 
-	def execFileCopy(self, c, path, target_path):
-		print("MVC: FileOps: execFileCopy: path: %s, target_path: %s" % (path, target_path))
+	def execFileCopy(self, c, path, target_path, file_type):
+		#print("MVC: FileOps: execFileCopy: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(c, path, target_path)
 		path, _ext = os.path.splitext(path)
-		c.append('cp "' + path + '."* "' + target_path + '/"')
-		print("MVC: FileOps: execFileCopy: c: %s" % c)
+		if file_type == TYPE_ISFILE:
+			c.append('cp "' + path + '."* "' + target_path + '/"')
+		elif file_type == TYPE_ISDIR:
+			c.append('cp -ar "' + path + '" "' + target_path + '"')
+		elif file_type == TYPE_ISLINK:
+			c.append('cp -ar "' + path + '" "' + target_path + '"')
+		#print("MVC: FileOps: execFileCopy: c: %s" % c)
 		return c
 
 	def __changeFileOwner(self, c, path, target_path):
-		if self.isMountPoint(target_path) != self.isMountPoint(config.MVC.movie_homepath.value):  # CIFS to HDD is ok!
+		if self.isMountPoint(target_path) != self.isMountPoint(path):
 			# need to change file ownership to match target filesystem file creation
 			tfile = "\"" + target_path + "/owner_test" + "\""
 			path = path.replace("'", "\'")

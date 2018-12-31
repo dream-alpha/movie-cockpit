@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -35,18 +35,18 @@ from Tools.BoundFunction import boundFunction
 
 
 def openSettings(session):
-	print("MVC: plugin: openSettings")
+	print("MVC-I: plugin: openSettings")
 	session.open(ConfigScreen)
 
 
 def openMovieSelection(session):
-	print("MVC: plugin: openMovieSelection")
+	print("MVC-I: plugin: openMovieSelection")
 	from MovieSelection import MovieSelection
 	session.open(MovieSelection)
 
 
 def autostart(reason, **kwargs):
-	print("MVC: plugin: autostart: reason: %s" % reason)
+	print("MVC-I: plugin: autostart: reason: %s" % reason)
 	if reason == 0:  # startup
 		if "session" in kwargs:
 			session = kwargs["session"]
@@ -63,7 +63,7 @@ def autostart(reason, **kwargs):
 				elif launch_key == "startTimeshift":
 					InfoBar.startTimeshift = boundFunction(openMovieSelection, session)
 
-			print("MVC: plugin: +++ Version: " + VERSION + " starts...")
+			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			ConfigScreen.setEPGLanguage()
 			MovieCache.getInstance()
 			RecordingControl()
@@ -71,14 +71,15 @@ def autostart(reason, **kwargs):
 			loadSkin(getSkinPath("MediaCenterLCD.xml"))
 
 	elif reason == 1:  # shutdown
-		print("MVC: plugin: --- shutdown")
+		print("MVC-I: plugin: --- shutdown")
 		MovieCache.getInstance().close()
 	else:
-		print("MVC: plugin: autostart: reason not handled: %s" % reason)
+		#print("MVC: plugin: autostart: reason not handled: %s" % reason)
+		pass
 
 
 def Plugins(**__):
-	print("MVC: plugin: +++ Plugins")
+	print("MVC-I: plugin: +++ Plugins")
 	ConfigInit()
 
 	descriptors = []

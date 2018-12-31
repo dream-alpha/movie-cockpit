@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2018 by dream_alpha
+Copyright (C) 2018-2019 by dream-alpha
 -->
 <screen flags="wfNoBorder" name="MVCMediaCenter"
 	position="0,825" size="1920,225">

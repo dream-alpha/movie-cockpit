@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -47,6 +47,7 @@ FUNC_MOVE = 9
 FUNC_OPEN_SETUP = 10
 FUNC_REMOVE_MARKER = 11
 FUNC_DELETE_CUTLIST = 12
+FUNC_OPEN_BOOKMARKS = 13
 
 
 class MovieSelectionMenu(Screen, Bookmarks, object):
@@ -87,6 +88,7 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 			self.menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
 			self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
 
+			self.menu.append((_("Bookmarks/Directories"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
 			self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_WITHOUT_CACHE)))
 			self.menu.append((_("Setup"), boundFunction(session.open, ConfigScreen)))
 

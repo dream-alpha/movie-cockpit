@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -47,7 +47,7 @@ class MountPoints(object):
 				space_used_percent += ", "
 			space_used_percent += mountpoint + (": %.1f" % percent_used) + "%"
 		config.MVC.disk_space_info.value = space_used_percent
-		print("MVC: MountPoints: getMountPointsSpaceUsedPercent: space_used_percent: %s" % space_used_percent)
+		#print("MVC: MountPoints: getMountPointsSpaceUsedPercent: space_used_percent: %s" % space_used_percent)
 		return space_used_percent
 
 	def getMountPointSpaceUsedPercent(self, path):

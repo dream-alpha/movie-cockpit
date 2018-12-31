@@ -67,7 +67,7 @@ class ParserEitFile(object):
 		return path
 
 	def __readFile(self, path):
-		print("MVC: ParserEitFile: __readFile: path: %s" % path)
+		#print("MVC: ParserEitFile: __readFile: path: %s" % path)
 		data = None
 		if os.path.isfile(path):
 			data = readFile(path)
@@ -154,7 +154,7 @@ class ParserEitFile(object):
 					else:
 						descriptor.decode('utf-8')
 				except (UnicodeDecodeError, AttributeError) as e:
-					print("MVC: ParserEitFile: convertToUtf8: exception:\n" + str(e))
+					print("MVC-E: ParserEitFile: convertToUtf8: exception:\n" + str(e))
 					pass
 			return descriptor.strip()
 
@@ -270,7 +270,7 @@ class ParserEitFile(object):
 			self.prev2_ISO_639_language_code = ISO_639_language_code
 
 		def parseContentDescriptor(_data, _pos):
-			print("MVC: ParserEitFile: parseContentDescriptor")
+			#print("MVC: ParserEitFile: parseContentDescriptor")
 			self.content_descriptor.append("n/a")
 
 		self.eit = {}
@@ -309,8 +309,8 @@ class ParserEitFile(object):
 				self.pdc_descriptor.append(data[pos + 5:pos + length])
 
 			else:
-				print("MVC: ParserEitFile: __parse: unsupported descriptor: %x %x" % (rec, length))
-				print("MVC: ParserEitFile: __parse: %s" % (data[pos:pos + length]))
+				#print("MVC: ParserEitFile: __parse: unsupported descriptor: %x %x" % (rec, length))
+				#print("MVC: ParserEitFile: __parse: %s" % (data[pos:pos + length]))
 				pass
 
 			pos += length

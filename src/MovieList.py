@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream_alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -26,18 +26,18 @@ from enigma import eListboxPythonMultiContent, gFont
 from ServiceCenter import ServiceCenter
 from MovieListGUI import MovieListGUI
 from MovieCache import MovieCache,\
-	TYPE_ISDIR, TYPE_ISLINK, TYPE_ISBOOKMARK,\
+	TYPE_ISDIR, TYPE_ISLINK,\
 	FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_DESCRIPTION, FILE_IDX_LENGTH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
 from MediaTypes import extVideo, plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
 from datetime import datetime
 
-virAll = frozenset([TYPE_ISBOOKMARK, TYPE_ISDIR, TYPE_ISLINK])
-virToE = frozenset([TYPE_ISBOOKMARK])
+virAll = frozenset([TYPE_ISDIR, TYPE_ISLINK])
+virToE = frozenset([])
 
 class MovieList(MovieListGUI, object):
 
 	def __init__(self, sort_mode):
-		print("MVC: MovieList: __init__")
+		#print("MVC: MovieList: __init__")
 
 		self.sort_mode = sort_mode
 		self.list = []
@@ -66,7 +66,8 @@ class MovieList(MovieListGUI, object):
 			try:
 				f()
 			except Exception as e:
-				print("MVC: MovieList: selectionChanged: exception:\n" + str(e))
+				print("MVC-E: MovieList: selectionChanged: exception:\n" + str(e))
+				pass
 
 	def getCurrentPath(self):
 		l = self.l.getCurrentSelection()
@@ -82,7 +83,7 @@ class MovieList(MovieListGUI, object):
 	def getCurrentEvent(self):
 		l = self.l.getCurrentSelection()
 		service = self.getPlayerService(l[FILE_IDX_PATH], "", l[FILE_IDX_EXT])
-		print("MVC: MovieList: getCurrentEvent: service: %s" % (service.getPath() if service else None))
+		#print("MVC: MovieList: getCurrentEvent: service: %s" % (service.getPath() if service else None))
 		return ServiceCenter.getInstance().info(service).getEvent()
 
 	def postWidgetCreate(self, instance):
@@ -120,23 +121,23 @@ class MovieList(MovieListGUI, object):
 		return self.selection_list
 
 	def resetSelectionList(self):
-		print("MVC: MovieList: resetSelectionList")
+		#print("MVC: MovieList: resetSelectionList")
 		self.selection_list = []
 		self.invalidateList()
 
 	def selectService(self, path):
-		print("MVC: MovieList: selectService: path: %s" % path)
+		#print("MVC: MovieList: selectService: path: %s" % path)
 		self.selection_list.append(path)
 		self.invalidateService(path)
 
 	def unselectService(self, path):
-		print("MVC: MovieList: unselectService: path: %s" % path)
+		#print("MVC: MovieList: unselectService: path: %s" % path)
 		if path in self.selection_list:
 			self.selection_list.remove(path)
 			self.invalidateService(path)
 
 	def selectSelectionList(self):
-		print("MVC: MovieList: selectSelectionList")
+		#print("MVC: MovieList: selectSelectionList")
 		for movie in self.list:
 			self.selectService(movie[FILE_IDX_PATH])
 
@@ -189,17 +190,14 @@ class MovieList(MovieListGUI, object):
 	def currentSelIsVirtual(self):
 		return self.getTypeOfIndex(self.getCurrentIndex()) in virAll
 
-	def currentSelIsBookmark(self):
-		return self.getTypeOfIndex(self.getCurrentIndex()) == TYPE_ISBOOKMARK
-
 	def indexIsDirectory(self, index):
 		return self.getTypeOfIndex(index) == TYPE_ISDIR
 
 	def indexIsPlayable(self, index):
 		return self.getExtOfIndex(index) in extVideo
 
- 	def getCurrentSelDescription(self):
- 		return self.getListEntry(self.getCurrentIndex())[FILE_IDX_DESCRIPTION]
+	def getCurrentSelDescription(self):
+		return self.getListEntry(self.getCurrentIndex())[FILE_IDX_DESCRIPTION]
 
 	def getList(self):
 		return self.list
@@ -209,6 +207,14 @@ class MovieList(MovieListGUI, object):
 
 	def getTypeOfIndex(self, index):
 		return self.list[index][FILE_IDX_TYPE]
+
+	def getTypeOfPath(self, path):
+		file_type = None
+		for entry in self.list:
+			if entry[FILE_IDX_PATH] == path:
+				file_type = entry[FILE_IDX_TYPE]
+				break
+		return file_type
 
 	def getExtOfIndex(self, index):
 		return self.list[index][FILE_IDX_EXT]
@@ -260,7 +266,7 @@ class MovieList(MovieListGUI, object):
 		return self.getPlayerService(path, name, ext)
 
 	def getServiceOfIndex(self, index):
-		print("MVC: MovieList: getServiceOfIndex: index: %s" % index)
+		#print("MVC: MovieList: getServiceOfIndex: index: %s" % index)
 		path = self.list[index][FILE_IDX_PATH]
 		name = self.list[index][FILE_IDX_NAME]
 		ext = self.list[index][FILE_IDX_EXT]
@@ -292,23 +298,19 @@ class MovieList(MovieListGUI, object):
 		return filelist
 
 	def createCustomList(self, path):
+		#print("MVC: MovieList: createCustomList: path: %s" % path)
+		path = os.path.realpath(path)
 		customlist = []
 
-		path = os.path.realpath(path)
-		if not self.isBookmark(path):
+		if path not in self.getBookmarks():
 			customlist.append(MovieCache.getInstance().getFile(os.path.join(path, "..")))
 
-		# Insert these entries always at last
-		if path == os.path.realpath(config.MVC.movie_homepath.value):
+		if path in self.getBookmarks():
+			path = self.getBookmarks()[0]
 			if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_show.value:
 				customlist.append(MovieCache.getInstance().getFile(self.getBookmark(path) + "/trashcan"))
 
-			if config.MVC.bookmarks.value:
-				bookmarks = self.getBookmarks()
-				if bookmarks:
-					for bookmark in bookmarks:
-						customlist.append(MovieCache.getInstance().newFileEntry(directory=os.path.dirname(bookmark), filetype=TYPE_ISBOOKMARK,
-							path=bookmark, filename=os.path.basename(bookmark), name=os.path.basename(bookmark)))
+		#print("MVC: MovieList: createCustomList: customlist: " + str(customlist))
 		return customlist
 
 	def sortList(self, sortlist):
@@ -342,7 +344,7 @@ class MovieList(MovieListGUI, object):
 		self.l.setList(self.list)
 
 	def reloadList(self, path, sort_mode):
-		print("MVC: MovieList: reloadList: path: %s" % path)
+		#print("MVC: MovieList: reloadList: path: %s" % path)
 		self.sort_mode = sort_mode
 		self.resetSelectionList()
 		filelist = self.createFileList(path)
@@ -355,13 +357,13 @@ class MovieList(MovieListGUI, object):
 		self.reloadList(path, self.sort_mode)
 
 	def getNextSelectedService(self, selection_list):
-		print("MVC: MovieSelection: getNextSelectedService: selected_list: %s" % selection_list)
+		#print("MVC: MovieSelection: getNextSelectedService: selected_list: %s" % selection_list)
 		# calc lowest selected index
 		indexes = []
 		for path in selection_list:
-			print("MVC: MovieSelection: getNextSelectedService: %s" % path)
+			#print("MVC: MovieSelection: getNextSelectedService: %s" % path)
 			indexes.append(self.getIndexOfService(path))
-		print("MVC: MovieSelection: getNextSelectedService: indexes: %s" % indexes)
+		#print("MVC: MovieSelection: getNextSelectedService: indexes: %s" % indexes)
 		indexes.sort()
 		lowest_index = indexes[0]
 
@@ -371,9 +373,8 @@ class MovieList(MovieListGUI, object):
 			if path not in selection_list:
 				next_path = path
 				break
-		print("MVC: MovieSelection: getNextSelectedService: next_path: %s" % next_path)
+		#print("MVC: MovieSelection: getNextSelectedService: next_path: %s" % next_path)
 		return next_path
 
 	def bqtListFolders(self):
-		movie_homepath = os.path.realpath(config.MVC.movie_homepath.value)
-		return MovieCache.getInstance().getDirList(movie_homepath).sort()
+		return MovieCache.getInstance().getDirList(self.getBookmarks()[0]).sort()

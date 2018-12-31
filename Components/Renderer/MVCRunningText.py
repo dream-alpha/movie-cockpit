@@ -2,7 +2,7 @@
 #    RunningText.py - Running Text Renderer for Enigma2
 #    Version: 1.6 (14.12.2018)
 #    Copyright (C) 2010-2012 vlamo <vlamodev@gmail.com>
-#                  2018      dream-alpha
+#              (C) 2018-2019 dream-alpha
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -77,8 +77,6 @@ class MVCRunningText(Renderer):
 	GUI_WIDGET = eWidget
 
 	def postWidgetCreate(self, instance):
-		self.instance.move(ePoint(0, 0))
-		self.instance.resize(eSize(self.W, self.H))
 		self.scroll_label = eLabel(instance)
 		self.__timer = eTimer()
 		self.__timer_conn = None
@@ -235,7 +233,7 @@ class MVCRunningText(Renderer):
 	def moveLabel(self, X, Y):
 		self.scroll_label.move(ePoint(X - self.soffset[0], Y - self.soffset[1]))
 
-	def adjustWidgetSizePosition(self):
+	def setWidgetSizePosition(self):
 		self.W = self.W1
 		self.H = self.H1
 		self.y_offset = 0
@@ -254,7 +252,7 @@ class MVCRunningText(Renderer):
 
 	def calcMoving(self):
 		self.X = self.Y = 0
-		self.adjustWidgetSizePosition()
+		self.setWidgetSizePosition()
 		#print("MVC: MVCRunningText: calcMoving: X: %s, Y: %s, H: %s, W: %s" % (self.X, self.Y, self.H, self.W))
 		if not (self.txtflags & RT_WRAP):
 			self.txtext = self.txtext.replace("\xe0\x8a", " ").replace(chr(0x8A), " ").replace("\n", " ").replace("\r", " ")

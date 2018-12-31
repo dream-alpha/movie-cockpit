@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -39,7 +39,7 @@ from RecordingUtils import adjustTimerPathAfterMove, isRecording, stopRecording
 from Components.Sources.MVCServiceEvent import MVCServiceEvent
 from ServiceCenter import ServiceCenter
 from MountPoints import MountPoints
-from MovieCache import MovieCache
+from MovieCache import MovieCache, TYPE_ISFILE, TYPE_ISDIR
 from MovieList import MovieList
 from MovieSelectionMenu import MovieSelectionMenu
 from Bookmarks import Bookmarks
@@ -50,7 +50,7 @@ from Tasker import mvcTasker
 from FileOps import FileOps
 from MovieCover import MovieCover
 from FileUtils import readFile
-from MovieCache import FILE_IDX_PATH, TYPE_ISBOOKMARK
+from MovieCache import FILE_IDX_PATH
 from ConfigInit import sort_modes, function_key_names, KEY_RED_SHORT, KEY_RED_LONG, KEY_GREEN_SHORT, KEY_GREEN_LONG, KEY_YELLOW_SHORT,\
 	KEY_YELLOW_LONG, KEY_BLUE_SHORT, KEY_BLUE_LONG, KEY_INFO_SHORT, KEY_INFO_LONG, KEY_FUNC_TOGGLE_COVER, KEY_FUNC_DISABLED
 
@@ -61,21 +61,21 @@ instance = None
 class MiniTV(object):
 
 	def __init__(self, session):
-		print("MVC: MovieSelection: MiniTV: __init__")
+		#print("MVC: MovieSelection: MiniTV: __init__")
 		self.session = session
 		desktopSize = getDesktop(0).size()
 		self["Video"] = VideoWindow(decoder=0, fb_width=desktopSize.width(), fb_height=desktopSize.height())
 
 	def volumeMute(self):
-		print("MVC: MovieSelection: volumeMute: volume_control")
+		#print("MVC: MovieSelection: volumeMute: volume_control")
 		eDVBVolumecontrol.getInstance().volumeMute()
 
 	def volumeUnMute(self):
-		print("MVC: MovieSelection: volumeUnMute: volume_control")
+		#print("MVC: MovieSelection: volumeUnMute: volume_control")
 		eDVBVolumecontrol.getInstance().volumeUnMute()
 
 	def suspendMiniTV(self, last_service_reference):
-		print("MVC: MovieSelection: suspendMiniTV: last_service_reference: %s" % (last_service_reference.toString() if last_service_reference else None))
+		#print("MVC: MovieSelection: suspendMiniTV: last_service_reference: %s" % (last_service_reference.toString() if last_service_reference else None))
 		self.volumeMute()
 		self["Video"].hide()
 		self.session.nav.stopService()
@@ -83,7 +83,7 @@ class MiniTV(object):
 		self.session.nav.stopService()
 
 	def resumeMiniTV(self, last_service_reference):
-		print("MVC: MovieSelection: resumeMiniTV: last_service_reference: %s" % (last_service_reference.toString() if last_service_reference else None))
+		#print("MVC: MovieSelection: resumeMiniTV: last_service_reference: %s" % (last_service_reference.toString() if last_service_reference else None))
 		self.session.nav.playService(last_service_reference)
 		self.volumeUnMute()
 		self["Video"].show()
@@ -92,7 +92,7 @@ class MiniTV(object):
 class MovieSelectionSummary(Screen, object):
 
 	def __init__(self, session, parent):
-		print("MVC: MovieSelectionSummary: MovieSelectionSummary: __init__")
+		#print("MVC: MovieSelectionSummary: MovieSelectionSummary: __init__")
 		Screen.__init__(self, session, parent)
 		self.skinName = ["MVCSelectionSummary"]
 
@@ -123,7 +123,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		return instance
 
 	def __init__(self, session, *__):
-		print("MVC: MovieSelection: __init__: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: __init__: self.return_path: %s" % self.return_path)
 
 		global instance
 		instance = self
@@ -168,16 +168,16 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self["list"].onSelectionChanged.append(self.selectionChanged)
 
 	def onDialogShow(self):
-		print("MVC: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
 		self.last_service_reference = self.last_service_reference or self.session.nav.getCurrentlyPlayingServiceReference()
-		print("MVC: MovieSelection: onDialogShow: self.last_service_reference: %s" % (self.last_service_reference.toString() if self.last_service_reference else None))
+		#print("MVC: MovieSelection: onDialogShow: self.last_service_reference: %s" % (self.last_service_reference.toString() if self.last_service_reference else None))
 		if self.last_service_reference:
 			self.session.nav.playService(self.last_service_reference)
 		self.updateSortMode()
 		self["space_info"].setText(config.MVC.disk_space_info.value)
 
 		if not self["list"]:
-			current_dir = config.MVC.movie_homepath.value
+			current_dir = self.getBookmarks()[0]
 			if not config.MVC.start_home.value and self.return_path:
 				current_dir = os.path.dirname(self.return_path)
 			self.reloadList(current_dir)
@@ -185,11 +185,11 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		if self.return_path:
 			self.moveToPath(self.return_path)
 
-		print("MVC: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
 
 	def onDialogHide(self):
 		self.return_path = self["list"].getCurrentPath()
-		print("MVC: MovieSelection: onDialogHide: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: onDialogHide: self.return_path: %s" % self.return_path)
 
 	def callHelpAction(self, *args):
 		HelpableScreen.callHelpAction(self, *args)
@@ -207,7 +207,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		return MovieSelectionSummary
 
 	def exit(self):
-		print("MVC: MovieSelection: exit")
+		#print("MVC: MovieSelection: exit")
 
 		if config.MVC.cover.value:
 			self.resumeMiniTV(self.last_service_reference)
@@ -219,7 +219,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.close()
 
 	def initFunctionKeys(self):
-		print("MVC: MovieSelection: initFunctionKeys")
+		#print("MVC: MovieSelection: initFunctionKeys")
 		self.function_key_functions = [
 			self.moveToMovieHome, # KEY_FUNC_HOME
 			self.deleteMovies, # KEY_FUNC_DELETE
@@ -232,6 +232,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.toggleSortOrder, # KEY_FUNC_SORT_ORDER
 			self.movieEventInfo, # KEY_FUNC_EVENT_INFO
 			self.movieInfoTMDB, # KEY_FUNC_TMDB_INFO
+			self.openTrashcan, # KEY_FUNC_TRASHCAN
 			self.disabledFunction, # KEY_FUNC_DISABLED
 		]
 
@@ -265,6 +266,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 				"MVCOK":	(self.entrySelected, 	_("Play")),
 				"MVCEXIT":	(self.exit, 		_("Exit")),
 				"MVCMENU":	(self.openMenu, 	_("Selection Menu")),
+				"MVCMENUL":	(self.openMenu, 	_("Selection Menu")),
 				"MVCINFO":	(boundFunction(self.execFunctionKey, KEY_INFO_SHORT), self.function_key_names[self.function_key_assignments[KEY_INFO_SHORT]]),
 				"MVCINFOL":	(boundFunction(self.execFunctionKey, KEY_INFO_LONG), self.function_key_names[self.function_key_assignments[KEY_INFO_LONG]]),
 				"MVCRED":	(boundFunction(self.execFunctionKey, KEY_RED_SHORT), self.function_key_names[self.function_key_assignments[KEY_RED_SHORT]]),
@@ -295,12 +297,14 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self["actions"].csel = self
 
 	def execFunctionKey(self, key):
-		print("MVC: MovieSelection: execFunctionKey: key: %s" % key)
-		print("MVC: MovieSelection: execFunctionKey: function: %s" % self.function_key_functions[key])
+		#print("MVC: MovieSelection: execFunctionKey: key: %s" % key)
+		#print("MVC: MovieSelection: execFunctionKey: function: %s" % self.function_key_functions[key])
 		if key % 2 == 0:  # short key
 			if self.short_key is False:
 				self.short_key = True
 			else:
+				#print("MVC: MovieSelection: execFunctionKey: function_key_assighments[key]: %s" % self.function_key_assignments[key])
+				#print("MVC: MovieSeleciton: execFunctionKey: key function: %s" % self.function_key_functions[self.function_key_assignments[key]])
 				self.function_key_functions[self.function_key_assignments[key]]()
 		else:  # long key
 			self.short_key = False
@@ -341,13 +345,13 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.changeDir(dirlist[pos])
 
 	def moveUp(self):
-		print("MVC: MovieSelection: moveUp")
+		#print("MVC: MovieSelection: moveUp")
 		self.cursor_direction = -1
 		self["list"].moveUp()
 		self.return_path = self["list"].getCurrentPath()
 
 	def moveDown(self):
-		print("MVC: MovieSelection: moveDown")
+		#print("MVC: MovieSelection: moveDown")
 		self.cursor_direction = 1
 		self["list"].moveDown()
 		self.return_path = self["list"].getCurrentPath()
@@ -387,13 +391,13 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.return_path = self["list"].getCurrentPath()
 
 	def moveToPath(self, path):
-		print("MVC: MovieSelection: moveToPath: path: %s" % path)
+		#print("MVC: MovieSelection: moveToPath: path: %s" % path)
 		self["list"].moveToPath(path)
 		self.return_path = self["list"].getCurrentPath()
 
 	def moveToMovieHome(self):
 		if self["list"].getCurrentDir() not in self.getBookmarks():
-			self.changeDir(config.MVC.movie_homepath.value)
+			self.changeDir(self.getBookmarks()[0])
 		self.moveTop()
 		self.return_path = self["list"].getCurrentPath()
 ###
@@ -414,7 +418,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 	def movieEventInfo(self):
 		from MovieInfoEPG import MovieInfoEPG
 		path = self["list"].getCurrentPath()
-		print("MVC: MovieSelection: infoFunc: path: %s" % path)
+		#print("MVC: MovieSelection: infoFunc: path: %s" % path)
 		if self["list"].currentSelIsPlayable():
 			evt = self["list"].getCurrentEvent()
 			if evt:
@@ -432,23 +436,25 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.updateInfo()
 
 	def changeDir(self, path):
-		print("MVC: MovieSelection: changeDir: path: %s" % path)
-		target_dir = path
-		if path and path.endswith(".."):
-			# Open Parent folder
-			target_dir = os.path.abspath(path)
-		self.return_path = None
-		self.reloadList(target_dir)
-		self.moveTop()
+		#print("MVC: MovieSelection: changeDir: path: %s" % path)
+		if path:
+			target_dir = path
+			if path.endswith(".."):
+				# open parent folder
+				target_dir = os.path.abspath(path)
+			self.return_path = None
+			self.reloadList(target_dir)
+			self.moveTop()
 
 	def openBookmarks(self):
 		self.selectDirectory(
 			self.openBookmarksCallback,
-			_("Bookmarks") + ":"
+			_("Bookmarks/Directories") + ":"
 		)
 
 	def openBookmarksCallback(self, path):
-		self.changeDir(path)
+		if path:
+			self.changeDir(os.path.normpath(path))
 
 	def videoFuncShort(self):
 		if self.short_key is False:
@@ -461,13 +467,13 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.resetSelectionList()
 
 	def updateInfo(self):
-		print("MVC: MovieSelection: updateInfo")
+		#print("MVC: MovieSelection: updateInfo")
 		self.resetInfo()
 		self.updateTitle()
 		self.delayTimer.start(int(config.MVC.movie_description_delay.value), True)
 
 	def updateInfoDelayed(self):
-		print("MVC: MovieSelection: updateInfoDelayed")
+		#print("MVC: MovieSelection: updateInfoDelayed")
 		path = self["list"].getCurrentPath()
 		if path and not self["list"].serviceBusy(path):
 			current_service = self["list"].getServiceOfPath(path)
@@ -477,21 +483,21 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.showCover(path)
 
 	def resetInfo(self):
-		print("MVC: MovieSelection: resetInfo")
+		#print("MVC: MovieSelection: resetInfo")
 		self.delayTimer.stop()
 		self["Service"].newService(None)
 
 	def resetReturnPath(self):
-		print("MVC: MovieSelection: resetReturnPath")
+		#print("MVC: MovieSelection: resetReturnPath")
 		self.return_path = None
 
 	def updateSpaceInfo(self):
 		disk_space_info = self.getMountPointsSpaceUsedPercent()
-		print("MVC: MovieSelection: updateSpaceInfo: disk_space_info: %s" % disk_space_info)
+		#print("MVC: MovieSelection: updateSpaceInfo: disk_space_info: %s" % disk_space_info)
 		self["space_info"].setText(disk_space_info)
 
 	def updateTitle(self):
-		title = "MovieCockpit: "
+		title = "MovieCockpit - "
 		# Display the current path
 		if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
 			title += _("trashcan")
@@ -508,7 +514,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self["sort_mode"].setText(sort_mode_text)
 
 	def toggleCover(self):
-		print("MVC: MovieSelection: toggleCover")
+		#print("MVC: MovieSelection: toggleCover")
 		if config.MVC.cover.value:
 			self.cover = False if self.cover else True
 		self.updateInfo()
@@ -537,8 +543,8 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		self.reloadList(self["list"].getCurrentDir())
 
 	def reloadList(self, path, update_disk_space_info=False):
-		print("MVC: MovieSelection: reloadList: path: %s" % path)
-		print("MVC: MovieSelection: reloadList: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: reloadList: path: %s" % path)
+		#print("MVC: MovieSelection: reloadList: self.return_path: %s" % self.return_path)
 		self.resetInfo()
 		self["list"].reloadList(path, self.current_sorting)
 		self["list"].resetSelectionList()
@@ -556,26 +562,26 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		return selection_list
 
 	def selectSelectionList(self):
-		print("MVC: MovieSelection: selectSelectionList")
+		#print("MVC: MovieSelection: selectSelectionList")
 		self["list"].selectSelectionList()
 
 	def resetSelectionList(self):
-		print("MVC: MovieSelection: resetSelectionList")
+		#print("MVC: MovieSelection: resetSelectionList")
 		self["list"].resetSelectionList()
 
 	def selectionChanged(self):
-		print("MVC: MovieSelection: selectionChanged")
+		#print("MVC: MovieSelection: selectionChanged")
 		self.updateInfo()
 
 	def toggleSelection(self, index=-1):
-		print("MVC: MovieSelection: toggleSelection: index: %s" % index)
+		#print("MVC: MovieSelection: toggleSelection: index: %s" % index)
 		if index >= 0:
 			path = self["list"].getPathOfIndex(index)
 		else:
 			path = self["list"].getCurrentPath()
 
 		selection_list = self.getSelectionList(including_current=False)
-		print("MVC: MovieSelection: toggleSelection: selection_list: %s" % selection_list)
+		#print("MVC: MovieSelection: toggleSelection: selection_list: %s" % selection_list)
 		if path in selection_list:
 			self["list"].unselectService(path)
 		else:
@@ -622,9 +628,9 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 ### Player
 ###
 
-	def playerCallback(self, reload, zap_service_ref):
-		print("MVC: MovieSelection: playerCallback")
-		if not reload:
+	def playerCallback(self, reload_selection, zap_service_ref):
+		#print("MVC: MovieSelection: playerCallback")
+		if not reload_selection:
 			if zap_service_ref is not None:
 				# zap to tv service of recordings
 				self.session.nav.playService(zap_service_ref)
@@ -636,18 +642,18 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		return
 
 	def openPlayer(self, path):
-		print("MVC: MovieSelection: openPlayer: path: %s" % path)
+		#print("MVC: MovieSelection: openPlayer: path: %s" % path)
 		self.resetInfo()
 		self.return_path = self["list"].getCurrentPath()
 		# Start Player
-		print("MVC: MovieSelection: openPlayer: self.close: self.last_service_reference: %s" % (self.last_service_reference.toString() if self.last_service_reference else None))
-		print("MVC: MovieSelection: openPlayer: self.close: self.return_path: %s" % self.return_path)
+		#print("MVC: MovieSelection: openPlayer: self.close: self.last_service_reference: %s" % (self.last_service_reference.toString() if self.last_service_reference else None))
+		#print("MVC: MovieSelection: openPlayer: self.close: self.return_path: %s" % self.return_path)
 		from MediaCenter import MediaCenter
 		self.session.openWithCallback(
-                        self.playerCallback,
-                        MediaCenter,
-                        self["list"].getServiceOfPath(path)
-                )
+			self.playerCallback,
+			MediaCenter,
+			self["list"].getServiceOfPath(path)
+		)
 		return
 
 ###
@@ -657,7 +663,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 	def menuCallback(self, function=None):
 		from MovieSelectionMenu import FUNC_MOVIE_HOME, FUNC_DIR_UP, FUNC_RELOAD_WITHOUT_CACHE, FUNC_DELETE,\
 			FUNC_DELETE_PERMANENTLY, FUNC_EMPTY_TRASHCAN, FUNC_OPEN_TRASHCAN, FUNC_SELECT_ALL,\
-			FUNC_COPY, FUNC_MOVE, FUNC_REMOVE_MARKER, FUNC_DELETE_CUTLIST
+			FUNC_COPY, FUNC_MOVE, FUNC_REMOVE_MARKER, FUNC_DELETE_CUTLIST, FUNC_OPEN_BOOKMARKS
 		self["list"].resetSelectionList()
 		if function == FUNC_MOVIE_HOME:
 			self.moveToMovieHome()
@@ -666,7 +672,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		elif function == FUNC_MOVE:
 			self.moveMovies()
 		elif function == FUNC_OPEN_TRASHCAN:
-			self.changeDir(self["list"].getCurrentDir() + "/trashcan")
+			self.openTrashcan()
 		elif function == FUNC_DELETE_PERMANENTLY or function == FUNC_DELETE:
 			self.deleteMovies(function == FUNC_DELETE_PERMANENTLY)
 		elif function == FUNC_DIR_UP:
@@ -681,8 +687,11 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.removeCutListMarker()
 		elif function == FUNC_DELETE_CUTLIST:
 			self.deleteCutListFile()
+		elif function == FUNC_OPEN_BOOKMARKS:
+			self.openBookmarks()
 		else:
-			print("MVC: MovieSelection: menuCallback: unknown function: %s" % function)
+			#print("MVC: MovieSelection: menuCallback: unknown function: %s" % function)
+			pass
 
 	def openMenu(self):
 		self.session.openWithCallback(
@@ -717,7 +726,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			LocationBox,
 			windowTitle=title,
 			text=_("Select directory"),
-			currDir=config.MVC.movie_homepath.value,
+			currDir=self.getBookmarks()[0],
 			bookmarks=config.movielist.videodirs,
 			autoAdd=False,
 			editDir=True,
@@ -728,12 +737,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 	### Recording
 
 	def stopRecordings(self):
-		self.delete_file_list = []
-		self.delete_dir_list = []
-		self.delete_link_list = []
-		self.trashcan_file_list = []
-		self.trashcan_dir_list = []
-		self.trashcan_link_list = []
+		self.file_ops_list = []
 		self.recordings_to_stop = []
 		selection_list = self.getSelectionList()
 		for path in selection_list:
@@ -746,7 +750,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		if answer:
 			for path in self.recordings_to_stop:
 				stopped = stopRecording(path)
-				print("MVC: MovieSelection: stopRecordingsConfirmed: stoppedResult: %s" % stopped)
+				#print("MVC: MovieSelection: stopRecordingsConfirmed: stoppedResult: %s" % stopped)
 				if not stopped:
 					if path in self.delete_file_list:
 						self.delete_file_list.remove(path)
@@ -778,33 +782,18 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 				delete_permanently |= not os.path.exists(self.getBookmark(path) + "/trashcan")
 			return delete_permanently
 
-		selection_list = self.getSelectionList()
-		self.delete_file_list = []
-		self.trashcan_file_list = []
-		self.delete_dir_list = []
-		self.trashcan_dir_list = []
-		self.delete_link_list = []
-		self.trashcan_link_list = []
 		self.recordings_to_stop = []
-
+		selection_list = self.getSelectionList()
+		self.file_ops_list = []
 		for path in selection_list:
-			print("MVC: MovieSelection: deleteFile: %s" % path)
+			#print("MVC: MovieSelection: deleteFile: %s" % path)
+			file_type = self["list"].getTypeOfPath(path)
 			if deletePermanently(path, delete_permanently):
-				if os.path.isfile(path):
-					self.delete_file_list.append(path)
-				elif os.path.isdir(path):
-					self.delete_dir_list.append(path)
-				elif os.path.islink(path):
-					self.delete_link_list.append(path)
+				self.file_ops_list.append(("delete", file_type, path, None))
 			else:
-				if os.path.isfile(path):
-					self.trashcan_file_list.append(path)
-				elif os.path.isdir(path):
-					self.trashcan_dir_list.append(path)
-				elif os.path.islink(path):
-					self.trashcan_link_list.append(path)
+				trashcan_path = self.getBookmark(path) + "/trashcan"
+				self.file_ops_list.append(("move", file_type, path, trashcan_path))
 
-		for path in self.delete_file_list + self.trashcan_file_list:
 			if isRecording(path):
 				self.recordings_to_stop.append(path)
 
@@ -828,7 +817,12 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 				names += name + "\n" * (i < movies)
 			return names
 
-		delete_list = self.delete_file_list + self.delete_dir_list + self.delete_link_list
+		delete_list = []
+		for file_ops_entry in self.file_ops_list:
+			op, _file_type, path, __ = file_ops_entry
+			if op == "delete":
+				delete_list.append(path)
+
 		delete_permanently = len(delete_list) > 0
 		if (config.MVC.movie_trashcan_enable.value and config.MVC.movie_delete_validation.value) or delete_permanently:
 			msg = _('Permanently delete') if delete_permanently else _('Delete')
@@ -844,71 +838,57 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			self.delayDeleteMoviesConfirmed(True)
 
 	def delayDeleteMoviesConfirmed(self, answer):
-		print("MVC: MovieSelection: delayDeleteMoviesConfirmed: answer: %s" % answer)
+		#print("MVC: MovieSelection: delayDeleteMoviesConfirmed: answer: %s" % answer)
 		delay = 0 if self.stoppedRecordings else 500
-		print("MVC: MovieSelection: delayDeleteMoviesConfirmed: delay: %s" % delay)
+		#print("MVC: MovieSelection: delayDeleteMoviesConfirmed: delay: %s" % delay)
 		DelayedFunction(delay, self.deleteMoviesConfirmed, answer)
 
 	def deleteMoviesConfirmed(self, answer):
-		print("MVC: MovieSelection: deleteMoviesConfirmed: answer: %s" % answer)
+		#print("MVC: MovieSelection: deleteMoviesConfirmed: answer: %s" % answer)
+		self.resetSelectionList()
 		if answer:
-			if self.delete_file_list:
-				self.execMovieOp("delete_file", self.delete_file_list)
-			if self.delete_dir_list:
-				self.execMovieOp("delete_dir", self.delete_dir_list)
-			if self.delete_link_list:
-				self.execMovieOp("delete_link", self.delete_link_list)
-			if self.trashcan_file_list:
-				self.execMovieOp("move_file", self.trashcan_file_list, "trashcan")
-			if self.trashcan_dir_list:
-				self.execMovieOp("move_dir", self.trashcan_dir_list, "trashcan")
-			if self.trashcan_link_list:
-				self.execMovieOp("move_link", self.trashcan_link_list, "trashcan")
+			self.execMovieOp(self.file_ops_list)
 
-	def deleteCallback(self, path):
-		print("MVC: MovieSelection: deleteCallback: path: %s" % path)
+	def deleteCallback(self, path, file_type):
+		#print("MVC: MovieSelection: deleteCallback: path: %s" % path)
 		if path in self["list"].highlights_delete:
 			self["list"].highlights_delete.remove(path)
-		MovieCache.getInstance().delete(path)
+		if file_type == TYPE_ISFILE:
+			MovieCache.getInstance().delete(path)
+		if file_type == TYPE_ISDIR:
+			MovieCache.getInstance().deleteDir(path)
 		self.reloadList(os.path.dirname(path), update_disk_space_info=True)
 
 	###  Move
 
 	def moveMovies(self):
-		self.move_file_list = []
-		self.move_dir_list = []
-		self.move_link_list = []
-		selection_list = self.getSelectionList()
-		for path in selection_list:
-			print("MVC: MovieSelection: moveTargetDirSelected: %s" % path)
-			if os.path.isfile(path):
-				self.move_file_list.append(path)
-			elif os.path.isdir(path):
-				self.move_dir_list.append(path)
-			elif os.path.islink(path):
-				self.move_link_list.append(path)
 		self.selectDirectory(
 			self.moveTargetDirSelected,
 			_("Move file(s)")
 		)
 
 	def moveTargetDirSelected(self, target_path):
-		print("MVC: MovieSelection: moveTargetDirSelected: target_path: %s" % target_path)
+		#print("MVC: MovieSelection: moveTargetDirSelected: target_path: %s" % target_path)
+		self.file_ops_list = []
 		if target_path:
-			if self.move_file_list:
-				self.execMovieOp("move_file", self.move_file_list, target_path)
-			if self.move_dir_list:
-				self.execMovieOp("move_dir", self.move_dir_list, target_path)
-			if self.move_link_list:
-				self.execMovieOp("move_link", self.move_link_list, target_path)
-		else:
-			self.resetSelectionList()
+			selection_list = self.getSelectionList()
+			for path in selection_list:
+				#print("MVC: MovieSelection: moveTargetDirSelected: path: %s" % path)
+				file_type = self["list"].getTypeOfPath(path)
+				#print("MVC: MovieSelection: moveTargetDirSelected: file_type: %s" % file_type)
+				self.file_ops_list.append(("move", file_type, path, os.path.normpath(target_path)))
+
+		self.resetSelectionList()
+		self.execMovieOp(self.file_ops_list)
 
 	def moveCallback(self, path, target_path, file_type):
-		print("MVC: MovieSelection: moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+		#print("MVC: MovieSelection: moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if path in self["list"].highlights_move:
 			self["list"].highlights_move.remove(path)
-		MovieCache.getInstance().move(path, target_path)
+		if file_type == TYPE_ISFILE:
+			MovieCache.getInstance().move(path, target_path)
+		if file_type == TYPE_ISDIR:
+			MovieCache.getInstance().moveDir(path, target_path)
 		self.reloadList(os.path.dirname(path), update_disk_space_info=True)
 		# check if moved a file that is currently being recorded and fix path
 		if file_type == "file":
@@ -924,21 +904,31 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		)
 
 	def copyTargetDirSelected(self, target_path):
-		print("MVC: MovieSelection: copyTargetDirSelected")
+		#print("MVC: MovieSelection: copyTargetDirSelected")
+		self.file_ops_list = []
 		if target_path:
 			selection_list = self.getSelectionList()
-			self.execMovieOp("copy", selection_list, target_path)
-		else:
-			self.resetSelectionList()
+			for path in selection_list:
+				file_type = self["list"].getTypeOfPath(path)
+				self.file_ops_list.append(("copy", file_type, path, os.path.normpath(target_path)))
+		self.resetSelectionList()
+		self.execMovieOp(self.file_ops_list)
 
-	def copyCallback(self, path, target_path):
-		print("MVC: MovieSelection: copyCallback: path: %s" % path)
+	def copyCallback(self, path, target_path, file_type):
+		#print("MVC: MovieSelection: copyCallback: path: %s" % path)
 		if path in self["list"].highlights_copy:
 			self["list"].highlights_copy.remove(path)
-		MovieCache.getInstance().copy(path, target_path)
+		if file_type == TYPE_ISFILE:
+			MovieCache.getInstance().copy(path, target_path)
+		if file_type == TYPE_ISDIR:
+			MovieCache.getInstance().copyDir(path, target_path)
 		self.reloadList(os.path.dirname(path), update_disk_space_info=True)
 
 	# Trashcan
+
+	def openTrashcan(self):
+		#print("MVC: MovieSelection: openTrashcan")
+		self.changeDir(self.getBookmarks()[0] + "/trashcan")
 
 	def emptyTrashcan(self):
 		self.session.openWithCallback(
@@ -953,26 +943,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 		if answer:
 			Trashcan.getInstance().purgeTrashcan(empty_trash=True, callback=self.updateSpaceInfo)
 			if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
-				self.reloadList(self["list"].getCurrentDir() + "/trashcan")
-
-	### Bookmark
-
-	def deleteBookmark(self, path):
-		if self.isBookmark(path):
-			if config.MVC.movie_delete_validation.value:
-				self.session.openWithCallback(
-					boundFunction(self.deleteBookmarkConfirmed, path),
-					MessageBox,
-					_("Do you really want to remove bookmark?") + "\n" + path
-				)
-			else:
-				self.deleteBookmarkConfirmed(path, True)
-
-	def deleteBookmarkConfirmed(self, path, answer):
-		if answer:
-			self.removeBookmark(path)
-			self["list"].removeServiceOfType(path, TYPE_ISBOOKMARK)
-			self.moveToPath(self.return_path)
+				self.reloadList(self.getBookmarks()[0] + "/trashcan")
 
 	### Cutlist
 
@@ -982,7 +953,7 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			cuts = CutList(path)
 			cuts.removeMarksCutList()
 		self.resetSelectionList()
-		print("MVC: MovieSelection: removeCutListMarker: removed marker")
+		#print("MVC: MovieSelection: removeCutListMarker: removed marker")
 
 	def deleteCutListFile(self):
 		selection_list = self.getSelectionList()
@@ -990,54 +961,53 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 			cuts = CutList(path)
 			cuts.deleteFileCutList()
 		self.resetSelectionList()
-		print("MVC: MovieSelection: deleteCutListFile: deleted file")
+		#print("MVC: MovieSelection: deleteCutListFile: deleted file")
 
 	### execute File OPs
 
-	def execMovieOp(self, op, selection_list, target_path=None):
-		print("MVC: MovieSelection: execMovieOp: op: %s" % op)
-		print("MVC: MovieSelection: execMovieOp: target_path: %s" % target_path)
-		print("MVC: MovieSelection: execMovieOp: selection_list: %s" % selection_list)
-
+	def execMovieOp(self, selection_list):
+		#print("MVC: MovieSelection: execMovieOp: selection_list: " + str(selection_list))
 		cmd = []
 		association = []
-		delete_ops = ["delete_file", "delete_dir", "delete_link"]
-		move_ops = ["move_file", "move_dir", "move_link"]
 
 		current_path = self["list"].getCurrentPath()
 		self.return_path = current_path
-		if (op in delete_ops + move_ops) and (current_path in selection_list):
-			self.return_path = self["list"].getNextSelectedService(selection_list)
 
-		print("MVC: MovieSelection: execMovieOp: return_path: %s" % self.return_path)
+		path_list = []
+		for entry in selection_list:
+			op, _file_type, path, _target_path = entry
+			if op == "delete" or op == "move":
+				path_list.append(path)
 
-		if target_path:
-			target_path = os.path.normpath(target_path)
+		if path_list and current_path in path_list:
+			self.return_path = self["list"].getNextSelectedService(path_list)
 
-		for path in selection_list[:]:
+		#print("MVC: MovieSelection: execMovieOp: return_path: %s" % self.return_path)
+
+		for entry in selection_list:
+			op, file_type, path, target_path = entry
+
+			#print("MVC: MovieSelection: execMovieOp: op: %s, file_type: %s, path: %s, target_path: %s" % (op, file_type, path, target_path))
+
 			if path and not path.endswith(".."):
 				c = []
-				if op in delete_ops:
-					file_type = op.split("_")[1]
-					print("MVC: MovieSelection: execMovieOp: delete: directDelete")
+				if op == "delete":
+					#print("MVC: MovieSelection: execMovieOp: delete: directDelete")
 					c = self.execFileDelete(c, path, file_type)
 					cmd.append(c)
-					association.append((self.deleteCallback, path))
+					association.append((self.deleteCallback, path, file_type))
 					if config.MVC.movie_hide_delete.value:
 						self["list"].removeService(path)
 					else:
 						self["list"].highlights_delete.append(path)
 						self["list"].invalidateService(path)
-				elif op in move_ops:
-					file_type = op.split("_")[1]
+				elif op == "move":
 					free = 0
 					size = 0
-					if target_path == "trashcan":
-						target_path = self.getBookmark(path) + "/trashcan"
-					if file_type != "file":
+					if file_type != TYPE_ISFILE:
 						_count, size = MovieCache.getInstance().getCountSize(path)
 						free = self.getMountPointSpaceFree(target_path)
-						print("MVC: MovieSelection: move_dir: size: %s, free: %s" % (size, free))
+						#print("MVC: MovieSelection: move_dir: size: %s, free: %s" % (size, free))
 					if free >= size:
 						c = self.execFileMove(c, path, target_path, file_type)
 						cmd.append(c)
@@ -1048,18 +1018,18 @@ class MovieSelection(MiniTV, Screen, HelpableScreen, MovieCover, FileOps, MountP
 							self["list"].highlights_move.append(path)
 							self["list"].invalidateService(path)
 					else:
-						print("MVC: MovieSelection: move_dir: not enough space left: size: %s, free: %s" % (size, free))
+						#print("MVC: MovieSelection: move_dir: not enough space left: size: %s, free: %s" % (size, free))
 						pass
 				elif op == "copy":
 					if os.path.dirname(path) != target_path:
-						c = self.execFileCopy(c, path, target_path)
+						c = self.execFileCopy(c, path, target_path, file_type)
 						cmd.append(c)
-						association.append((self.copyCallback, path, target_path))
+						association.append((self.copyCallback, path, target_path, file_type))
 						if not config.MVC.movie_hide_copy.value:
 							self["list"].highlights_copy.append(path)
 							self["list"].invalidateService(path)
 		if cmd:
 			association.append(self.resetReturnPath)
-			print("MVC: MovieSelection: execMovieOp: cmd: %s" % cmd)
+			#print("MVC: MovieSelection: execMovieOp: cmd: %s" % cmd)
 			# Sync = True: Run script for one file do association and continue with next file
 			mvcTasker.shellExecute(cmd, association, True)	# first move, then delete if expiration limit is 0

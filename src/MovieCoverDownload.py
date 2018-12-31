@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream_alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -56,28 +56,30 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 		return moviename
 
 	def downloadCover(self, cover_url, cover_path):
-		print("MVC: MovieCoverDownload: downloadCover: cover_path: %s" % cover_path)
+		#print("MVC: MovieCoverDownload: downloadCover: cover_path: %s" % cover_path)
 		cover_found = 0
 		if cover_url is not None:
 			if config.MVC.cover_replace_existing.value and os.path.isfile(cover_path):
 				os.remove(cover_path)
 			if not os.path.isfile(cover_path):
 				try:
-					print("MVC: MovieCoverDownload: downloadCover: url: %s, cover_path: %s" % (cover_url, cover_path))
+					#print("MVC: MovieCoverDownload: downloadCover: url: %s, cover_path: %s" % (cover_url, cover_path))
 					os.system("wget -O \"" + cover_path + "\" " + cover_url)
 					cover_found = 1
 				except Exception as e:
-					print('MVC: MovieCoverDownload: downloadCover: exception failure:\n', str(e))
+					print('MVC-E: MovieCoverDownload: downloadCover: exception failure:\n', str(e))
+					pass
 		else:
-			print("MVC: MovieCoverDownload: downloadCover: cover_url is None")
+			#print("MVC: MovieCoverDownload: downloadCover: cover_url is None")
+			pass
 		return cover_found
 
 	def getCover4SplitTitles(self, path, _filename, titles):
-		print("MVC: MovieCoverDownload: getCover4SplitTitles: path: %s, titles: %s" % (path, titles))
+		#print("MVC: MovieCoverDownload: getCover4SplitTitles: path: %s, titles: %s" % (path, titles))
 		cover_found = 0
 		for title in titles:
 			title = self.getMovieNameWithoutPhrases(title)
-			print("MVC: MovieCoverDownload: getCover4SplitTitles: %s" % title)
+			#print("MVC: MovieCoverDownload: getCover4SplitTitles: %s" % title)
 			self.movielist = self.getMovieList(title)
 			if self.movielist:
 				selection = self.movielist[0]
@@ -91,13 +93,14 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 						self.saveInfo(info_path, self.info)
 						break
 			else:
-				print("MVC: MovieCoverDownload: getCover4SplitTitles: nothing found")
+				#print("MVC: MovieCoverDownload: getCover4SplitTitles: nothing found")
+				pass
 
-		print("MVC: MovieCoverDownload: getCover4SplitTitles: cover_found: %s" % cover_found)
+		#print("MVC: MovieCoverDownload: getCover4SplitTitles: cover_found: %s" % cover_found)
 		return cover_found
 
 	def getCoverTitle(self, title, path, filename, ext):
-		print("MVC: MovieCoverDownload: getCoverTitle: path: %s, filename: %s" % (path, filename))
+		#print("MVC: MovieCoverDownload: getCoverTitle: path: %s, filename: %s" % (path, filename))
 		cover_found = 0
 		if ext in plyAll:
 			title = self.__removeCutNumbers(title)
@@ -110,7 +113,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 						cover_found = self.getCover4SplitTitles(path, filename, titles)
 						if cover_found > 0:
 							break
-		print("MVC: MovieCoverDownload: getCoverTitle: cover_found: %s" % cover_found)
+		#print("MVC: MovieCoverDownload: getCoverTitle: cover_found: %s" % cover_found)
 		return cover_found
 
 	def nextMovieInLine(self):
@@ -133,7 +136,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 				self.getCover(name, path, filename, ext)
 		else:
 			if self.session:
-				print("MVC: MovieCoverDownload: getCover: cover result: %s of %s covers found: %s percent" % (self.cover_found, self.tried, str(float(float(self.cover_found) / float(self.tried)) * 100)))
+				#print("MVC: MovieCoverDownload: getCover: cover result: %s of %s covers found: %s percent" % (self.cover_found, self.tried, str(float(float(self.cover_found) / float(self.tried)) * 100)))
 				msg = "Download finished: %s of %s covers found." % (self.cover_found, self.tried)
 				self.session.open(
 					MessageBox,
@@ -143,7 +146,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 				)
 
 	def getCover(self, name, path, filename, ext, _answer=True):
-		print("MVC: MovieCoverDownload: getCover: path: %s, filename: %s" % (path, filename))
+		#print("MVC: MovieCoverDownload: getCover: path: %s, filename: %s" % (path, filename))
 		self.tried += 1
 		self.cover_found += self.getCoverTitle(name, path, filename, ext)
 		self.nextMovieInLine()

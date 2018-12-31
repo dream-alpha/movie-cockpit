@@ -63,36 +63,37 @@ class Executioner(object):
 		#    False = All callbacks are executed at the end
 		if not sync or not isinstance(script, list):
 			# Single command execution
-			print("MVC: Tasker: shellExecute: single script: " + str(script))
+			#print("MVC: Tasker: shellExecute: single script: " + str(script))
 			self.script.append(script)
 			self.associated.append(associated)
 		else:
-			print("MVC: Tasker: shellExecute: list script: " + str(script))
+			#print("MVC: Tasker: shellExecute: list script: " + str(script))
 			for s, a in izip_longest(script, associated):
 				self.script.append(s)
 				self.associated.append([a])
 
 		if self.executing == "":
-			print("MVC: Tasker: shellExecute: run script:" + str(self.script))
+			#print("MVC: Tasker: shellExecute: run script:" + str(self.script))
 			self.execCurrent()
 		else:
-			print("MVC: Tasker: shellExecute: Run after current execution")
+			#print("MVC: Tasker: shellExecute: Run after current execution")
+			pass
 
 	def execCurrent(self):
 		script = self.script.popleft()
 		if script:
 			if isinstance(script, list):
 				script = '; '.join(script)
-			print("MVC: Tasker: execCurrent: script: " + str(script))
+			#print("MVC: Tasker: execCurrent: script: " + str(script))
 			self.executing = quote(script)
 			self.container.execute("sh -c " + self.executing)
-			print("MVC: Tasker: execCurrent: executing: " + self.executing)
+			#print("MVC: Tasker: execCurrent: executing: " + self.executing)
 		else:
 			self.runFinished()
 
-	def runFinished(self, retval=None):
+	def runFinished(self, _retval=None):
 		associated = self.associated.popleft()
-		print("MVC: Tasker: runFinished: sh exec %s finished, return status = %s %s" % (self.executing, str(retval), self.returnData))
+		#print("MVC: Tasker: runFinished: sh exec %s finished, return status = %s %s" % (self.executing, str(_retval), self.returnData))
 		if associated:
 			#P3 for foo, bar, *other in tuple:
 			for fargs in associated:
@@ -110,7 +111,7 @@ class Executioner(object):
 
 		if self.script:
 			# There is more to be executed
-			print("MVC: Tasker: runFinisched: sh exec rebound")
+			#print("MVC: Tasker: runFinisched: sh exec rebound")
 			self.execCurrent()
 		else:
 			self.executing = ""

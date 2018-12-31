@@ -140,7 +140,8 @@ KEY_FUNC_SORT_MODE = 7
 KEY_FUNC_SORT_ORDER = 8
 KEY_FUNC_EVENT_INFO = 9
 KEY_FUNC_TMDB_INFO = 10
-KEY_FUNC_DISABLED = 11
+KEY_FUNC_TRASHCAN = 11
+KEY_FUNC_DISABLED = 12
 
 
 function_key_names = [
@@ -155,6 +156,7 @@ function_key_names = [
 	_("Sort Order"),
 	_("EPG info"),
 	_("TMDB info"),
+	_("trashcan"),
 	_("disabled"),
 ]
 
@@ -201,7 +203,7 @@ class ConfigInit(MountPoints, object):
 		cfg.value = cfg.choices.choices[0][0]
 
 	def __init__(self):
-		print("MVC: ConfigInit: __init__")
+		#print("MVC: ConfigInit: __init__")
 		config.MVC                           = ConfigSubsection()
 		config.MVC.fake_entry                = NoSave(ConfigNothing())
 		config.MVC.extmenu_plugin            = ConfigYesNo(default=True)
@@ -252,7 +254,6 @@ class ConfigInit(MountPoints, object):
 		config.MVC.movie_rewind_finished     = ConfigYesNo(default=True)
 		config.MVC.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
 		config.MVC.movie_real_path           = ConfigYesNo(default=True)
-		config.MVC.movie_homepath            = ConfigText(default="/media/hdd/movie", fixed_size=False, visible_width=22)
 		config.MVC.movie_trashcan_enable     = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_show       = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_info       = ConfigSelection(default="C", choices=dirinfo_choices)
@@ -265,7 +266,6 @@ class ConfigInit(MountPoints, object):
 		config.MVC.datetext_alignment        = ConfigSelection(default=RT_HALIGN_CENTER, choices=[(RT_HALIGN_CENTER, _("center")), (RT_HALIGN_RIGHT, _("right")), (RT_HALIGN_LEFT, _("left"))])
 		config.MVC.color_recording           = ConfigSelection(default="#ff0000", choices=[("#ffff00", _("Yellow")), ("#ff0000", _("Red")), ("#ff9999", _("Light red")), ("#990000", _("Dark red"))])
 		config.MVC.color_highlight           = ConfigSelection(default="#ffffff", choices=[("#ffffff", _("White")), ("#cccccc", _("Light grey")), ("#bababa", _("Grey")), ("#666666", _("Dark grey")), ("#000000", _("Black"))])
-		config.MVC.bookmarks                 = ConfigYesNo(default=False)
 		config.MVC.movie_hide_move           = ConfigYesNo(default=False)
 		config.MVC.movie_hide_delete         = ConfigYesNo(default=False)
 		config.MVC.movie_hide_copy           = ConfigYesNo(default=False)

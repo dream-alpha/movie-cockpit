@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 by dream_alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -34,7 +34,7 @@ from Tools.LoadPixmap import LoadPixmap
 from skin import parseColor, parseFont, parseSize
 from enigma import eListboxPythonMultiContent, eListbox, RT_HALIGN_LEFT, RT_HALIGN_CENTER, loadPNG
 from RecordingUtils import isCutting, getRecording
-from MovieCache import TYPE_ISBOOKMARK, TYPE_ISDIR, TYPE_ISFILE
+from MovieCache import TYPE_ISDIR, TYPE_ISFILE
 
 
 class MovieListGUI(GUIComponent, Bookmarks, object):
@@ -269,11 +269,6 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 				if config.MVC.directories_info.value == "D":
 					datetext = _("up")
 
-			elif filetype == TYPE_ISDIR and self.isBookmark(path):
-				pixmap = self.pic_e2bookmark
-				if config.MVC.directories_info.value == "D":
-					datetext = _("Bookmark")
-
 			elif filetype == TYPE_ISDIR and os.path.basename(path) == "trashcan":
 				if config.MVC.movie_trashcan_enable.value:
 					count, datetext = getDateText(path, config.MVC.movie_trashcan_info.value, filetype)
@@ -417,7 +412,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 
 				if config.MVC.movie_date_format.value:
 					createDateText(datetext, color, recording)
-			elif filetype in [TYPE_ISBOOKMARK, TYPE_ISDIR, TYPE_ISLINK]:
+			elif filetype in [TYPE_ISDIR, TYPE_ISLINK]:
 				#print("MVC: MovieListGUI: buildMovieListEntry: ext: " + ext)
 				datetext, pixmap = getDirValues(path, filetype)
 
