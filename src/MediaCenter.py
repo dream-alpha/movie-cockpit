@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#               2018 by dream-alpha
+#           (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -72,8 +72,8 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		CutList.__init__(self)
 		MovieCover.__init__(self)
 
-		self.session = session
 		self.selected_subtitle = None
+		self.execing = None
 
 		self.skinName = "MediaCenter"
 		self.skin = readFile(getSkinPath("MediaCenterOSD.xml"))
@@ -99,16 +99,19 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		self["NumberActions"].prio = 2
 
 		self["mvc_logo"] = Pixmap()
-
 		self.skip = -1
 		self.service = service
 		self.allowPiP = True
 		self.allowPiPSwap = False
 		self.realSeekLength = None
 		self.servicelist = InfoBar.instance.servicelist
+		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
+		if not self.lastservice:
+			self.lastservice = InfoBar.instance.servicelist.servicelist.getCurrent()
 
 		# Dialog Events
 		self.onShown.append(self.__onShow)  # Don't use onFirstExecBegin() it will crash
+		self.onClose.append(self.__onClose)
 
 	def getCurrentEvent(self):
 		return self.service and self.serviceHandler.info(self.service).getEvent()
@@ -121,12 +124,14 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 	def __onShow(self):
 		self.evEOF()  # begin playback
 
-	def evEOF(self):
-		#print("MVC: MediaCenter: evEOF")
+	def __onClose(self):
+		if self.lastservice:
+			self.zapToService(self.lastservice)
 
+	def evEOF(self):
+		print("MVC-I: MediaCenter: evEOF")
 		path = self.service and self.service.getPath()
 		if os.path.exists(path):
-			# Start playing movie
 			self.session.nav.playService(self.service)
 
 			if self.service and self.service.type != sidDVB:
@@ -135,11 +140,10 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			DelayedFunction(50, self.setAudioTrack)
 			DelayedFunction(50, self.setSubtitleState, True)
 
+			self["mvc_logo"].show()
 			if config.MVC.cover.value:
 				if self.showCover(self.service.getPath()):
 					self["mvc_logo"].hide()
-				else:
-					self["mvc_logo"].show()
 		else:
 			self.session.open(
 				MessageBox,
@@ -147,43 +151,6 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 				MessageBox.TYPE_ERROR,
 				10
 			)
-
-	def leavePlayer(self, reopen=True, zap_service_ref=None):
-		#print("MVC: MediaCenter: leavePlayer: %s" % reopen)
-
-		self.setSubtitleState(False)
-
-		if self.service and self.service.type != sidDVB:
-			self.updateServiceCutList(self.service)
-
-		if not reopen:
-			#print("MVC: MediaCenter: leavePlayer: closed due to EOF")
-			if config.MVC.record_eof_zap.value == "1":
-				AddPopup(
-					_("Zap to Live TV of recording"),
-					MessageBox.TYPE_INFO,
-					3,
-					"MVCCloseAllAndZap"
-				)
-
-		#print("MVC: MediaCenter: leavePlayer: stopping service")
-		self.session.nav.stopService()
-
-		# [Cutlist.Workaround]
-		# Always make a backup-copy when recording is running and we stopped the playback
-		if self.service and self.service.type == sidDVB:
-			path = self.service.getPath()
-			if isRecording(path):
-				backupCutsFile(path + ".cuts")
-
-			#print("MVC: MediaCenter: leavePlayer: update cuts: " + self.service.getPath())
-			cuts = CutList(self.service.getPath())
-			#print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(cuts.getCutList()))
-			_cut_list = cuts.reloadCutListFromFile()
-			#print("MVC: MediaCenter: leavePlayer: cut_list after  reload: " + str(_cut_list))
-
-		#print("MVC: MediaCenter: leavePlayer: zap_service_ref: %s" % zap_service_ref)
-		self.close(reopen, zap_service_ref)
 
 	### support functions for converters: MVCServicePosition and MVCRecordingPosition
 
@@ -197,7 +164,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			seek = self.getSeek()
 			if seek is not None:
 				__len = seek.getLength()
-#				#print("MVC: MediaCenter: getLength: seek.getLength(): %s" % __len)
+				#print("MVC: MediaCenter: getLength: seek.getLength(): %s" % __len)
 				if not __len[0]:
 					length = __len[1]
 		return length
@@ -219,7 +186,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		seek = self.getSeek()
 		if seek is not None:
 			pos = seek.getPlayPosition()
-#			#print("MVC: MediaCenter: getPosition: getPlayPosition(): %s" % pos)
+			#print("MVC: MediaCenter: getPosition: getPlayPosition(): %s" % pos)
 			if not pos[0]:
 				position = pos[1]
 		if self.skip:
@@ -283,7 +250,6 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			#print("MVC: MediaCenter: setAudioTrack: audio1")
 		except Exception as e:
 			print("MVC-E: MediaCenter: setAudioTrack: exception:\n" + str(e))
-			pass
 
 	def tryAudioTrack(self, tracks, audiolang, trackList, seltrack, useAc3):
 		for entry in audiolang:
@@ -383,8 +349,43 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 							if self.trySubEnable(l, sublang):
 								break
 		except Exception as e:
-			#print("MVC: MediaCenter: setSubtitleState: exception:\n" + str(e))
-			pass
+			print("MVC-E: MediaCenter: setSubtitleState: exception:\n" + str(e))
+
+	def leavePlayer(self, reopen=True):
+		print("MVC-I: MediaCenter: leavePlayer: %s" % reopen)
+
+		self.setSubtitleState(False)
+
+		if self.service and self.service.type != sidDVB:
+			self.updateServiceCutList(self.service)
+
+		if not reopen:
+			#print("MVC: MediaCenter: leavePlayer: closed due to EOF")
+			if config.MVC.record_eof_zap.value == "1":
+				AddPopup(
+					_("Zap to Live TV of recording"),
+					MessageBox.TYPE_INFO,
+					3,
+					"MVCCloseAllAndZap"
+				)
+
+		print("MVC: MediaCenter: leavePlayer: stopping service")
+		self.session.nav.stopService()
+
+		# [Cutlist.Workaround]
+		# Always make a backup-copy when recording is running and we stopped the playback
+		if self.service and self.service.type == sidDVB:
+			path = self.service.getPath()
+			if isRecording(path):
+				backupCutsFile(path + ".cuts")
+
+			#print("MVC: MediaCenter: leavePlayer: update cuts: " + self.service.getPath())
+			cuts = CutList(self.service.getPath())
+			#print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(cuts.getCutList()))
+			cut_list = cuts.reloadCutListFromFile()
+			print("MVC-I: MediaCenter: leavePlayer: cut_list after  reload: " + str(cut_list))
+
+		self.close(reopen)
 
 	### functions for InfoBarGenerics.py
 	# InfoBarShowMovies
@@ -393,24 +394,25 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		return
 
 	def doEofInternal(self, playing):
-		#print("MVC: MediaCenter: doEofInternal")
-		if self.execing and playing:
+		print("MVC-I: MediaCenter: doEofInternal: playing: %s, self.execing: %s" % (playing, self.execing))
+		self.is_closing = True
+
+		if not self.execing:
+			return
+
+		timer = self.service and isRecording(self.service.getPath())
+		if timer:
+			if int(config.MVC.record_eof_zap.value) < 2:
+				self.lastservice = timer.service_ref.ref
+				print("MVC-I: MediaCenter: doEofInternal: self.lastservice: %s" % (self.lastservice.toString() if self.lastservice else None))
+				self.leavePlayer(reopen=False)
+
+		else:
 			if self.service.type != sidDVB:
 				self.updateServiceCutList(self.service)
 
-			if int(config.MVC.record_eof_zap.value) < 2:
-				timer = isRecording(self.service.getPath())
-				zap_service_ref = None
-				if timer:
-					zap_service_ref = timer.service_ref.ref
-				#print("MVC: MediaCenter: doEofInternal: zap_service_ref: %s" % zap_service_ref.toString())
-				self.zapToService(zap_service_ref)
-				self.leavePlayer(reopen=False, zap_service_ref=zap_service_ref)
-			else:
-				self.evEOF()
-
 	def updateServiceCutList(self, service):
-#		#print("MVC: MediaCenter: updateCutList")
+		print("MVC-I: MediaCenter: updateCutList")
 		cuts = CutList(service.getPath())
 		if self.getSeekPlayPosition() == 0:
 			if self.realSeekLength:

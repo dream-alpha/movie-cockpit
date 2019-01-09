@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by betonme
-#               2018 dream-alpha
+#           (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -62,9 +62,9 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			self,
 			actionmap,
 			{
-				"jumpPreviousMark": (self.jumpPreviousMark, _("jump to previous marked position")),
-				"jumpNextMark": (self.jumpNextMark, _("jump to next marked position")),
-				"toggleMark": (self.toggleMark, _("toggle a cut mark at the current position"))
+				"jumpPreviousMark": (self.jumpPreviousMark, _("Jump to previous marked position")),
+				"jumpNextMark": (self.jumpNextMark, _("Jump to next marked position")),
+				"toggleMark": (self.toggleMark, _("Toggle a cut mark at current position"))
 			},
 			prio=1
 		)
@@ -83,10 +83,13 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 	### Override from InfoBarGenerics.py
 
 	def zapToService(self, service):
+		print("MVC-I: InfoBarSupport: zapToService: service: %s" % (service.toString() if service else None))
 		if service is not None:
 			self.servicelist.setCurrentSelection(service) #select the service in servicelist
 			self.servicelist.zap()
+			self.session.nav.playService(service)
 
+	# InfoBarCueSheetSupport
 	def downloadCuesheet(self):
 		#print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
 		self.cut_list = CutList(self.service.getPath()).getCutList()
@@ -97,10 +100,9 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 		#print("MVC: InfoBarSupport: uploadCuesheet: cut_list: %s" % self.cut_list)
 		CutList(self.service.getPath()).setCutList(self.cut_list)
 
-	# InfoBarCueSheetSupport
 	def __serviceStarted(self):
+		print("MVC-I: InfoBarSupport: __serviceStarted: self.is_closing: %s" % self.is_closing)
 		if not self.is_closing:
-			#print("MVC: InfoBarSupport: __serviceStarted: new service started, trying to download cuts")
 			self.downloadCuesheet()
 
 			if config.usage.on_movie_start.value == "beginning" and config.MVC.movie_jump_first_mark.value:
@@ -141,16 +143,6 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 		elif config.MVC.movie_jump_first_mark.value:
 			self.jumpToFirstMark()
 		self.showAfterSeek()
-
-#	def numberEntered(self, retval):
-#		if retval and retval > 0 and retval != "":
-#			self.zapToNumber(retval)
-#
-#	def zapToNumber(self, number):
-#		if self.service:
-#			seekable = self.getSeek()
-#			if seekable:
-#				seekable.seekChapter(number)
 
 	def jumpToFirstMark(self):
 		first_mark = None
@@ -214,7 +206,6 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			return self.cueGetCurrentPosition() or 0
 		except Exception as e:
 			print("MVC-E: InfoBarSupport: getSeekPlayPosition: exception:\n" + str(e))
-			pass
 		return 0
 
 	def getSeekLength(self):
@@ -225,7 +216,6 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			seek = InfoBarCueSheetSupport._InfoBarCueSheetSupport__getSeekable(self)
 		except Exception as e:
 			print("MVC-E: InfoBarSupport: getSeekLength: exception:\n" + str(e))
-			pass
 		if seek is not None:
 			__len = seek.getLength()
 			if not __len[0]:

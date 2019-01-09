@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#               2018 by dream-alpha
+#           (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -151,7 +151,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(self.section                                       , _("PLAYBACK")                       , None                  , None                  , 0     , []          , ""),
 			(_("No resume below 10 seconds")                    , config.MVC.movie_ignore_firstcuts   , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
 			(_("Jump to first mark when playing movie")         , config.MVC.movie_jump_first_mark    , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
-			(_("Rewind finished movies before playing")         , config.MVC.movie_rewind_finished    , None                  , None                  , 1     , []          , _("Help Rewind finished movies before playing")),
 			(_("Zap to Live TV of recording")                   , config.MVC.record_eof_zap           , None                  , None                  , 1     , []          , _("Help Zap to Live TV of recording")),
 			(_("Automatic timers list cleaning")                , config.MVC.timer_autoclean          , None                  , None                  , 1     , []          , _("Help Automatic timers list cleaning")),
 			(self.section                                       , _("DISPLAY-SETTINGS")               , None                  , None                  , 0     , []          , ""),

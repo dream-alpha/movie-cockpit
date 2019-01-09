@@ -3,7 +3,7 @@
 #
 # EitSupport
 # Copyright (C) 2011 by betonme
-#               2018 by dream-alpha
+#           (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -155,7 +155,6 @@ class ParserEitFile(object):
 						descriptor.decode('utf-8')
 				except (UnicodeDecodeError, AttributeError) as e:
 					print("MVC-E: ParserEitFile: convertToUtf8: exception:\n" + str(e))
-					pass
 			return descriptor.strip()
 
 		def determineCodepage(byte):
@@ -309,9 +308,8 @@ class ParserEitFile(object):
 				self.pdc_descriptor.append(data[pos + 5:pos + length])
 
 			else:
-				#print("MVC: ParserEitFile: __parse: unsupported descriptor: %x %x" % (rec, length))
-				#print("MVC: ParserEitFile: __parse: %s" % (data[pos:pos + length]))
-				pass
+				print("MVC-I: ParserEitFile: __parse: unsupported descriptor: %x %x" % (rec, length))
+				print("MVC-I: ParserEitFile: __parse: %s" % (data[pos:pos + length]))
 
 			pos += length
 

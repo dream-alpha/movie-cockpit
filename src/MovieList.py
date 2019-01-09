@@ -67,7 +67,6 @@ class MovieList(MovieListGUI, object):
 				f()
 			except Exception as e:
 				print("MVC-E: MovieList: selectionChanged: exception:\n" + str(e))
-				pass
 
 	def getCurrentPath(self):
 		l = self.l.getCurrentSelection()

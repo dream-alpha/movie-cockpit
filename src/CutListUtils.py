@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -24,7 +24,7 @@ import struct
 import shutil
 from bisect import insort
 from Components.config import config
-from FileUtils import readFile
+from FileUtils import readFile, deleteFile
 
 cutsParser = struct.Struct('>QI')  # big-endian, 64-bit PTS and 32-bit type
 
@@ -75,18 +75,11 @@ def mergeBackupCutsFile(path, cut_list):
 		#print("MVC: CutListUtils: mergeBackupCutsFile: backup_cut_list: %s" % backup_cut_list)
 		cut_list = mergeCutList(cut_list, backup_cut_list)
 		writeCutsFile(path, packCutList(cut_list))
-		os.remove(backup_cut_file)
+		deleteFile(backup_cut_file)
 	else:
 		#print("MVC: CutListUtils: mergeBackupCutsFile: no Backup-File found: " + backup_path)
 		pass
 	return cut_list
-
-def deleteCutsFile(path):
-	try:
-		os.remove(path)
-	except Exception as e:
-		print("MVC-E: CutListUtils: deleteCutsFile:exception:\n" + str(e))
-		pass
 
 def verifyCutList(cut_list):
 	if config.MVC.movie_ignore_firstcuts.value:

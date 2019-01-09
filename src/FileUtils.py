@@ -19,13 +19,22 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+import os
+
 def readFile(path):
 	try:
 		return file(path).read()
-	except IOError:
-		#print("MVC: FileUtils: readFile: failed to read %s" % path)
+	except IOError as e:
+		print("MVC-E: FileUtils: readFile: path: %s, exception: %s" % (path, e))
 		return ""
 
 def writeFile(path, text):
 	f = open(path, "w")
 	f.write(text)
+
+def deleteFile(path):
+	if os.path.exists(path):
+		try:
+			os.remove(path)
+		except IOError as e:
+			print("MVC-E: FileUtils: deleteFile: exception: path: %s, exception: %s" % (path, e))

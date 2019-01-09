@@ -30,18 +30,18 @@ from MovieCache import TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK
 class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 
 	def execFileDelete(self, c, path, file_type):
-		#print("MVC: FileOps: execFileDelete: path: %s, file_type: %s" % (path, file_type))
+		print("MVC-I: FileOps: execFileDelete: path: %s, file_type: %s" % (path, file_type))
 		if file_type == TYPE_ISFILE:
 			path, _ext = os.path.splitext(path)
-			c.append('rm -f "' + path + '."*')     # name.*
+			c.append('rm -f "' + path + '."*')
 			cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
 			info_path = self.getInfoPath(path)
 			if config.MVC.cover_flash.value and path.startswith(self.getBookmark(path) + "/trashcan"):
 				cover_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".jpg"
 				info_path = config.MVC.cover_bookmark.value + "/" + os.path.basename(path) + ".txt"
 			#print("MVC: FileOps: execFileDelete: cover_path: %s, info_path: %s" % (cover_path, info_path))
-			c.append('rm -f "' + cover_path + '"') # name.jpg
-			c.append('rm -f "' + info_path + '"')  # name.txt
+			c.append('rm -f "' + cover_path + '"')
+			c.append('rm -f "' + info_path + '"')
 		elif file_type == TYPE_ISDIR:
 			c.append('rm -rf "' + path + '"')
 		elif file_type == TYPE_ISLINK:
@@ -50,7 +50,7 @@ class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 		return c
 
 	def execFileMove(self, c, path, target_path, file_type):
-		#print("MVC: FileOps: execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+		print("MVC-I: FileOps: execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(c, path, target_path)
 		path, _ext = os.path.splitext(path)
 		if file_type == TYPE_ISFILE:
@@ -69,7 +69,7 @@ class FileOps(MovieTMDB, MountPoints, Bookmarks, object):
 		return c
 
 	def execFileCopy(self, c, path, target_path, file_type):
-		#print("MVC: FileOps: execFileCopy: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+		print("MVC-I: FileOps: execFileCopy: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(c, path, target_path)
 		path, _ext = os.path.splitext(path)
 		if file_type == TYPE_ISFILE:

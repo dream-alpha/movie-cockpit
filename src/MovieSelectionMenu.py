@@ -27,8 +27,6 @@ from Components.Sources.List import List
 from Screens.Screen import Screen
 from Tools.BoundFunction import boundFunction
 from Components.Sources.StaticText import StaticText
-from Components.PluginComponent import plugins
-from Plugins.Plugin import PluginDescriptor
 from FileUtils import readFile
 from Bookmarks import Bookmarks
 from SkinUtils import getSkinPath
@@ -53,60 +51,41 @@ FUNC_OPEN_BOOKMARKS = 13
 class MovieSelectionMenu(Screen, Bookmarks, object):
 	skin = readFile(getSkinPath("MovieSelectionMenu.xml"))
 
-	def __init__(self, session, menu_mode, service, selections, current_dir):
+	def __init__(self, session, current_dir):
 		Screen.__init__(self, session)
 		self["title"] = StaticText()
-		self.service = service
-		self.selections = selections
 
 		self["actions"] = ActionMap(
 			["OkCancelActions", "ColorActions"],
 			{"ok": self.okButton, "cancel": self.close, "red": self.close}
 		)
 
+		self.setTitle(_("Select function"))
 		self.menu = []
-		if menu_mode == "functions":
-			self.setTitle(_("Select function"))
 
-			if not self.isBookmark(os.path.realpath(current_dir)):
-				self.menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
+		if not self.isBookmark(os.path.realpath(current_dir)):
+			self.menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
+			self.menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
 
-			if not self.isBookmark(current_dir):
-				self.menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
+		self.menu.append((_("Select all"), boundFunction(self.close, FUNC_SELECT_ALL)))
 
-			self.menu.append((_("Select all"), boundFunction(self.close, FUNC_SELECT_ALL)))
+		self.menu.append((_("Delete"), boundFunction(self.close, FUNC_DELETE)))
+		self.menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
+		self.menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
 
-			self.menu.append((_("Delete"), boundFunction(self.close, FUNC_DELETE)))
-			self.menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
-			self.menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
+		if config.MVC.movie_trashcan_enable.value:
+			self.menu.append((_("Delete permanently"), boundFunction(self.close, FUNC_DELETE_PERMANENTLY)))
+			self.menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
+			self.menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))
 
-			if config.MVC.movie_trashcan_enable.value:
-				self.menu.append((_("Delete permanently"), boundFunction(self.close, FUNC_DELETE_PERMANENTLY)))
-				self.menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
-				self.menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))
+		self.menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
+		self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
 
-			self.menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
-			self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
-
-			self.menu.append((_("Bookmarks/Directories"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
-			self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_WITHOUT_CACHE)))
-			self.menu.append((_("Setup"), boundFunction(session.open, ConfigScreen)))
-
-		elif menu_mode == "plugins":
-			self.setTitle(_("Select plugin"))
-			if service:
-				for p in plugins.getPlugins(PluginDescriptor.WHERE_MOVIELIST):
-					self.menu.append((p.description, boundFunction(self.execPlugin, p)))
+		self.menu.append((_("Bookmarks/Directories"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
+		self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_WITHOUT_CACHE)))
+		self.menu.append((_("Setup"), boundFunction(session.open, ConfigScreen)))
 
 		self["menu"] = List(self.menu)
 
 	def okButton(self):
 		self["menu"].getCurrent()[1]()
-
-	def execPlugin(self, plugin):
-		# Very bad but inspect.getargspec won't work
-		# Plugins should always be designed to accept additional parameters!
-		try:
-			plugin(self.session, self.service, self.selections)
-		except Exception:
-			plugin(session=self.session, service=self.service)

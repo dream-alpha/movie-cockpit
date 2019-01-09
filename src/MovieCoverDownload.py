@@ -30,6 +30,7 @@ from MovieCache import MovieCache, FILE_IDX_FILENAME, FILE_IDX_EXT, FILE_IDX_NAM
 from MediaTypes import plyAll
 from MovieTMDB import MovieTMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, INFO_COVER_URL
 from MovieCover import MovieCover
+from FileUtils import deleteFile
 
 substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", ""), ("h264", ""), ("1080i", ""), ("AC3", "")]
 
@@ -60,7 +61,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 		cover_found = 0
 		if cover_url is not None:
 			if config.MVC.cover_replace_existing.value and os.path.isfile(cover_path):
-				os.remove(cover_path)
+				deleteFile(cover_path)
 			if not os.path.isfile(cover_path):
 				try:
 					#print("MVC: MovieCoverDownload: downloadCover: url: %s, cover_path: %s" % (cover_url, cover_path))
@@ -68,7 +69,6 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 					cover_found = 1
 				except Exception as e:
 					print('MVC-E: MovieCoverDownload: downloadCover: exception failure:\n', str(e))
-					pass
 		else:
 			#print("MVC: MovieCoverDownload: downloadCover: cover_url is None")
 			pass
@@ -137,6 +137,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 		else:
 			if self.session:
 				#print("MVC: MovieCoverDownload: getCover: cover result: %s of %s covers found: %s percent" % (self.cover_found, self.tried, str(float(float(self.cover_found) / float(self.tried)) * 100)))
+				self.movielist = None
 				msg = "Download finished: %s of %s covers found." % (self.cover_found, self.tried)
 				self.session.open(
 					MessageBox,

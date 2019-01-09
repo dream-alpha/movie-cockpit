@@ -42,44 +42,35 @@ class MovieCover(Bookmarks, object):
 		cover_path = re.sub(file_formats + "$", '.jpg', path, flags=re.IGNORECASE)
 		if config.MVC.cover_flash.value:
 			for bookmark in bookmarks:
-				if cover_path.find(bookmark) == 0:
+				if cover_path.startswith(bookmark):
 					cover_path = config.MVC.cover_bookmark.value + cover_path[len(bookmark):]
 					break
 		#print("MVC: MovieCover getCoverPath: cover_path: " + cover_path)
 		return cover_path
 
-	def hideCover(self):
-		#print("MVC: MovieCover: hideCover")
-		self["cover"].hide()
-
 	def showCover(self, path, no_cover_path=None):
-#		#print("MVC: MovieCover: showCover: path: %s" % path)
+		print("MVC-I: MovieCover: showCover: path: %s" % path)
 		if path:
 			cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
 			if not os.path.exists(cover_path):
 				cover_path = None
 				if config.MVC.cover_fallback.value:
-					if no_cover_path:
+					if no_cover_path and os.path.exists(no_cover_path):
 						cover_path = no_cover_path
 					else:
 						cover_path = getSkinPath("img/no_cover.svg")
 
-			#print("MVC: MovieCover: showCover: cover_path %s" % cover_path)
+			print("MVC-I: MovieCover: showCover: cover_path %s" % cover_path)
 			if cover_path:
 				self["cover"].show()
-
-				self.displayCover(cover_path, no_cover_path)
+				self.displayCover(cover_path)
 				return True
 			else:
-				self.hideCover()
+				self["cover"].hide()
 		return False
 
-	def displayCover(self, cover_path, nocover_path):
-		#print("MVC: MovieCover displayCover: cover_path: %s, nocover_path: %s" % (cover_path, nocover_path))
-		path = nocover_path
-		if os.path.exists(cover_path):
-			path = cover_path
-
+	def displayCover(self, path):
+		#print("MVC: MovieCover displayCover: path: %s" % path)
 		if path is not None:
 			#print("MVC: MovieCover displayCover: showing cover now")
 			scale = AVSwitch().getFramebufferScale()

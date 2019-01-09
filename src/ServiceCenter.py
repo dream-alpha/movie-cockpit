@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -19,6 +19,7 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+import os
 from time import mktime
 #from CutList import CutList
 from CutListUtils import unpackCutList
@@ -145,6 +146,6 @@ class Info(object):
 		if self.__filetype == TYPE_ISFILE:
 			size = self.__size
 		else:
-			if config.MVC.directories_info.value or config.MVC.movie_trashcan_info.value:
+			if config.MVC.directories_info.value or (os.path.basename(self.path) == "trashcan" and config.MVC.movie_trashcan_info.value):
 				_count, size = MovieCache.getInstance().getCountSize(self.path)
 		return size

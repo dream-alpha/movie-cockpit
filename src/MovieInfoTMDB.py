@@ -1,7 +1,7 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -19,7 +19,6 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-import os
 import shutil
 from __init__ import _
 from Components.ActionMap import HelpableActionMap
@@ -34,7 +33,7 @@ from Components.config import config
 from Components.Pixmap import Pixmap
 from enigma import eTimer
 from Tools.Directories import fileExists
-from FileUtils import readFile
+from FileUtils import readFile, deleteFile
 from SkinUtils import getSkinPath
 from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
@@ -118,39 +117,36 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 	def selectionChanged(self):
 		#print("MVC: MovieInfoTMDB: selectionChanged")
 		if self.page == PAGE_SELECTION:
-			self.deleteCover(TEMP_COVER_PATH)
-			self.selection = self["previewlist"].l.getCurrentSelection()
-			#print("MVC: MovieInfoTMDB: selectionChanged: selection: " + str(self.selection))
-			if self.selection:
-				self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.MVC.cover_language.value)
-				self.downloadCover(self.info[INFO_COVER_URL], TEMP_COVER_PATH)
-				self.switchPage()
+			self.getInfoAndCoverForCurrentSelection(TEMP_INFO_PATH, TEMP_COVER_PATH)
+
+	def getInfoAndCoverForCurrentSelection(self, info_path, cover_path):
+		deleteFile(TEMP_COVER_PATH)
+		deleteFile(TEMP_INFO_PATH)
+		self.info = None
+		self.selection = self["previewlist"].l.getCurrentSelection()
+		#print("MVC: MovieInfoTMDB: getInfoAndCoverForCurrentSelection: selection: " + str(self.selection))
+		if self.selection:
+			self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.MVC.cover_language.value)
+			self.saveInfo(info_path, self.info)
+			self.downloadCover(self.info[INFO_COVER_URL], cover_path)
+		self.switchPage()
 
 	def getThisCover(self):
 		#print("MVC: MovieInfoTMDB: getThisCover: search_name: %s" % self.search_name)
+		self.page = PAGE_DETAILS
 		self.cover_path = TEMP_COVER_PATH
 		self.info_path = TEMP_INFO_PATH
-		self.deleteCover(self.cover_path)
-		self.deleteInfo(self.info_path)
-		self.page = PAGE_DETAILS
-		self.info = None
+
 		self.movielist = self.getMovieList(self.search_name)
 		if self.movielist:
 			#print("MVC: MovieInfoTMDB: getThisCover: len(self.movielist): %s", len(self.movielist))
 			self["previewlist"].setList(self.movielist)
 			if len(self.movielist) > 1:
 				self.page = PAGE_SELECTION
-			self.selection = self["previewlist"].l.getCurrentSelection()
-			#print("MVC: MovieInfoTMDB: getThisCover: selection: " + str(self.selection))
-			if self.selection:
-				#print("MVC: MovieInfoTMDB: getThisCover: selection")
-				self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.MVC.cover_language.value)
-				self.saveInfo(self.info_path, self.info)
-				self.downloadCover(self.info[INFO_COVER_URL], self.cover_path)
+			self.getInfoAndCoverForCurrentSelection(self.info_path, self.cover_path)
 		else:
 			#print("MVC: MovieInfoTMDB: getThisCover: no movielist available")
 			pass
-		self.switchPage()
 
 	def switchPage(self):
 		#print("MVC: MovieInfoTMDB: switchPage: " + str(self.page))
@@ -206,8 +202,8 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 	def save(self):
 		#print("MVC: MovieInfoTMDB: save: self.path: %s" % self.path)
 		if self.page == PAGE_DETAILS and self.path:
-			self.cover_path = MovieCover.getCoverPath(self.path, self.getBookmarks())
 			self.info_path = self.getInfoPath(self.path)
+			self.cover_path = MovieCover.getCoverPath(self.path, self.getBookmarks())
 			if fileExists(self.cover_path):
 				self.session.openWithCallback(
 					self.saveCallback,
@@ -252,23 +248,23 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 
 	def deleteThisCover(self):
 		#print("MVC: MovieInfoTMDB: deleteThisCover")
-		cover_path = MovieCover.getCoverPath(self.path, self.getBookmarks())
-		self.deleteCover(cover_path)
-		info_path = self.getInfoPath(self.path)
-		self.deleteInfo(info_path)
-		self.session.open(
+		deleteFile(TEMP_COVER_PATH)
+		deleteFile(self.cover_path)
+		self.cover_path = TEMP_COVER_PATH
+		deleteFile(TEMP_INFO_PATH)
+		deleteFile(self.info_path)
+		self.info_path = TEMP_INFO_PATH
+		self.info = None
+		self.session.openWithCallback(
+			self.deleteThisCoverCallback,
 			MessageBox,
 			_("Cover/TMDB Info deleted successfully"),
 			MessageBox.TYPE_INFO,
 			5
 		)
 
-	def deleteCover(self, cover_path):
-		try:
-			os.remove(cover_path)
-		except Exception as e:
-			print("MVC-E: MovieInfoTMDB: deleteCover: exception:\n" + str(e))
-			pass
+	def deleteThisCoverCallback(self, _answer):
+		self.switchPage()
 
 	def ok(self):
 		if self.page == PAGE_SELECTION:
@@ -288,21 +284,25 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 			self["previewlist"].down()
 
 	def showCoverDelayed(self):
-		#print("MVC: MovieInfoTMDB: ShowCover")
+		#print("MVC: MovieInfoTMDB: ShowCover: self.cover_path: %s" % self.cover_path)
 		self.showCover(self.cover_path, getSkinPath("img/tmdb.svg"))
 
 	def exit(self):
 		#print("MVC: MovieInfoTMDB: exit")
 		if self.movielist:
+			#print("MVC: MovieInfoTMDB: exit: movielist")
 			if self.page == PAGE_DETAILS and len(self.movielist) > 1:
+				#print("MVC: MovieInfoTMDB: exit: PAGE_DETAILS")
 				self["movie_name"].setText(_("Search results for") + ": " + self.name)
 				self.page = PAGE_SELECTION
 				self.switchPage()
 				return
 
+		#print("MVC: MovieInfoTMDB: exit: before close")
 		self["previewlist"].onSelectionChanged = []
 		self.close()
 
 	def getAllCovers(self):
 		#print("MVC: MovieInfoTMDB: getAllCovers")
 		self.getCovers()
+		# will not return here

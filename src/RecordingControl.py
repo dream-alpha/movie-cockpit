@@ -37,30 +37,31 @@ class RecordingControl(object):
 		self.check4ActiveRecordings()
 
 	def recordingEvent(self, timer):
-		# StateWaiting=0, StatePrepared=1, StateRunning=2, StateEnded=3
+		TIMER_STATES = ["StateWaiting", "StatePrepared", "StateRunning", "StateEnded"]
 		from MovieCache import MovieCache
 		if timer and not timer.justplay:
-			#print("MVC: RecordingControl: recEvent: timer.Filename: %s, timer.state: %s" % (timer.Filename, timer.state))
+			print("MVC-I: RecordingControl: recordingEvent: timer.Filename: %s, timer.state: %s"
+				% (timer.Filename, (TIMER_STATES[timer.state] if timer.state in range(0, len(TIMER_STATES)) else timer.state)))
 
 			if timer.state == TimerEntry.StatePrepared:
-#				#print("MVC: RecordingControl: recEvent: timer.StatePrepared")
+#				#print("MVC: RecordingControl: recordingEvent: timer.StatePrepared")
 				pass
 
 			elif timer.state == TimerEntry.StateRunning:
-				#print("MVC: RecordingControl: recEvent: REC START for: " + timer.Filename)
+				#print("MVC: RecordingControl: recordingEvent: REC START for: " + timer.Filename)
 				DelayedFunction(250, MovieCache.getInstance().loadDatabaseFile, timer.Filename)
 				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
 				if config.MVC.cover_auto_download.value:
 					DelayedFunction(1000, self.autoCoverDownload, timer.Filename)
 
 			elif timer.state == TimerEntry.StateEnded or timer.state == TimerEntry.StateWaiting:
-				#print("MVC: RecordingControl: recEvent: REC END for: " + timer.Filename)
+				#print("MVC: RecordingControl: recordingEvent: REC END for: " + timer.Filename)
 				DelayedFunction(100, MovieCache.getInstance().updateSize, timer.Filename, os.path.getsize(timer.Filename))
 				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
 				# [Cutlist.Workaround] Initiate the Merge
 				DelayedFunction(500, self.mergeCutListAfterRecording, timer.Filename)
 				if hasattr(timer, "move_recording_cmd"):
-					#print("MVC: RecordingControl: recEvent: file had been moved while recording was in progress, moving left over files...")
+					#print("MVC: RecordingControl: recordingEvent: file had been moved while recording was in progress, moving left over files...")
 					mvcTasker.shellExecute(timer.move_recording_cmd)
 
 			if config.MVC.timer_autoclean.value:
@@ -95,8 +96,7 @@ class RecordingControl(object):
 				#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
 				mvcSelection.reloadList(path, update_disk_space_info=True)
 		except Exception:
-			#print("MVC: RecordingControl: reloadList: movie_selection.reloadList exception")
-			pass
+			print("MVC-E: RecordingControl: reloadList: movie_selection.reloadList exception")
 
 	def timerCleanup(self):
 		NavigationInstance.instance.RecordTimer.cleanup()

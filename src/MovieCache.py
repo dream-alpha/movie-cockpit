@@ -71,7 +71,6 @@ def str2date(date_string):
 		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 	except ValueError:
 		print("MVC-E: MovieCache: str2date: exception: " + date_string)
-		pass
 	return date
 
 
@@ -531,14 +530,13 @@ class MovieCache(Bookmarks, object):
 				print("MVC-I: MovieCache: dump: - size : %s" % size)
 				print("MVC-I: MovieCache: dump: - cuts : %s" % unpackCutList(cuts))
 				print("MVC-I: MovieCache: dump: - tags : %s" % tags)
-				pass
 
 			if os.path.isfile(path):
 				#print("MVC: MovieCache: dump: file exists")
 				pass
 			elif os.path.isdir(path):
 				#print("MVC: MovieCache: dump: dir exists")
- 				pass
+				pass
 			elif os.path.islink(path):
 				#print("MVC: MovieCache: dump: link exists")
 				pass

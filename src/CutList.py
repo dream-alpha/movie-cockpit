@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -21,8 +21,9 @@
 
 import os
 from RecordingUtils import isRecording
-from CutListUtils import packCutList, unpackCutList, readCutsFile, writeCutsFile, deleteCutsFile,\
+from CutListUtils import packCutList, unpackCutList, readCutsFile, writeCutsFile,\
 	replaceLast, replaceLength, removeMarks, mergeBackupCutsFile, verifyCutList, backupCutsFile
+from FileUtils import deleteFile
 
 # [Cutlist.Workaround] Creates a backup of the cutlist during recording and merge it with the cutlist-file from enigma after recording
 
@@ -80,7 +81,7 @@ class CutList(object):
 		from MovieCache import MovieCache
 		data = ""
 		MovieCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
-		deleteCutsFile(self.cut_file)
+		deleteFile(self.cut_file)
 
 	def reloadCutListFromFile(self):
 		from MovieCache import MovieCache

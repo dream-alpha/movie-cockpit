@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018 dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -26,7 +26,7 @@ from urllib2 import Request, urlopen
 import cPickle
 from __init__ import _
 from Components.config import config
-from FileUtils import readFile, writeFile
+from FileUtils import readFile, writeFile, deleteFile
 from Bookmarks import Bookmarks
 
 SELECTION_ID = 1   # tmdb movie id
@@ -51,7 +51,7 @@ class MovieTMDB(Bookmarks, object):
 		#print("MVC: MovieTMDB: saveInfo: path: %s, info: %s" % (info_path, info))
 		if info:
 			if config.MVC.cover_replace_existing.value and os.path.isfile(info_path):
-				os.remove(info_path)
+				deleteFile(info_path)
 			if not os.path.isfile(info_path):
 				text = cPickle.dumps(info)
 				writeFile(info_path, text)
@@ -62,10 +62,6 @@ class MovieTMDB(Bookmarks, object):
 			text = readFile(info_path)
 			info = cPickle.loads(text)
 		return info
-
-	def deleteInfo(self, info_path):
-		if os.path.isfile(info_path):
-			os.remove(info_path)
 
 	def fetchData(self, url):
 		from time import sleep

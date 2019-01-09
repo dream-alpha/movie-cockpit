@@ -24,6 +24,7 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from skin import loadSkin
+from Tools.BoundFunction import boundFunction
 from MovieCache import MovieCache
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
@@ -31,7 +32,6 @@ from Version import VERSION
 from SkinUtils import getSkinPath
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
-from Tools.BoundFunction import boundFunction
 
 
 def openSettings(session):

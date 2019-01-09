@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#               2018 by dream-alpha
+#           (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -251,7 +251,6 @@ class ConfigInit(MountPoints, object):
 		config.MVC.movie_date_format         = ConfigSelection(default="%d.%m.%Y %H:%M", choices=date_choices)
 		config.MVC.movie_ignore_firstcuts    = ConfigYesNo(default=True)
 		config.MVC.movie_jump_first_mark     = ConfigYesNo(default=False)
-		config.MVC.movie_rewind_finished     = ConfigYesNo(default=True)
 		config.MVC.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
 		config.MVC.movie_real_path           = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_enable     = ConfigYesNo(default=True)
