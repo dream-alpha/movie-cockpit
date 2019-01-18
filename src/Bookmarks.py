@@ -30,12 +30,7 @@ class Bookmarks(object):
 		config.movielist.videodirs.save()
 
 	def isBookmark(self, path):
-		is_bookmark = False
-		if path:
-			bookmark = os.path.normpath(path)
-			bookmarks = self.getBookmarks()
-			is_bookmark = bookmark in bookmarks
-		return is_bookmark
+		return path in self.getBookmarks()
 
 	def getBookmarks(self):
 		bookmarks = []
@@ -45,13 +40,13 @@ class Bookmarks(object):
 
 	def getBookmark(self, path):
 		for bookmark in self.getBookmarks():
-			if path.find(bookmark) == 0:
+			if path.startswith(bookmark):
 				return bookmark
 		return ""
 
 	def addBookmark(self, path):
 		if path and config.movielist and config.movielist.videodirs:
-			bookmark = os.path.normpath(path) + "/"
+			bookmark = os.path.normpath(path)
 			bookmarks = self.getBookmarks()
 			if bookmark not in bookmarks:
 				bookmarks.append(bookmark)
@@ -59,7 +54,7 @@ class Bookmarks(object):
 
 	def removeBookmark(self, path):
 		if path and config.movielist and config.movielist.videodirs:
-			bookmark = os.path.normpath(path) + "/"
+			bookmark = os.path.normpath(path)
 			bookmarks = self.getBookmarks()
 			if bookmark in bookmarks:
 				bookmarks.remove(bookmark)

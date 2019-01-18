@@ -2,7 +2,7 @@
 #    RunningText.py - Running Text Renderer for Enigma2
 #    Version: 1.6 (14.12.2018)
 #    Copyright (C) 2010-2012 vlamo <vlamodev@gmail.com>
-#              (C) 2018-2019 dream-alpha
+#    Copyright (C) 2018-2019 dream-alpha
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

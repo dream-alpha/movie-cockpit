@@ -20,7 +20,6 @@
 #
 
 import os
-from __init__ import _
 from sqlite3 import dbapi2 as sqlite
 import datetime
 from ParserEitFile import ParserEitFile
@@ -109,10 +108,9 @@ instance = None
 class MovieCache(Bookmarks, object):
 
 	def __init__(self):
-		#print("MVC: MovieCache: __init__")
 		self.sql_db_name = "/etc/enigma2/moviecockpit.db"
 		first_load = not os.path.exists(self.sql_db_name)
-		#print("MVC: MovieCache: __init__: first_load: " + str(first_load))
+		print("MVC-I: MovieCache: __init__: first_load: %s" % first_load)
 		self.sql_conn = sqlite.connect(self.sql_db_name)
 		self.sql_conn.execute('''CREATE TABLE IF NOT EXISTS recordings (directory TEXT, filetype INTEGER, path TEXT, fileName TEXT, fileExt TEXT, name TEXT, date TEXT, length INTEGER,\
 				description TEXT, extended_description TEXT, service_reference TEXT, size INTEGER, cuts TEXT, tags TEXT)''')
@@ -122,14 +120,12 @@ class MovieCache(Bookmarks, object):
 		self.loaded_dirs = []
 		self.bookmarks = self.getBookmarks()
 		#print("MVC: MovieCache: __init__: " + str(self.bookmarks))
-
 		if first_load:
 			#print("MVC: MovieCache: __init__: sql_db does not exist")
 			self.loadDatabaseDirs(self.bookmarks)
 		else:
 			#print("MVC: MovieCache: __init__: sql_db exists")
 			self.__loadCache(self.bookmarks)
-
 		#print("MVC: MovieCache: __init__: done")
 
 	@staticmethod
@@ -165,7 +161,6 @@ class MovieCache(Bookmarks, object):
 				sql += or_op + "directory = \"" + directory + "\""
 				or_op = " OR "
 			#print("MVC: MovieCache: __loadCache: " + sql)
-
 			# do it
 			self.cursor.execute(sql)
 			filelist = self.cursor.fetchall()
@@ -175,10 +170,9 @@ class MovieCache(Bookmarks, object):
 			#print("MVC: MovieCache: __loadCache: loaded_dirs after merge: " + str(self.loaded_dirs))
 			self.filelist += filelist
 			#print("MVC: MovieCache: __loadCache: len(self.filelist): " + str(len(self.filelist)))
-
 #			self.dump(cache=True, detailed=False)
 		else:
-			#print("MVC: MovieCache: __loadCache: all dirs are loaded already")
+			#print("MVC: MovieCache: __loadCache: all dirs are already loaded")
 			pass
 
 	def clearDatabase(self):
@@ -289,15 +283,14 @@ class MovieCache(Bookmarks, object):
 				path = os.path.realpath(path)
 				date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 				name = convertToUtf8(os.path.basename(path))
-				self.add((path, TYPE_ISLINK, path, walk_name, "", name, date, length, description, extended_description, service_reference, size, cuts, tags))
+				ext = ""
+				self.add((path, TYPE_ISLINK, path, walk_name, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
 			elif os.path.isdir(path):
 				#print("MVC: MovieCache: loadDatabaseDir: dir:" + path)
 				date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
-				if os.path.basename(path) == "trashcan":
-					name = _(os.path.basename(path))
-				else:
-					name = convertToUtf8(os.path.basename(path))
-				self.add((movie_dir, TYPE_ISDIR, path, walk_name, "", name, date, length, description, extended_description, service_reference, size, cuts, tags))
+				name = convertToUtf8(os.path.basename(path))
+				ext = ""
+				self.add((movie_dir, TYPE_ISDIR, path, walk_name, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
 				self.loadDatabaseDir(path)
 			else:
 				#print("MVC: MovieCache: loadDatabaseDir: file type not supported")
@@ -335,7 +328,6 @@ class MovieCache(Bookmarks, object):
 	def getFileList(self, dirs, include_dirs=False):
 		#print("MVC: MovieCache: getFileList:    get_dirs: %s" % dirs)
 		#print("MVC: MovieCache: getFileList: loaded_dirs: %s" % self.loaded_dirs)
-
 		extMovie = extVideo - extBlu
 		more_dirs = self.__resolveVirtualDirs(dirs)
 		self.__loadCache(more_dirs)
@@ -355,7 +347,6 @@ class MovieCache(Bookmarks, object):
 				and filedata[FILE_IDX_PATH] not in more_dirs
 			):
 				filelist.append(filedata)
-
 		return filelist
 
 	def getDirList(self, dirs):
@@ -376,6 +367,15 @@ class MovieCache(Bookmarks, object):
 		# add to memory cache as well
 		self.filelist.append(filedata)
 #		self.dump(cache=True, detailed=True)
+
+	def exists(self, path):
+		filedata = self.getFile(path)
+		directory, _filetype, _path, _filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, _size, _cuts, _tags = filedata
+		return directory != ""
+
+	def makeDir(self, path):
+		if not self.exists(path):
+			self.loadDatabaseDir(path)
 
 	def deleteDir(self, _path):
 		self.reloadDatabase()
@@ -486,7 +486,7 @@ class MovieCache(Bookmarks, object):
 				self.delete(src_path)
 			else:
 				self.delete(src_path) # workaround
-				#print("MVC: MovieCache: move: file already exists at destination")
+				print("MVC-E: MovieCache: move: file already exists at destination: %s" % src_path)
 		else:
 			#print("MVC: MovieCache: move: source file not found")
 			pass

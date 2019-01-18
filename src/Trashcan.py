@@ -19,22 +19,20 @@
 #	<http://www.gnu.org/licenses/>.
 #
 import os
-from __init__ import _
 from Components.config import config
 from DelayedFunction import DelayedFunction
-from MovieCache import MovieCache, TYPE_ISDIR, FILE_IDX_PATH
+from MovieCache import MovieCache, FILE_IDX_PATH, FILE_IDX_TYPE
 from MediaTypes import extVideo
-from FileOps import FileOps
-from MountPoints import MountPoints
+from FileOps import FileOps, FILE_OP_DELETE
 from Bookmarks import Bookmarks
-from Tasker import mvcTasker
 
+RC_TRASHCAN_CREATED = 0
 RC_TRASHCAN_CREATE_DIR_FAILED = 1
 
 instance = None
 
 
-class Trashcan(FileOps, MountPoints, Bookmarks, object):
+class Trashcan(FileOps, Bookmarks, object):
 
 	def __init__(self):
 		if config.MVC.movie_trashcan_enable.value:
@@ -50,57 +48,49 @@ class Trashcan(FileOps, MountPoints, Bookmarks, object):
 
 	def __schedulePurge(self):
 		if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_clean.value:
-			# Recall setup function in 24 hours
+			# recall function in 24 hours
 			seconds = 24 * 60 * 60
 			DelayedFunction(1000 * seconds, self.__schedulePurge)
-			# Execute trash cleaning
+			# execute trash cleaning
 			DelayedFunction(5000, self.purgeTrashcan)
 			print("MVC-I: Trashcan: scheduleCleanup: next trashcan cleanup in %s minutes" % (seconds / 60))
 
-	def createTrashcan(self):
-		import datetime
-		print("MVC-I: Trashcan: createTrashcan")
+	def __createTrashcan(self):
+		print("MVC-I: Trashcan: __createTrashcan")
 		for bookmark in self.getBookmarks():
 			path = bookmark + "/trashcan"
-			if not os.path.exists(path):
+			if not MovieCache.getInstance().exists(path):
 				try:
 					os.makedirs(path)
-					MovieCache.getInstance().add(
-						(path, TYPE_ISDIR, path, _(os.path.basename(path)), "", _(os.path.basename(path)),
-						str(datetime.datetime.fromtimestamp(os.stat(path).st_mtime))[0:19], 0, "", "", "", 0, "", "")
-					)
-				except Exception:
+					MovieCache.getInstance().makeDir(path)
+					config.movie_trashcan_enable.value = True
+				except IOError as e:
+					print("MVC-E: Trashcan: __createTrashcan: exception: %s\n" % e)
 					config.MVC.movie_trashcan_enable.value = False
 					return RC_TRASHCAN_CREATE_DIR_FAILED
-		return 0
+		return RC_TRASHCAN_CREATED
 
 	def enableTrashcan(self):
 		print("MVC-I: Trashcan: enable")
+		rc = 0
 		if not config.MVC.movie_trashcan_enable.value:
-			self.createTrashcan()
+			rc = self.__createTrashcan()
+		return rc
 
 	def purgeTrashcan(self, empty_trash=False, callback=None):
 		import time
 		print("MVC-I: Trashcan: purgeTrashcan: empty_trash: %s" % empty_trash)
-		cmd = []
+		files = 0
 		now = time.localtime()
 		filelist = MovieCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
+			file_type = afile[FILE_IDX_TYPE]
 			# Only check media files
-			ext = os.path.splitext(path)[1]
+			_filename, ext = os.path.splitext(path)
 			if ext in extVideo and os.path.exists(path):
 				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.movie_trashcan_retention.value)):
 					#print("MVC: Trashcan: purgeTrashcan: path: " + path)
-					cmd = self.execFileDelete(cmd, path, "file")
-					#print("MVC: Trashcan: purgeTrashcan: cmd: %s" % cmd)
-					MovieCache.getInstance().delete(path)
-		if cmd:
-			association = []
-			if callback is not None:
-				association.append(callback)
-			print("MVC-I: Trashcan: purgeTrashcan: deleting...")
-			mvcTasker.shellExecute(cmd, association)
-		else:
-			print("MVC-I: Trashcan: purgeTrashcan: nothing to delete")
-			pass
+					self.execFileOp(FILE_OP_DELETE, path, None, file_type, callback)
+					files += 1
+		print("MVC-I: Trashcan: purgeTrashcan: deleted %s files" % files)

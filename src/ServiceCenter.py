@@ -20,8 +20,8 @@
 #
 
 import os
+from __init__ import _
 from time import mktime
-#from CutList import CutList
 from CutListUtils import unpackCutList
 from Components.config import config
 from enigma import eServiceCenter, iServiceInformation
@@ -93,8 +93,7 @@ class Info(object):
 		_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = MovieCache.getInstance().getFile(self.path)
 		self.__filetype = filetype
 		self.__date = str2date(date)
-		self.__name = name
-		self.__eventname = name
+		self.__name = name if name != "trashcan" else _(name)
 		self.__mtime = int(mktime(self.__date.timetuple()))
 		self.__shortdescription = description
 		self.__extendeddescription = extended_description
@@ -116,7 +115,7 @@ class Info(object):
 		return self.__tags
 
 	def getEventName(self):
-		return self.__eventname
+		return self.__name
 
 	def getShortDescription(self):
 		#EventName SHORT_DESCRIPTION

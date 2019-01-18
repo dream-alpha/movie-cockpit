@@ -46,7 +46,7 @@ TEMP_COVER_PATH = "/tmp/preview_cover.jpg"
 TEMP_INFO_PATH = "/tmp/preview_info.txt"
 
 
-class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
+class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 	skin = readFile(getSkinPath("MovieInfoTMDB.xml"))
 
 	def __init__(self, session, path, name):
@@ -60,7 +60,7 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 		self.path = path
 		self.page = PAGE_DETAILS
 		self.selection = None
-		self.cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
+		self.cover_path = self.getCoverPath(path)
 		self.coverTimer = eTimer()
 		self.coverTimer_conn = self.coverTimer.timeout.connect(self.showCoverDelayed)
 
@@ -91,14 +91,14 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 			self,
 			"MovieInfoTMDB",
 			{
-				"MVCEXIT": (self.exit, _("exit")),
-				"MVCUp": (self.pageUp, _("cursor page up")),
-				"MVCDown": (self.pageDown, _("cursor page down")),
-				"MVCOK": (self.ok, _("select cover")),
-				"MVCGreen": (self.save, _("save temporary cover")),
-				"MVCYellow": (self.getThisCover, ("get cover")),
-				"MVCBlue": (self.getAllCovers, ("get all covers")),
-				"MVCRed": (self.deleteThisCover, ("delete cover"))
+				"MVCEXIT": (self.exit, _("Exit")),
+				"MVCUp": (self.pageUp, _("Cursor page up")),
+				"MVCDown": (self.pageDown, _("Cursor page down")),
+				"MVCOK": (self.ok, _("Select cover")),
+				"MVCGreen": (self.save, _("Save temporary cover")),
+				"MVCYellow": (self.getThisCover, ("Get cover")),
+				"MVCBlue": (self.getAllCovers, ("Get all covers")),
+				"MVCRed": (self.deleteThisCover, ("Delete cover"))
 			},
 			-1
 		)
@@ -203,7 +203,7 @@ class MovieInfoTMDB(Screen, MovieCover, MovieCoverDownload, Bookmarks, object):
 		#print("MVC: MovieInfoTMDB: save: self.path: %s" % self.path)
 		if self.page == PAGE_DETAILS and self.path:
 			self.info_path = self.getInfoPath(self.path)
-			self.cover_path = MovieCover.getCoverPath(self.path, self.getBookmarks())
+			self.cover_path = self.getCoverPath(self.path)
 			if fileExists(self.cover_path):
 				self.session.openWithCallback(
 					self.saveCallback,

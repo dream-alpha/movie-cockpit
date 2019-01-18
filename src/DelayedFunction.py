@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#           (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -30,7 +30,6 @@ class DelayedFunction(object):
 
 	def __init__(self, delay, function, *params):
 		if isCallable(function):
-			global instanceTab
 			instanceTab.append(self)
 			self.function = function
 			self.params = params
@@ -41,14 +40,12 @@ class DelayedFunction(object):
 			self.timer.start(delay, False)
 
 	def cancel(self):
-		global instanceTab
 		instanceTab.remove(self)
 		self.timer.stop()
 		self.timer_conn = None
 		self.timer = None
 
 	def timerLaunch(self):
-		global instanceTab
 		instanceTab.remove(self)
 		self.timer.stop()
 		self.timer_conn = None

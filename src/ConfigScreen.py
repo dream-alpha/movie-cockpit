@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#           (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -79,7 +79,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		self.MVCConfig = []
 		ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
 		self.needs_restart_flag = False
-		self.needs_reload_flag = False
 		self.defineConfig()
 		self.createConfig()
 
@@ -130,24 +129,24 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(self.section                                       , _("GENERAL")                        , None                  , None                  , 0     , []          , ""),
 			(_("About")                                         , config.MVC.fake_entry               , None                  , self.showInfo         , 0     , []          , _("HELP About")),
 			(_("Disable plugin")                                , config.MVC.ml_disable               , self.needsRestart     , None                  , 1     , []          , _("Help Disable Plugin")),
-			(_("Start plugin with")                             , config.MVC.movie_launch             , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with")),
+			(_("Start plugin with key")                         , config.MVC.movie_launch             , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with key")),
 			(_("Show settings in extensions menu")              , config.MVC.extmenu_plugin           , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
 			(_("Show plugin in extensions menu")                , config.MVC.extmenu_list             , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
 			(_("Movie home at start")                           , config.MVC.start_home               , None                  , None                  , 0     , []          , _("Help Movie home at start")),
 			(_("Default sort mode")                             , config.MVC.movie_sort               , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
-			(self.section                                       , _("KEYMAPPING")                     , None                  , None                  , 0     , []          , ""),
+			(self.section                                       , _("KEY-MAPPING")                    , None                  , None                  , 0     , []          , ""),
 			(_("Bouquet buttons behavior")                      , config.MVC.bqt_keys                 , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
 			(_("List entries to skip")                          , config.MVC.list_skip_size           , None                  , None                  , 0     , []          , _("Help List entries to skip")),
-			(_("Red button function")                           , config.MVC.movie_shortredfunc       , self.needsReload      , None                  , 0     , []          , _("Help Red button function")),
-			(_("Long red button function")                      , config.MVC.movie_longredfunc        , self.needsReload      , None                  , 0     , []          , _("Help Long Red button function")),
-			(_("Green button function")                         , config.MVC.movie_shortgreenfunc     , self.needsReload      , None                  , 0     , []          , _("Help Green button function")),
-			(_("Long green button function")                    , config.MVC.movie_longgreenfunc      , self.needsReload      , None                  , 0     , []          , _("Help Long Green button function")),
-			(_("Yellow button function")                        , config.MVC.movie_shortyellowfunc    , self.needsReload      , None                  , 0     , []          , _("Help Yellow button function")),
-			(_("Long yellow button function")                   , config.MVC.movie_longyellowfunc     , self.needsReload      , None                  , 0     , []          , _("Help Long Yellow button function")),
-			(_("Blue button function")                          , config.MVC.movie_shortbluefunc      , self.needsReload      , None                  , 0     , []          , _("Help Blue button function")),
-			(_("Long blue button function")                     , config.MVC.movie_longbluefunc       , self.needsReload      , None                  , 0     , []          , _("Help Long Blue button function")),
-			(_("Info button function")                          , config.MVC.movie_shortinfofunc      , self.needsReload      , None                  , 0     , []          , _("Help Info Button")),
-			(_("Long info button function")                     , config.MVC.movie_longinfofunc       , self.needsReload      , None                  , 0     , []          , _("Help Long Info Button")),
+			(_("Red button function")                           , config.MVC.movie_shortredfunc       , None                  , None                  , 0     , []          , _("Help Red button function")),
+			(_("Long red button function")                      , config.MVC.movie_longredfunc        , None                  , None                  , 0     , []          , _("Help Long Red button function")),
+			(_("Green button function")                         , config.MVC.movie_shortgreenfunc     , None                  , None                  , 0     , []          , _("Help Green button function")),
+			(_("Long green button function")                    , config.MVC.movie_longgreenfunc      , None                  , None                  , 0     , []          , _("Help Long Green button function")),
+			(_("Yellow button function")                        , config.MVC.movie_shortyellowfunc    , None                  , None                  , 0     , []          , _("Help Yellow button function")),
+			(_("Long yellow button function")                   , config.MVC.movie_longyellowfunc     , None                  , None                  , 0     , []          , _("Help Long Yellow button function")),
+			(_("Blue button function")                          , config.MVC.movie_shortbluefunc      , None                  , None                  , 0     , []          , _("Help Blue button function")),
+			(_("Long blue button function")                     , config.MVC.movie_longbluefunc       , None                  , None                  , 0     , []          , _("Help Long Blue button function")),
+			(_("Info button function")                          , config.MVC.movie_shortinfofunc      , None                  , None                  , 0     , []          , _("Help Info Button")),
+			(_("Long info button function")                     , config.MVC.movie_longinfofunc       , None                  , None                  , 0     , []          , _("Help Long Info Button")),
 			(self.section                                       , _("PLAYBACK")                       , None                  , None                  , 0     , []          , ""),
 			(_("No resume below 10 seconds")                    , config.MVC.movie_ignore_firstcuts   , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
 			(_("Jump to first mark when playing movie")         , config.MVC.movie_jump_first_mark    , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
@@ -157,13 +156,10 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Show directories")                              , config.MVC.directories_show         , None                  , None                  , 0     , []          , _("Help Show directories")),
 			(_("Show directories within movie list")            , config.MVC.directories_ontop        , None                  , None                  , 0     , [-1]        , _("Help Show directories within movielist")),
 			(_("Show directories information")                  , config.MVC.directories_info         , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
-			(_("Hide movies being moved")                       , config.MVC.movie_hide_move          , None                  , None                  , 1     , []          , _("Help Hide movies being moved")),
-			(_("Hide movies being deleted")                     , config.MVC.movie_hide_delete        , None                  , None                  , 1     , []          , _("Help Hide movies being deleted")),
-			(_("Hide movies being copied")                      , config.MVC.movie_hide_copy          , None                  , None                  , 1     , []          , _("Help Hide movies being copied")),
 			(_("Cursor predictive move after selection")        , config.MVC.moviecenter_selmove      , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
 			(_("Description field update delay")                , config.MVC.movie_description_delay  , None                  , None                  , 2     , []          , _("Help Description field update delay")),
 			(self.section                                       , _("SKIN-SETTINGS")                  , None                  , None                  , 0     , []          , ""),
-			(_("Show miniTV")                                   , config.MVC.mini_tv                  , self.needsReload      , None                  , 0     , []          , _("Help Show MiniTV")),
+			(_("Skin layout")                                   , config.MVC.skin_layout              , None                  , None                  , 0     , []          , _("Help Skin layout")),
 			(_("Show mountpoints")                              , config.MVC.movie_mountpoints        , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
 			(_("Date format")                                   , config.MVC.movie_date_format        , None                  , None                  , 0     , []          , _("Help Date format")),
 			(_("Horizontal alignment for date field")	    , config.MVC.datetext_alignment       , None                  , None                  , 0     , []          , _("Help Horizontal alignment for date field")),
@@ -176,9 +172,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Finished watching percent")                     , config.MVC.movie_finished_percent   , None                  , None                  , 0     , [-2]        , _("Help Finished watching percent")),
 			(_("Default color for recording movie")             , config.MVC.color_recording          , None                  , None                  , 0     , [-3]        , _("Help Default color recording")),
 			(_("Default color for highlighted movie")           , config.MVC.color_highlight          , None                  , None                  , 0     , [-4]        , _("Help Default color highlighted")),
-			(self.section                                       , _("MOVIE COVER")                    , None                  , None                  , 0     , []          , ""),
-			(_("Show cover")                                    , config.MVC.cover                    , self.needsReload      , None                  , 0     , []          , _("Help Show Cover")),
-			(_("Show fallback cover")                           , config.MVC.cover_fallback           , None                  , None                  , 0     , [-1]        , _("Help Cover fallback")),
+			(self.section                                       , _("MOVIE-COVER")                    , None                  , None                  , 0     , []          , ""),
+			(_("Show fallback cover")                           , config.MVC.cover_fallback           , None                  , None                  , 0     , []          , _("Help Cover fallback")),
 			(_("Search cover language")                         , config.MVC.cover_language           , None                  , None                  , 0     , []          , _("Help Cover language")),
 			(_("Search cover size")                             , config.MVC.cover_size               , None                  , None                  , 0     , []          , _("Help Cover size")),
 			(_("Download replace existing cover")               , config.MVC.cover_replace_existing   , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
@@ -284,13 +279,13 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 
 	def loadDefaultSettings(self):
 		self.session.openWithCallback(
-			self.loadDefaultSettingsCB,
+			self.loadDefaultSettingsCallback,
 			MessageBox,
 			_("Loading default settings will overwrite all settings, really load them?"),
 			MessageBox.TYPE_YESNO
 		)
 
-	def loadDefaultSettingsCB(self, answer):
+	def loadDefaultSettingsCallback(self, answer):
 		if answer:
 			# Refresh is done implicitly on change
 			for conf in self.MVCConfig:
@@ -343,9 +338,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		configfile.save()
 		if self.needs_restart_flag:
 			self.session.open(MessageBox, _("Some changes require a GUI restart"), MessageBox.TYPE_INFO, 10)
-		elif self.needs_reload_flag:
-			self.session.open(MessageBox, _("Some changes require a plugin restart"), MessageBox.TYPE_INFO, 10)
-		self.close()
+		self.close(not self.needs_restart_flag)
 
 	@staticmethod
 	def setEPGLanguage():
@@ -362,9 +355,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 
 	def needsRestart(self, _element=None):
 		self.needs_restart_flag = True
-
-	def needsReload(self, _element=None):
-		self.needs_reload_flag = True
 
 	def openLocationBox(self, element):
 		if element:

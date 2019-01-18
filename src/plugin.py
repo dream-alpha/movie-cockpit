@@ -42,7 +42,13 @@ def openSettings(session):
 def openMovieSelection(session):
 	print("MVC-I: plugin: openMovieSelection")
 	from MovieSelection import MovieSelection
-	session.open(MovieSelection)
+	session.openWithCallback(reloadMovieSelection, MovieSelection)
+
+
+def reloadMovieSelection(session=None, reload_movie_selection=False):
+	if reload_movie_selection:
+		print("MVC-I: plugin: reloadMovieSelection")
+		openMovieSelection(session)
 
 
 def autostart(reason, **kwargs):

@@ -25,12 +25,12 @@ from Components.config import config
 import NavigationInstance
 from timer import TimerEntry
 from DelayedFunction import DelayedFunction
-from Tasker import mvcTasker
+from Tasker import tasker
 
 
 class RecordingControl(object):
 	def __init__(self):
-		#print("MVC: RecordingControl: __init__")
+		print("MVC-I: RecordingControl: __init__")
 		# Register for recording events
 		NavigationInstance.instance.RecordTimer.on_state_change.append(self.recordingEvent)
 		# check for active recordings not yet in cache
@@ -56,13 +56,13 @@ class RecordingControl(object):
 
 			elif timer.state == TimerEntry.StateEnded or timer.state == TimerEntry.StateWaiting:
 				#print("MVC: RecordingControl: recordingEvent: REC END for: " + timer.Filename)
-				DelayedFunction(100, MovieCache.getInstance().updateSize, timer.Filename, os.path.getsize(timer.Filename))
+				MovieCache.getInstance().updateSize(timer.Filename, os.path.getsize(timer.Filename))
 				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
 				# [Cutlist.Workaround] Initiate the Merge
-				DelayedFunction(500, self.mergeCutListAfterRecording, timer.Filename)
+				self.mergeCutListAfterRecording(timer.Filename)
 				if hasattr(timer, "move_recording_cmd"):
 					#print("MVC: RecordingControl: recordingEvent: file had been moved while recording was in progress, moving left over files...")
-					mvcTasker.shellExecute(timer.move_recording_cmd)
+					tasker.shellExecute(timer.move_recording_cmd)
 
 			if config.MVC.timer_autoclean.value:
 				DelayedFunction(2000, self.timerCleanup)  # postpone to avoid crash in basic timer delete by user
@@ -72,13 +72,12 @@ class RecordingControl(object):
 		MovieCoverDownload().getCoverOfRecording(path)
 
 	def check4ActiveRecordings(self):
-		from MovieCache import MovieCache, FILE_IDX_PATH
+		from MovieCache import MovieCache
 		#print("MVC: RecordingControl: check4ActiveRecordings")
 		for timer in NavigationInstance.instance.RecordTimer.timer_list:
 			# check if file is in cache
 			if timer.Filename and timer.isRunning() and not timer.justplay:
-				afile = MovieCache.getInstance().getFile(timer.Filename)
-				if not afile[FILE_IDX_PATH]:
+				if not MovieCache.getInstance().exists(timer.Filename):
 					#print("MVC: RecordingControl: check4ActiveRecordings: loadDatabaseFile: " + timer.Filename)
 					MovieCache.getInstance().loadDatabaseFile(timer.Filename)
 

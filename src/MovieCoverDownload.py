@@ -35,8 +35,9 @@ from FileUtils import deleteFile
 substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", ""), ("h264", ""), ("1080i", ""), ("AC3", "")]
 
 
-class MovieCoverDownload(MovieTMDB, Bookmarks, object):
+class MovieCoverDownload(MovieTMDB, MovieCover, Bookmarks, object):
 	def __init__(self, session=None):
+		MovieCover.__init__(self)
 		self.cover_size = config.MVC.cover_size.value
 		self.session = session
 		self.tried = 0
@@ -86,7 +87,7 @@ class MovieCoverDownload(MovieTMDB, Bookmarks, object):
 				if selection[SELECTION_URL]:
 					self.info = self.getTMDBInfo(selection[SELECTION_ID], selection[SELECTION_TYPE], config.MVC.cover_language.value)
 					if self.info:
-						cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
+						cover_path = self.getCoverPath(path)
 						cover_url = self.info[INFO_COVER_URL]
 						cover_found = self.downloadCover(cover_url, cover_path)
 						info_path = self.getInfoPath(path)

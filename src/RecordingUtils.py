@@ -53,13 +53,13 @@ def stopRecording(path):
 		else:
 			timer.afterEvent = AFTEREVENT.NONE
 			NavigationInstance.instance.RecordTimer.removeEntry(timer)
-		#print("MVC: RecordingUtils: stopRecording: path: %s" % path)
-		return True
-	return False
+		print("MVC-I: RecordingUtils: stopRecording: path: %s" % path)
 
 
-def isCutting(filename):
-	return filename.lower().endswith("_.ts") and not os.path.exists(filename[:-2] + "eit")
+def isCutting(path):
+	#print("MVC: RecordingUtils: isCutting: path: %s" % path)
+	filename, _ext = os.path.splitext(path)
+	return (filename.endswith("_") and not os.path.exists(filename + ".eit"))
 
 
 def adjustTimerPathAfterMove(source_path, destination_path):
@@ -68,7 +68,7 @@ def adjustTimerPathAfterMove(source_path, destination_path):
 		timer.dirname = os.path.dirname(destination_path)
 		timer.move_recording_cmd = 'mv "' + timer.Filename + '."* "' + timer.dirname + '/"'
 		timer.Filename = destination_path
-		#print("MVC: RecordingUtils adjustTimerPathAfterMove: fixed path: " + destination_path)
+		print("MVC-I: RecordingUtils adjustTimerPathAfterMove: fixed path: " + destination_path)
 
 
 def getRecording(path, include_margin_before=True):

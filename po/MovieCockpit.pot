@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Enhanced Movie Center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-09 15:00+0100\n"
-"PO-Revision-Date: 2019-01-09 15:17+0100\n"
+"POT-Creation-Date: 2019-01-18 13:55+0100\n"
+"PO-Revision-Date: 2019-01-18 13:55+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: de_DE\n"
@@ -118,15 +118,15 @@ msgstr ""
 msgid "Percent (%)"
 msgstr ""
 
-#: ConfigInit.py:148 MovieSelection.py:281
+#: ConfigInit.py:148 MovieSelection.py:256
 msgid "Home"
 msgstr ""
 
-#: ConfigInit.py:149 MovieSelection.py:795 MovieSelectionMenu.py:74
+#: ConfigInit.py:149 MovieSelection.py:771 MovieSelectionMenu.py:75
 msgid "Delete"
 msgstr ""
 
-#: ConfigInit.py:150 MovieSelectionMenu.py:75
+#: ConfigInit.py:150 MovieSelectionMenu.py:76
 msgid "Move"
 msgstr ""
 
@@ -134,11 +134,11 @@ msgstr ""
 msgid "Cover Search"
 msgstr ""
 
-#: ConfigInit.py:152 MovieSelectionMenu.py:76
+#: ConfigInit.py:152 MovieSelectionMenu.py:77
 msgid "Copy"
 msgstr ""
 
-#: ConfigInit.py:153
+#: ConfigInit.py:153 MovieSelection.py:415 MovieSelectionMenu.py:87
 msgid "Bookmarks"
 msgstr ""
 
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Cover on/off"
 msgstr ""
 
-#: ConfigInit.py:155 MovieSelection.py:500
+#: ConfigInit.py:155 MovieSelection.py:475
 msgid "Sort Mode"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "TMDB info"
 msgstr ""
 
-#: ConfigInit.py:159 MovieListGUI.py:252 MovieSelection.py:491
+#: ConfigInit.py:159 MovieListGUI.py:244 MovieSelection.py:466
 msgid "trashcan"
 msgstr ""
 
@@ -206,91 +206,103 @@ msgstr ""
 msgid "Alpha sort down"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:193
+msgid "Standard"
+msgstr ""
+
+#: ConfigInit.py:193
+msgid "Mini-TV"
+msgstr ""
+
+#: ConfigInit.py:193
+msgid "Cover"
+msgstr ""
+
+#: ConfigInit.py:243
 msgid "English"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:243
 msgid "German"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:243
 msgid "Italian"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:243
 msgid "Spanish"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:243
 msgid "French"
 msgstr ""
 
-#: ConfigInit.py:240
+#: ConfigInit.py:243
 msgid "Portuguese"
 msgstr ""
 
-#: ConfigInit.py:254
+#: ConfigInit.py:257
 msgid "yes, without Message"
 msgstr ""
 
-#: ConfigInit.py:254
+#: ConfigInit.py:257
 msgid "yes, with Message"
 msgstr ""
 
-#: ConfigInit.py:254
+#: ConfigInit.py:257
 msgid "no"
 msgstr ""
 
-#: ConfigInit.py:265
+#: ConfigInit.py:268
 msgid "center"
 msgstr ""
 
-#: ConfigInit.py:265
+#: ConfigInit.py:268
 msgid "right"
 msgstr ""
 
-#: ConfigInit.py:265
+#: ConfigInit.py:268
 msgid "left"
 msgstr ""
 
-#: ConfigInit.py:266
+#: ConfigInit.py:269
 msgid "Yellow"
 msgstr ""
 
-#: ConfigInit.py:266
+#: ConfigInit.py:269
 msgid "Red"
 msgstr ""
 
-#: ConfigInit.py:266
+#: ConfigInit.py:269
 msgid "Light red"
 msgstr ""
 
-#: ConfigInit.py:266
+#: ConfigInit.py:269
 msgid "Dark red"
 msgstr ""
 
-#: ConfigInit.py:267
+#: ConfigInit.py:270
 msgid "White"
 msgstr ""
 
-#: ConfigInit.py:267
+#: ConfigInit.py:270
 msgid "Light grey"
 msgstr ""
 
-#: ConfigInit.py:267
+#: ConfigInit.py:270
 msgid "Grey"
 msgstr ""
 
-#: ConfigInit.py:267
+#: ConfigInit.py:270
 msgid "Dark grey"
 msgstr ""
 
-#: ConfigInit.py:267
+#: ConfigInit.py:270
 msgid "Black"
 msgstr ""
 
-#: ConfigScreen.py:73
+#: ConfigScreen.py:73 MovieOps.py:54
 msgid "Cancel"
 msgstr ""
 
@@ -302,619 +314,583 @@ msgstr ""
 msgid "Defaults"
 msgstr ""
 
-#: ConfigScreen.py:130
+#: ConfigScreen.py:129
 msgid "GENERAL"
 msgstr ""
 
-#: ConfigScreen.py:131
+#: ConfigScreen.py:130
 msgid "About"
 msgstr ""
 
-#: ConfigScreen.py:131
+#: ConfigScreen.py:130
 msgid "HELP About"
 msgstr ""
 
-#: ConfigScreen.py:132
+#: ConfigScreen.py:131
 msgid "Disable plugin"
 msgstr ""
 
-#: ConfigScreen.py:132
+#: ConfigScreen.py:131
 msgid "Help Disable Plugin"
 msgstr ""
 
-#: ConfigScreen.py:133
-msgid "Start plugin with"
+#: ConfigScreen.py:132
+msgid "Start plugin with key"
+msgstr ""
+
+#: ConfigScreen.py:132
+msgid "Help Start plugin with key"
 msgstr ""
 
 #: ConfigScreen.py:133
-msgid "Help Start plugin with"
-msgstr ""
-
-#: ConfigScreen.py:134
 msgid "Show settings in extensions menu"
 msgstr ""
 
-#: ConfigScreen.py:134
+#: ConfigScreen.py:133
 msgid "Help Show plugin config in extensions menu"
 msgstr ""
 
-#: ConfigScreen.py:135
+#: ConfigScreen.py:134
 msgid "Show plugin in extensions menu"
 msgstr ""
 
-#: ConfigScreen.py:135
+#: ConfigScreen.py:134
 msgid "Help Show plugin in extensions menu"
 msgstr ""
 
-#: ConfigScreen.py:136
+#: ConfigScreen.py:135
 msgid "Movie home at start"
 msgstr ""
 
-#: ConfigScreen.py:136
+#: ConfigScreen.py:135
 msgid "Help Movie home at start"
 msgstr ""
 
-#: ConfigScreen.py:137
+#: ConfigScreen.py:136
 msgid "Default sort mode"
 msgstr ""
 
-#: ConfigScreen.py:137
+#: ConfigScreen.py:136
 msgid "Help Sort mode at startup"
 msgstr ""
 
-#: ConfigScreen.py:138
-msgid "KEYMAPPING"
+#: ConfigScreen.py:137
+msgid "KEY-MAPPING"
 msgstr ""
 
-#: ConfigScreen.py:139
+#: ConfigScreen.py:138
 msgid "Bouquet buttons behavior"
 msgstr ""
 
-#: ConfigScreen.py:139
+#: ConfigScreen.py:138
 msgid "Help Bouquet buttons behavior"
 msgstr ""
 
-#: ConfigScreen.py:140
+#: ConfigScreen.py:139
 msgid "List entries to skip"
 msgstr ""
 
-#: ConfigScreen.py:140
+#: ConfigScreen.py:139
 msgid "Help List entries to skip"
 msgstr ""
 
-#: ConfigScreen.py:141
+#: ConfigScreen.py:140
 msgid "Red button function"
 msgstr ""
 
-#: ConfigScreen.py:141
+#: ConfigScreen.py:140
 msgid "Help Red button function"
 msgstr ""
 
-#: ConfigScreen.py:142
+#: ConfigScreen.py:141
 msgid "Long red button function"
 msgstr ""
 
-#: ConfigScreen.py:142
+#: ConfigScreen.py:141
 msgid "Help Long Red button function"
 msgstr ""
 
-#: ConfigScreen.py:143
+#: ConfigScreen.py:142
 msgid "Green button function"
 msgstr ""
 
-#: ConfigScreen.py:143
+#: ConfigScreen.py:142
 msgid "Help Green button function"
 msgstr ""
 
-#: ConfigScreen.py:144
+#: ConfigScreen.py:143
 msgid "Long green button function"
 msgstr ""
 
-#: ConfigScreen.py:144
+#: ConfigScreen.py:143
 msgid "Help Long Green button function"
 msgstr ""
 
-#: ConfigScreen.py:145
+#: ConfigScreen.py:144
 msgid "Yellow button function"
 msgstr ""
 
-#: ConfigScreen.py:145
+#: ConfigScreen.py:144
 msgid "Help Yellow button function"
 msgstr ""
 
-#: ConfigScreen.py:146
+#: ConfigScreen.py:145
 msgid "Long yellow button function"
 msgstr ""
 
-#: ConfigScreen.py:146
+#: ConfigScreen.py:145
 msgid "Help Long Yellow button function"
 msgstr ""
 
-#: ConfigScreen.py:147
+#: ConfigScreen.py:146
 msgid "Blue button function"
 msgstr ""
 
-#: ConfigScreen.py:147
+#: ConfigScreen.py:146
 msgid "Help Blue button function"
 msgstr ""
 
-#: ConfigScreen.py:148
+#: ConfigScreen.py:147
 msgid "Long blue button function"
 msgstr ""
 
-#: ConfigScreen.py:148
+#: ConfigScreen.py:147
 msgid "Help Long Blue button function"
 msgstr ""
 
-#: ConfigScreen.py:149
+#: ConfigScreen.py:148
 msgid "Info button function"
 msgstr ""
 
-#: ConfigScreen.py:149
+#: ConfigScreen.py:148
 msgid "Help Info Button"
 msgstr ""
 
-#: ConfigScreen.py:150
+#: ConfigScreen.py:149
 msgid "Long info button function"
 msgstr ""
 
-#: ConfigScreen.py:150
+#: ConfigScreen.py:149
 msgid "Help Long Info Button"
 msgstr ""
 
-#: ConfigScreen.py:151
+#: ConfigScreen.py:150
 msgid "PLAYBACK"
 msgstr ""
 
-#: ConfigScreen.py:152
+#: ConfigScreen.py:151
 msgid "No resume below 10 seconds"
 msgstr ""
 
-#: ConfigScreen.py:152
+#: ConfigScreen.py:151
 msgid "Help No resume below 10 seconds"
 msgstr ""
 
-#: ConfigScreen.py:153
+#: ConfigScreen.py:152
 msgid "Jump to first mark when playing movie"
 msgstr ""
 
-#: ConfigScreen.py:153
+#: ConfigScreen.py:152
 msgid "Help Jump to first mark when playing movie"
 msgstr ""
 
-#: ConfigScreen.py:154 MediaCenter.py:362
+#: ConfigScreen.py:153 MediaCenter.py:366
 msgid "Zap to Live TV of recording"
 msgstr ""
 
-#: ConfigScreen.py:154
+#: ConfigScreen.py:153
 msgid "Help Zap to Live TV of recording"
 msgstr ""
 
-#: ConfigScreen.py:155
+#: ConfigScreen.py:154
 msgid "Automatic timers list cleaning"
 msgstr ""
 
-#: ConfigScreen.py:155
+#: ConfigScreen.py:154
 msgid "Help Automatic timers list cleaning"
 msgstr ""
 
-#: ConfigScreen.py:156
+#: ConfigScreen.py:155
 msgid "DISPLAY-SETTINGS"
 msgstr ""
 
-#: ConfigScreen.py:157
+#: ConfigScreen.py:156
 msgid "Show directories"
 msgstr ""
 
-#: ConfigScreen.py:157
+#: ConfigScreen.py:156
 msgid "Help Show directories"
 msgstr ""
 
-#: ConfigScreen.py:158
+#: ConfigScreen.py:157
 msgid "Show directories within movie list"
 msgstr ""
 
-#: ConfigScreen.py:158
+#: ConfigScreen.py:157
 msgid "Help Show directories within movielist"
 msgstr ""
 
-#: ConfigScreen.py:159
+#: ConfigScreen.py:158
 msgid "Show directories information"
 msgstr ""
 
-#: ConfigScreen.py:159
+#: ConfigScreen.py:158
 msgid "Help Show directories information"
 msgstr ""
 
-#: ConfigScreen.py:160
-msgid "Hide movies being moved"
-msgstr ""
-
-#: ConfigScreen.py:160
-msgid "Help Hide movies being moved"
-msgstr ""
-
-#: ConfigScreen.py:161
-msgid "Hide movies being deleted"
-msgstr ""
-
-#: ConfigScreen.py:161
-msgid "Help Hide movies being deleted"
-msgstr ""
-
-#: ConfigScreen.py:162
-msgid "Hide movies being copied"
-msgstr ""
-
-#: ConfigScreen.py:162
-msgid "Help Hide movies being copied"
-msgstr ""
-
-#: ConfigScreen.py:163
+#: ConfigScreen.py:159
 msgid "Cursor predictive move after selection"
 msgstr ""
 
-#: ConfigScreen.py:163
+#: ConfigScreen.py:159
 msgid "Help Cursor predictive move after selection"
 msgstr ""
 
-#: ConfigScreen.py:164
+#: ConfigScreen.py:160
 msgid "Description field update delay"
 msgstr ""
 
-#: ConfigScreen.py:164
+#: ConfigScreen.py:160
 msgid "Help Description field update delay"
 msgstr ""
 
-#: ConfigScreen.py:165
+#: ConfigScreen.py:161
 msgid "SKIN-SETTINGS"
 msgstr ""
 
-#: ConfigScreen.py:166
-msgid "Show miniTV"
+#: ConfigScreen.py:162
+msgid "Skin layout"
 msgstr ""
 
-#: ConfigScreen.py:166
-msgid "Help Show MiniTV"
+#: ConfigScreen.py:162
+msgid "Help Skin layout"
 msgstr ""
 
-#: ConfigScreen.py:167
+#: ConfigScreen.py:163
 msgid "Show mountpoints"
 msgstr ""
 
-#: ConfigScreen.py:167
+#: ConfigScreen.py:163
 msgid "Help Show mountpoints"
 msgstr ""
 
-#: ConfigScreen.py:168
+#: ConfigScreen.py:164
 msgid "Date format"
 msgstr ""
 
-#: ConfigScreen.py:168
+#: ConfigScreen.py:164
 msgid "Help Date format"
 msgstr ""
 
-#: ConfigScreen.py:169
+#: ConfigScreen.py:165
 msgid "Horizontal alignment for date field"
 msgstr ""
 
-#: ConfigScreen.py:169
+#: ConfigScreen.py:165
 msgid "Help Horizontal alignment for date field"
 msgstr ""
 
-#: ConfigScreen.py:170
+#: ConfigScreen.py:166
 msgid "Show movie icons"
 msgstr ""
 
-#: ConfigScreen.py:170
+#: ConfigScreen.py:166
 msgid "Help Show movie icons"
 msgstr ""
 
-#: ConfigScreen.py:171
+#: ConfigScreen.py:167
 msgid "Show link arrow"
 msgstr ""
 
-#: ConfigScreen.py:171
+#: ConfigScreen.py:167
 msgid "Help Show link arrow"
 msgstr ""
 
-#: ConfigScreen.py:172
+#: ConfigScreen.py:168
 msgid "Show movie picons"
 msgstr ""
 
-#: ConfigScreen.py:172
+#: ConfigScreen.py:168
 msgid "Help Show movie picons"
 msgstr ""
 
-#: ConfigScreen.py:173
+#: ConfigScreen.py:169
 msgid "Path to movie picons"
 msgstr ""
 
-#: ConfigScreen.py:173
+#: ConfigScreen.py:169
 msgid "Help Path to movie picons"
 msgstr ""
 
-#: ConfigScreen.py:174
+#: ConfigScreen.py:170
 msgid "Show movie progress"
 msgstr ""
 
-#: ConfigScreen.py:174
+#: ConfigScreen.py:170
 msgid "Help Show movie progress"
 msgstr ""
 
-#: ConfigScreen.py:175
+#: ConfigScreen.py:171
 msgid "Watching in progress percent"
 msgstr ""
 
-#: ConfigScreen.py:175
+#: ConfigScreen.py:171
 msgid "Help Short watching percent"
 msgstr ""
 
-#: ConfigScreen.py:176
+#: ConfigScreen.py:172
 msgid "Finished watching percent"
 msgstr ""
 
-#: ConfigScreen.py:176
+#: ConfigScreen.py:172
 msgid "Help Finished watching percent"
 msgstr ""
 
-#: ConfigScreen.py:177
+#: ConfigScreen.py:173
 msgid "Default color for recording movie"
 msgstr ""
 
-#: ConfigScreen.py:177
+#: ConfigScreen.py:173
 msgid "Help Default color recording"
 msgstr ""
 
-#: ConfigScreen.py:178
+#: ConfigScreen.py:174
 msgid "Default color for highlighted movie"
 msgstr ""
 
-#: ConfigScreen.py:178
+#: ConfigScreen.py:174
 msgid "Help Default color highlighted"
 msgstr ""
 
-#: ConfigScreen.py:179
-msgid "MOVIE COVER"
+#: ConfigScreen.py:175
+msgid "MOVIE-COVER"
 msgstr ""
 
-#: ConfigScreen.py:180
-msgid "Show cover"
-msgstr ""
-
-#: ConfigScreen.py:180
-msgid "Help Show Cover"
-msgstr ""
-
-#: ConfigScreen.py:181
+#: ConfigScreen.py:176
 msgid "Show fallback cover"
 msgstr ""
 
-#: ConfigScreen.py:181
+#: ConfigScreen.py:176
 msgid "Help Cover fallback"
 msgstr ""
 
-#: ConfigScreen.py:182
+#: ConfigScreen.py:177
 msgid "Search cover language"
 msgstr ""
 
-#: ConfigScreen.py:182
+#: ConfigScreen.py:177
 msgid "Help Cover language"
 msgstr ""
 
-#: ConfigScreen.py:183
+#: ConfigScreen.py:178
 msgid "Search cover size"
 msgstr ""
 
-#: ConfigScreen.py:183
+#: ConfigScreen.py:178
 msgid "Help Cover size"
 msgstr ""
 
-#: ConfigScreen.py:184
+#: ConfigScreen.py:179
 msgid "Download replace existing cover"
 msgstr ""
 
-#: ConfigScreen.py:184
+#: ConfigScreen.py:179
 msgid "Help Cover replace existing cover"
 msgstr ""
 
-#: ConfigScreen.py:185
+#: ConfigScreen.py:180
 msgid "Download cover to flash"
 msgstr ""
 
-#: ConfigScreen.py:185
+#: ConfigScreen.py:180
 msgid "Help Cover in flash"
 msgstr ""
 
-#: ConfigScreen.py:186
+#: ConfigScreen.py:181
 msgid "Download cover bookmark"
 msgstr ""
 
-#: ConfigScreen.py:186
+#: ConfigScreen.py:181
 msgid "Help Cover bookmark"
 msgstr ""
 
-#: ConfigScreen.py:187
+#: ConfigScreen.py:182
 msgid "Download cover automatically for recording"
 msgstr ""
 
-#: ConfigScreen.py:187
+#: ConfigScreen.py:182
 msgid "Help Cover auto download"
 msgstr ""
 
-#: ConfigScreen.py:188
+#: ConfigScreen.py:183
 msgid "TRASHCAN"
 msgstr ""
 
-#: ConfigScreen.py:189
+#: ConfigScreen.py:184
 msgid "Enable trashcan"
 msgstr ""
 
-#: ConfigScreen.py:189
+#: ConfigScreen.py:184
 msgid "Help Trashcan enable"
 msgstr ""
 
-#: ConfigScreen.py:190
+#: ConfigScreen.py:185
 msgid "Show trashcan directory"
 msgstr ""
 
-#: ConfigScreen.py:190
+#: ConfigScreen.py:185
 msgid "Help Show trashcan directory"
 msgstr ""
 
-#: ConfigScreen.py:191
+#: ConfigScreen.py:186
 msgid "Show trashcan information"
 msgstr ""
 
-#: ConfigScreen.py:191
+#: ConfigScreen.py:186
 msgid "Help Dynamic trashcan"
 msgstr ""
 
-#: ConfigScreen.py:192
+#: ConfigScreen.py:187
 msgid "Delete validation"
 msgstr ""
 
-#: ConfigScreen.py:192
+#: ConfigScreen.py:187
 msgid "Help Delete validation"
 msgstr ""
 
-#: ConfigScreen.py:193
+#: ConfigScreen.py:188
 msgid "Enable auto trashcan cleanup"
 msgstr ""
 
-#: ConfigScreen.py:193
+#: ConfigScreen.py:188
 msgid "Help Enable auto trashcan cleanup"
 msgstr ""
 
-#: ConfigScreen.py:194
+#: ConfigScreen.py:189
 msgid "File retention period in trashcan"
 msgstr ""
 
-#: ConfigScreen.py:194
+#: ConfigScreen.py:189
 msgid "Help How many days files may remain in trashcan"
 msgstr ""
 
-#: ConfigScreen.py:195
+#: ConfigScreen.py:190
 msgid "LANGUAGE"
 msgstr ""
 
-#: ConfigScreen.py:196
+#: ConfigScreen.py:191
 msgid "Preferred EPG language"
 msgstr ""
 
-#: ConfigScreen.py:196
+#: ConfigScreen.py:191
 msgid "Help Preferred EPG language"
 msgstr ""
 
-#: ConfigScreen.py:197
+#: ConfigScreen.py:192
 msgid "Enable playback auto-subtitling"
 msgstr ""
 
-#: ConfigScreen.py:197
+#: ConfigScreen.py:192
 msgid "Help Enable playback auto-subtitling"
 msgstr ""
 
-#: ConfigScreen.py:198
+#: ConfigScreen.py:193
 msgid "Primary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:198
+#: ConfigScreen.py:193
 msgid "Help Primary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:199
+#: ConfigScreen.py:194
 msgid "Secondary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:199
+#: ConfigScreen.py:194
 msgid "Help Secondary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:200
+#: ConfigScreen.py:195
 msgid "Tertiary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:200
+#: ConfigScreen.py:195
 msgid "Help Tertiary playback subtitle language"
 msgstr ""
 
-#: ConfigScreen.py:201
+#: ConfigScreen.py:196
 msgid "Enable playback auto-language selection"
 msgstr ""
 
-#: ConfigScreen.py:201
+#: ConfigScreen.py:196
 msgid "Help Enable playback auto-language selection"
 msgstr ""
 
-#: ConfigScreen.py:202
+#: ConfigScreen.py:197
 msgid "Enable playback AC3-track first"
 msgstr ""
 
-#: ConfigScreen.py:202
+#: ConfigScreen.py:197
 msgid "Help Enable playback AC3-track first"
 msgstr ""
 
-#: ConfigScreen.py:203
+#: ConfigScreen.py:198
 msgid "Primary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:203
+#: ConfigScreen.py:198
 msgid "Help Primary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:204
+#: ConfigScreen.py:199
 msgid "Secondary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:204
+#: ConfigScreen.py:199
 msgid "Help Secondary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:205
+#: ConfigScreen.py:200
 msgid "Tertiary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:205
+#: ConfigScreen.py:200
 msgid "Help Tertiary playback audio language"
 msgstr ""
 
-#: ConfigScreen.py:241
+#: ConfigScreen.py:236
 msgid "Really close without saving settings?"
 msgstr ""
 
-#: ConfigScreen.py:283 MovieSelectionMenu.py:88 plugin.py:96
+#: ConfigScreen.py:278 MovieSelectionMenu.py:89 plugin.py:102
 msgid "Setup"
 msgstr ""
 
-#: ConfigScreen.py:289
+#: ConfigScreen.py:284
 msgid "Loading default settings will overwrite all settings, really load them?"
 msgstr ""
 
-#: ConfigScreen.py:345
+#: ConfigScreen.py:340
 msgid "Some changes require a GUI restart"
 msgstr ""
 
-#: ConfigScreen.py:347
-msgid "Some changes require a plugin restart"
-msgstr ""
-
-#: ConfigScreen.py:360
+#: ConfigScreen.py:353
 msgid "Cannot create trashcan"
 msgstr ""
 
-#: ConfigScreen.py:360
+#: ConfigScreen.py:353
 msgid "Check mounts and permissions"
 msgstr ""
 
-#: ConfigScreen.py:375
+#: ConfigScreen.py:365
 msgid "Select Location"
 msgstr ""
 
-#: ConfigScreen.py:376 MovieSelection.py:695
+#: ConfigScreen.py:366 MovieSelection.py:677
 msgid "Select directory"
 msgstr ""
 
-#: ConfigScreen.py:391
+#: ConfigScreen.py:381
 msgid "Path does not exist"
 msgstr ""
 
@@ -927,7 +903,7 @@ msgid "Jump to next marked position"
 msgstr ""
 
 #: InfoBarSupport.py:67
-msgid "Toggle a cut mark at current position"
+msgid "Toggle cut mark at current position"
 msgstr ""
 
 #: InfoBarSupport.py:121
@@ -943,15 +919,15 @@ msgstr ""
 msgid "Resuming playback"
 msgstr ""
 
-#: MediaCenter.py:88
+#: MediaCenter.py:89
 msgid "Stop playback"
 msgstr ""
 
-#: MediaCenter.py:146
+#: MediaCenter.py:150
 msgid "Skipping movie, the file does not exist."
 msgstr ""
 
-#: MovieCoverDownload.py:127
+#: MovieCoverDownload.py:128
 msgid "Downloading cover"
 msgstr ""
 
@@ -980,24 +956,24 @@ msgstr ""
 msgid "Vote"
 msgstr ""
 
-#: MovieInfoTMDB.py:94
-msgid "exit"
+#: MovieInfoTMDB.py:94 MovieSelection.py:230
+msgid "Exit"
 msgstr ""
 
-#: MovieInfoTMDB.py:95
-msgid "cursor page up"
+#: MovieInfoTMDB.py:95 MovieSelection.py:243
+msgid "Cursor page up"
 msgstr ""
 
-#: MovieInfoTMDB.py:96
-msgid "cursor page down"
+#: MovieInfoTMDB.py:96 MovieSelection.py:244
+msgid "Cursor page down"
 msgstr ""
 
 #: MovieInfoTMDB.py:97
-msgid "select cover"
+msgid "Select cover"
 msgstr ""
 
 #: MovieInfoTMDB.py:98
-msgid "save temporary cover"
+msgid "Save temporary cover"
 msgstr ""
 
 #: MovieInfoTMDB.py:106
@@ -1052,170 +1028,194 @@ msgstr ""
 msgid "Cover/TMDB Info deleted successfully"
 msgstr ""
 
-#: MovieListGUI.py:254
+#: MovieListGUI.py:246
 msgid "Collection"
 msgstr ""
 
-#: MovieListGUI.py:256
+#: MovieListGUI.py:248
 msgid "Link"
 msgstr ""
 
-#: MovieListGUI.py:258
+#: MovieListGUI.py:250
 msgid "Directory"
 msgstr ""
 
-#: MovieListGUI.py:270
+#: MovieListGUI.py:262
 msgid "up"
 msgstr ""
 
-#: MovieSelection.py:254
+#: MovieOps.py:47
+msgid "File operation(s) in progress..."
+msgstr ""
+
+#: MovieOps.py:55
+msgid "Close"
+msgstr ""
+
+#: MovieOps.py:56
+msgid "Hide"
+msgstr ""
+
+#: MovieOps.py:99
+msgid "Cancelling, please wait..."
+msgstr ""
+
+#: MovieOps.py:124
+msgid "Deleting"
+msgstr ""
+
+#: MovieOps.py:124
+msgid "Moving"
+msgstr ""
+
+#: MovieOps.py:124
+msgid "Copying"
+msgstr ""
+
+#: MovieOps.py:127
+msgid "of"
+msgstr ""
+
+#: MovieOps.py:160 MovieOps.py:186
+msgid "Cancelled"
+msgstr ""
+
+#: MovieOps.py:173
+msgid "Please wait..."
+msgstr ""
+
+#: MovieOps.py:186
+msgid "Done"
+msgstr ""
+
+#: MovieSelection.py:229
 msgid "Play"
 msgstr ""
 
-#: MovieSelection.py:255
-msgid "Exit"
-msgstr ""
-
-#: MovieSelection.py:256 MovieSelection.py:257 MovieSelection.py:276
+#: MovieSelection.py:231 MovieSelection.py:232
 msgid "Selection menu"
 msgstr ""
 
-#: MovieSelection.py:268
-msgid "Cursor page up"
-msgstr ""
-
-#: MovieSelection.py:269
-msgid "Cursor page down"
-msgstr ""
-
-#: MovieSelection.py:270
+#: MovieSelection.py:245
 msgid "Cursor up"
 msgstr ""
 
-#: MovieSelection.py:271
+#: MovieSelection.py:246
 msgid "Cursor down"
 msgstr ""
 
-#: MovieSelection.py:272
+#: MovieSelection.py:247
 msgid "Bouquet up"
 msgstr ""
 
-#: MovieSelection.py:273
+#: MovieSelection.py:248
 msgid "Bouquet down"
 msgstr ""
 
-#: MovieSelection.py:274
+#: MovieSelection.py:249
 msgid "Selection on/off"
 msgstr ""
 
-#: MovieSelection.py:275
+#: MovieSelection.py:250
 msgid "Selection off"
 msgstr ""
 
-#: MovieSelection.py:277
+#: MovieSelection.py:251
+msgid "Toggle skin"
+msgstr ""
+
+#: MovieSelection.py:252
 msgid "Timer list"
 msgstr ""
 
-#: MovieSelection.py:278
+#: MovieSelection.py:253
 msgid "Reset progress"
 msgstr ""
 
-#: MovieSelection.py:279
+#: MovieSelection.py:254
 msgid "Date/Mountpoint"
 msgstr ""
 
-#: MovieSelection.py:280
-msgid "Stop recording"
+#: MovieSelection.py:255 MovieSelection.py:711
+msgid "Stop recording(s)"
 msgstr ""
 
-#: MovieSelection.py:440 MovieSelectionMenu.py:86
-msgid "Bookmarks/Directories"
-msgstr ""
-
-#: MovieSelection.py:493
+#: MovieSelection.py:468
 msgid "Recordings"
 msgstr ""
 
-#: MovieSelection.py:611
-msgid "File not available"
-msgstr ""
-
-#: MovieSelection.py:735
-msgid "Stop ongoing recording(s)?"
-msgstr ""
-
-#: MovieSelection.py:795
+#: MovieSelection.py:771
 msgid "Permanently delete"
 msgstr ""
 
-#: MovieSelection.py:797
+#: MovieSelection.py:773
 msgid "the selected video file(s), dir(s), link(s)"
 msgstr ""
 
-#: MovieSelection.py:834
+#: MovieSelection.py:794
 msgid "Move file(s)"
 msgstr ""
 
-#: MovieSelection.py:870
+#: MovieSelection.py:816
 msgid "Copy file(s)"
 msgstr ""
 
-#: MovieSelection.py:904
+#: MovieSelection.py:840
 msgid "Permanently delete all files in trashcan?"
 msgstr ""
 
-#: MovieSelectionMenu.py:63
+#: MovieSelectionMenu.py:66
 msgid "Select function"
 msgstr ""
 
-#: MovieSelectionMenu.py:67
+#: MovieSelectionMenu.py:70
 msgid "Movie home"
 msgstr ""
 
-#: MovieSelectionMenu.py:70
+#: MovieSelectionMenu.py:71
 msgid "Directory up"
 msgstr ""
 
-#: MovieSelectionMenu.py:72
+#: MovieSelectionMenu.py:73
 msgid "Select all"
 msgstr ""
 
-#: MovieSelectionMenu.py:79
+#: MovieSelectionMenu.py:80
 msgid "Delete permanently"
 msgstr ""
 
-#: MovieSelectionMenu.py:80
+#: MovieSelectionMenu.py:81
 msgid "Empty trashcan"
 msgstr ""
 
-#: MovieSelectionMenu.py:81
+#: MovieSelectionMenu.py:82
 msgid "Open trashcan"
 msgstr ""
 
-#: MovieSelectionMenu.py:83
+#: MovieSelectionMenu.py:84
 msgid "Remove cutlist marker"
 msgstr ""
 
-#: MovieSelectionMenu.py:84
+#: MovieSelectionMenu.py:85
 msgid "Delete cutlist file"
 msgstr ""
 
-#: MovieSelectionMenu.py:87
+#: MovieSelectionMenu.py:88
 msgid "Reload cache"
 msgstr ""
 
-#: MovieTMDB.py:92
+#: MovieTMDB.py:90
 msgid "Movies"
 msgstr ""
 
-#: MovieTMDB.py:103
+#: MovieTMDB.py:101
 msgid "TV Shows"
 msgstr ""
 
-#: plugin.py:97
+#: plugin.py:103
 msgid "Open Setup"
 msgstr ""
 
-#: plugin.py:108
+#: plugin.py:114
 msgid "Manage recordings"
 msgstr ""

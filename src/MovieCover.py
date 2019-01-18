@@ -20,7 +20,6 @@
 #
 
 import os
-import re
 from enigma import ePicLoad, gPixmapPtr
 from Components.config import config
 from Components.Pixmap import Pixmap
@@ -35,13 +34,11 @@ class MovieCover(Bookmarks, object):
 		#print("MVC: MovieCover: MovieCover: __init__")
 		self["cover"] = Pixmap()
 
-	@staticmethod
-	def getCoverPath(path, bookmarks):
-#		#print("MVC: MovieCover getCoverPath: path: " + path)
-		file_formats = "(.ts|.avi|.mkv|.divx|.f4v|.flv|.img|.iso|.m2ts|.m4v|.mov|.mp4|.mpeg|.mpg|.mts|.vob|.asf|.wmv|.stream|.webm)"
-		cover_path = re.sub(file_formats + "$", '.jpg', path, flags=re.IGNORECASE)
+	def getCoverPath(self, path):
+		#print("MVC: MovieCover getCoverPath: path: " + path)
+		cover_path = os.path.splitext(path)[0] + ".jpg"
 		if config.MVC.cover_flash.value:
-			for bookmark in bookmarks:
+			for bookmark in self.getBookmarks():
 				if cover_path.startswith(bookmark):
 					cover_path = config.MVC.cover_bookmark.value + cover_path[len(bookmark):]
 					break
@@ -51,7 +48,7 @@ class MovieCover(Bookmarks, object):
 	def showCover(self, path, no_cover_path=None):
 		print("MVC-I: MovieCover: showCover: path: %s" % path)
 		if path:
-			cover_path = MovieCover.getCoverPath(path, self.getBookmarks())
+			cover_path = self.getCoverPath(path)
 			if not os.path.exists(cover_path):
 				cover_path = None
 				if config.MVC.cover_fallback.value:

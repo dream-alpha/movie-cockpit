@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 betonme
-#           (C) 2018-2019 dream-alpha
+# Copyright (C) 2018-2019 dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #

@@ -46,6 +46,8 @@ FUNC_OPEN_SETUP = 10
 FUNC_REMOVE_MARKER = 11
 FUNC_DELETE_CUTLIST = 12
 FUNC_OPEN_BOOKMARKS = 13
+FUNC_RELOAD_MOVIE_SELECTION = 14
+FUNC_NOOP = 99
 
 
 class MovieSelectionMenu(Screen, Bookmarks, object):
@@ -54,10 +56,11 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 	def __init__(self, session, current_dir):
 		Screen.__init__(self, session)
 		self["title"] = StaticText()
+		self.reload_movie_selection = False
 
 		self["actions"] = ActionMap(
 			["OkCancelActions", "ColorActions"],
-			{"ok": self.okButton, "cancel": self.close, "red": self.close}
+			{"ok": self.ok, "cancel": self.close, "red": self.close}
 		)
 
 		self.setTitle(_("Select function"))
@@ -81,11 +84,16 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 		self.menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
 		self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
 
-		self.menu.append((_("Bookmarks/Directories"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
+		self.menu.append((_("Bookmarks"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
 		self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_WITHOUT_CACHE)))
-		self.menu.append((_("Setup"), boundFunction(session.open, ConfigScreen)))
+		self.menu.append((_("Setup"), boundFunction(session.openWithCallback, self.openConfigScreenCallback, ConfigScreen)))
 
 		self["menu"] = List(self.menu)
 
-	def okButton(self):
+	def openConfigScreenCallback(self, reload_movie_selection=False):
+		print("MVC: MovieSelectionMenu: configScrenCallback: reload_movie_selection: %s" % reload_movie_selection)
+		function = FUNC_RELOAD_MOVIE_SELECTION if reload_movie_selection else FUNC_NOOP
+		self.close(function)
+
+	def ok(self):
 		self["menu"].getCurrent()[1]()

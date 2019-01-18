@@ -5,22 +5,22 @@ Copyright (C) 2018-2019 by dream-alpha
 <screen name="ConfigScreen" position="center,110" size="1800,930" title="">
 	<ePixmap
 		pixmap="MovieCockpit/img/red.svg"
-		position="10,5" size="300,70" alphatest="blend" />
+		position="10,0" size="300,70" alphatest="blend" />
 	<ePixmap
 		pixmap="MovieCockpit/img/green.svg"
-		position="310,5" size="300,70" alphatest="blend" />
+		position="310,0" size="300,70" alphatest="blend" />
 	<ePixmap pixmap="MovieCockpit/img/blue.svg"
-		position="610,5" size="300,70" alphatest="blend"/>
+		position="610,0" size="300,70" alphatest="blend"/>
 	<widget backgroundColor="#9f1313" font="Regular;30"
-		halign="center" name="key_red" position="10,5" foregroundColor="white"
+		halign="center" name="key_red" position="10,0" foregroundColor="white"
 		shadowColor="black" shadowOffset="-2,-2" size="300,70" transparent="1"
 		valign="center" zPosition="1" />
 	<widget backgroundColor="#1f771f" font="Regular;30"
-		halign="center" name="key_green" position="310,5"
+		halign="center" name="key_green" position="310,0"
 		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 		size="300,70" transparent="1" valign="center" zPosition="1" />
 	<widget backgroundColor="#18188b" font="Regular;30" halign="center" name="key_blue"
-		position="610,5" foregroundColor="white" shadowColor="black" shadowOffset="-2,-2" 
+		position="610,0" foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 		size="300,70" transparent="1" valign="center" zPosition="1" />
 	<widget font="Regular;34" halign="right" position="1650,25"
 		render="Label" size="120,40" source="global.CurrentTime">

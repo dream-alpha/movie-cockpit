@@ -20,7 +20,6 @@
 #
 
 import os
-import re
 import json
 from urllib2 import Request, urlopen
 import cPickle
@@ -38,8 +37,7 @@ class MovieTMDB(Bookmarks, object):
 
 	def getInfoPath(self, path):
 		#print("MVC: MovieTMDB: getInfoPath: path: " + path)
-		file_formats = "(.ts|.avi|.mkv|.divx|.f4v|.flv|.img|.iso|.m2ts|.m4v|.mov|.mp4|.mpeg|.mpg|.mts|.vob|.asf|.wmv|.stream|.webm)"
-		info_path = re.sub(file_formats + "$", '.txt', path, flags=re.IGNORECASE)
+		info_path = os.path.splitext(path)[0] + ".txt"
 		if config.MVC.cover_flash.value:
 			bookmark = self.getBookmark(info_path)
 			if bookmark:

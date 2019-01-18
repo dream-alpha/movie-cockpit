@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2018-2019 by dream-alpha -->
+<screen name="FileOpsProgress" position="center,center" size="920,350" title="">
+	<ePixmap pixmap="MovieCockpit/img/red.svg" position="10,0"
+		size="300,70" alphatest="blend" />
+	<ePixmap pixmap="MovieCockpit/img/green.svg" position="310,0"
+		size="300,70" alphatest="blend" />
+	<ePixmap pixmap="MovieCockpit/img/blue.svg" position="610,0"
+		size="300,70" alphatest="blend" />
+	<widget backgroundColor="#9f1313" font="Regular;30"
+		halign="center" name="key_red" position="10,0" foregroundColor="white"
+		shadowColor="black" shadowOffset="-2,-2" size="300,70" transparent="1"
+		valign="center" zPosition="1" />
+	<widget backgroundColor="#1f771f" font="Regular;30"
+		halign="center" name="key_green" position="310,0"
+		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
+		size="300,70" transparent="1" valign="center" zPosition="1" />
+	<widget backgroundColor="#18188b" font="Regular;30"
+		halign="center" name="key_blue" position="610,0"
+		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
+		size="300,70" transparent="1" valign="center" zPosition="1" />
+
+	<eLabel backgroundColor="#818181" position="5,75" size="910,1" />
+
+	<widget name="movie_op" position="10,95" size="900,35"
+		font="Regular;32" halign="left" valign="center" transparent="1" />
+	<widget name="movies_slider" position="10,150" size="900,25" />
+	<widget name="movie_name" position="10,199" size="900,35"
+		font="Regular;32" halign="left" valign="center" transparent="1" />
+	<widget name="movie_progress_slider" position="10,250" size="900,25" />
+	<widget name="status" position="10,295" size="900,35"
+		font="Regular;32" halign="left" valign="center" transparent="1" />
+</screen>

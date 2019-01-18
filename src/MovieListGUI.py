@@ -184,16 +184,8 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 		def createSelNum(path):
 			#print("MVC: MovieListGUI: buildMovieListEntry: createSelNum: startHPos: %s" % self.startHPos)
 			selnumtxt = None
-			if self.serviceMoving(path):
-				selnumtxt = ">"
-			elif self.serviceDeleting(path):
-				selnumtxt = "x"
-			elif self.serviceCopying(path):
-				selnumtxt = "+"
-			elif path in self.selection_list:
+			if path in self.selection_list:
 				selnumtxt = "*"
-
-			if selnumtxt:
 				x = self.startHPos
 				y = yPos(self.l.getItemSize().height(), self.MVCSelectFont.pointSize)
 
@@ -387,42 +379,39 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 		self.startHPos = self.MVCStartHPos
 		self.width = self.l.getItemSize().width() - 10
 
-		if not ((config.MVC.movie_hide_move.value and self.serviceMoving(path))
-			or (config.MVC.movie_hide_delete.value and self.serviceDeleting(path))
-			or (config.MVC.movie_hide_copy.value and self.serviceCopying(path))):
-			#print("MVC: MovieListGUI: buildMovieListEntry: let's start with startHPos: %s" % self.startHPos)
-			if filetype == TYPE_ISFILE and ext in extVideo:
-				#print("MVC: MovieListGUI: buildMovieListEntry: adjusted startHPos: %s" % self.startHPos)
-				datetext, pixmap, color, progress, recording = getFileValues(path, date_string, length, cuts)
+		#print("MVC: MovieListGUI: buildMovieListEntry: let's start with startHPos: %s" % self.startHPos)
+		if filetype == TYPE_ISFILE and ext in extVideo:
+			#print("MVC: MovieListGUI: buildMovieListEntry: adjusted startHPos: %s" % self.startHPos)
+			datetext, pixmap, color, progress, recording = getFileValues(path, date_string, length, cuts)
 
-				selnumtxt = createSelNum(path)
-				if not selnumtxt and config.MVC.movie_icons.value:
-					createIcon(pixmap)
+			selnumtxt = createSelNum(path)
+			if not selnumtxt and config.MVC.movie_icons.value:
+				createIcon(pixmap)
 
-				if config.MVC.movie_picons.value:
-					createPicon(service_reference, ext)
+			if config.MVC.movie_picons.value:
+				createPicon(service_reference, ext)
 
-				createTitle(name, ext, color)
+			createTitle(name, ext, color)
 
-				if config.MVC.movie_progress.value == "PB":
-					createProgressBar(progress, color, recording)
+			if config.MVC.movie_progress.value == "PB":
+				createProgressBar(progress, color, recording)
 
-				if config.MVC.movie_progress.value == "P":
-					createProgressValue(progress, color)
+			if config.MVC.movie_progress.value == "P":
+				createProgressValue(progress, color)
 
-				if config.MVC.movie_date_format.value:
-					createDateText(datetext, color, recording)
-			elif filetype in [TYPE_ISDIR, TYPE_ISLINK]:
-				#print("MVC: MovieListGUI: buildMovieListEntry: ext: " + ext)
-				datetext, pixmap = getDirValues(path, filetype)
+			if config.MVC.movie_date_format.value:
+				createDateText(datetext, color, recording)
+		elif filetype in [TYPE_ISDIR, TYPE_ISLINK]:
+			#print("MVC: MovieListGUI: buildMovieListEntry: ext: " + ext)
+			datetext, pixmap = getDirValues(path, filetype)
 
-				if config.MVC.movie_icons.value:
-					createIcon(pixmap)
+			if config.MVC.movie_icons.value:
+				createIcon(pixmap)
 
-				createTitle(name, ext, self.FrontColorSel)
-				createDateText(datetext, self.FrontColorSel, False)
-			else:
-				#print("MVC: MovieListGUI: buildMovieListEntry: unknown ext: " + ext)
-				pass
+			createTitle(_(name), ext, self.FrontColorSel)
+			createDateText(datetext, self.FrontColorSel, False)
+		else:
+			#print("MVC: MovieListGUI: buildMovieListEntry: unknown ext: " + ext)
+			pass
 		#print("MVC: MovieListGUI: buildMovieListEntry: return")
 		return self.res

@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-#           (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -190,6 +190,9 @@ sort_choices = [(k, v[1]) for k, v in sort_modes.items()]
 sort_values = [v[0] for v in sort_modes.values()]
 
 
+skin_layout_choices = [("MovieSelection.xml", _("Standard")), ("MovieSelectionPIG.xml", _("Mini-TV")), ("MovieSelectionCover.xml", _("Cover"))]
+
+
 class ConfigInit(MountPoints, object):
 
 	def checkList(self, cfg):
@@ -265,15 +268,13 @@ class ConfigInit(MountPoints, object):
 		config.MVC.datetext_alignment        = ConfigSelection(default=RT_HALIGN_CENTER, choices=[(RT_HALIGN_CENTER, _("center")), (RT_HALIGN_RIGHT, _("right")), (RT_HALIGN_LEFT, _("left"))])
 		config.MVC.color_recording           = ConfigSelection(default="#ff0000", choices=[("#ffff00", _("Yellow")), ("#ff0000", _("Red")), ("#ff9999", _("Light red")), ("#990000", _("Dark red"))])
 		config.MVC.color_highlight           = ConfigSelection(default="#ffffff", choices=[("#ffffff", _("White")), ("#cccccc", _("Light grey")), ("#bababa", _("Grey")), ("#666666", _("Dark grey")), ("#000000", _("Black"))])
-		config.MVC.movie_hide_move           = ConfigYesNo(default=False)
-		config.MVC.movie_hide_delete         = ConfigYesNo(default=False)
-		config.MVC.movie_hide_copy           = ConfigYesNo(default=False)
 		config.MVC.movie_sort                = ConfigSelection(default=("D-"), choices=sort_choices)
 		config.MVC.moviecenter_selmove       = ConfigSelection(default="d", choices=move_choices)
 		config.MVC.timer_autoclean           = ConfigYesNo(default=False)
 		config.MVC.movie_launch              = ConfigSelection(default="showMovies", choices=launch_choices)
 		config.MVC.bqt_keys                  = ConfigSelection(default="", choices=bqt_choices)
 		config.MVC.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
+		config.MVC.skin_layout               = ConfigSelection(default="MovieSelection.xml", choices=skin_layout_choices)
 		config.MVC.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
 
 		self.checkList(config.MVC.epglang)

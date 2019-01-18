@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 by betonme
-#           (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -64,7 +64,7 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			{
 				"jumpPreviousMark": (self.jumpPreviousMark, _("Jump to previous marked position")),
 				"jumpNextMark": (self.jumpNextMark, _("Jump to next marked position")),
-				"toggleMark": (self.toggleMark, _("Toggle a cut mark at current position"))
+				"toggleMark": (self.toggleMark, _("Toggle cut mark at current position"))
 			},
 			prio=1
 		)

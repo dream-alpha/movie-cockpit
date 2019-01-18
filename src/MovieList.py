@@ -38,14 +38,9 @@ class MovieList(MovieListGUI, object):
 
 	def __init__(self, sort_mode):
 		#print("MVC: MovieList: __init__")
-
 		self.sort_mode = sort_mode
 		self.list = []
 		self.selection_list = []
-
-		self.highlights_move = []
-		self.highlights_delete = []
-		self.highlights_copy = []
 
 		MovieListGUI.__init__(self)
 
@@ -94,14 +89,14 @@ class MovieList(MovieListGUI, object):
 		instance.setContent(None)
 		self.selectionChanged_conn = None
 
-	def removeService(self, path):
+	def removePath(self, path):
 		for l in self.list:
 			if l[FILE_IDX_PATH] == path:
 				self.list.remove(l)
 				break
 		self.l.setList(self.list)
 
-	def removeServiceOfType(self, path, filetype):
+	def removePathOfType(self, path, filetype):
 		for l in self.list:
 			if l[FILE_IDX_PATH] == path and l[FILE_IDX_TYPE] == filetype:
 				self.list.remove(l)
@@ -144,7 +139,7 @@ class MovieList(MovieListGUI, object):
 		self.l.invalidateEntry(self.getCurrentIndex())
 
 	def invalidateService(self, path):
-		index = self.getIndexOfService(path)
+		index = self.getIndexOfPath(path)
 		if index >= 0:
 			self.l.invalidateEntry(index)  # force redraw of the item
 
@@ -174,7 +169,7 @@ class MovieList(MovieListGUI, object):
 		self.instance.moveSelectionTo(index)
 
 	def moveToPath(self, path):
-		index = self.getIndexOfService(path)
+		index = self.getIndexOfPath(path)
 		if index >= 0:
 			self.instance.moveSelectionTo(index)
 		else:
@@ -218,18 +213,6 @@ class MovieList(MovieListGUI, object):
 	def getExtOfIndex(self, index):
 		return self.list[index][FILE_IDX_EXT]
 
-	def serviceBusy(self, path):
-		return path in self.highlights_move or path in self.highlights_delete or path in self.highlights_copy
-
-	def serviceMoving(self, path):
-		return path and path in self.highlights_move
-
-	def serviceDeleting(self, path):
-		return path and path in self.highlights_delete
-
-	def serviceCopying(self, path):
-		return path and path in self.highlights_copy
-
 	def getNameOfService(self, path):
 		name = ""
 		for entry in self.list:
@@ -246,7 +229,7 @@ class MovieList(MovieListGUI, object):
 				break
 		return length
 
-	def getIndexOfService(self, path):
+	def getIndexOfPath(self, path):
 		index = -1
 		for i, entry in enumerate(self.list):
 			if path and entry[FILE_IDX_PATH] == path:
@@ -289,7 +272,7 @@ class MovieList(MovieListGUI, object):
 			service.setData(0, DEFAULT_VIDEO_PID)
 			service.setData(1, DEFAULT_AUDIO_PID)
 		service.setName(name)
-		#print("MVC: MovieCache: getPlayerService: service valid = %s for %s" % (service.valid(), path))
+		#print("MVC: MovieList: getPlayerService: service valid = %s for %s" % (service.valid(), path))
 		return service
 
 	def createFileList(self, path):
@@ -354,26 +337,6 @@ class MovieList(MovieListGUI, object):
 		# reload files and directories for current path without using cache
 		MovieCache.getInstance().reloadDatabase()
 		self.reloadList(path, self.sort_mode)
-
-	def getNextSelectedService(self, selection_list):
-		#print("MVC: MovieSelection: getNextSelectedService: selected_list: %s" % selection_list)
-		# calc lowest selected index
-		indexes = []
-		for path in selection_list:
-			#print("MVC: MovieSelection: getNextSelectedService: %s" % path)
-			indexes.append(self.getIndexOfService(path))
-		#print("MVC: MovieSelection: getNextSelectedService: indexes: %s" % indexes)
-		indexes.sort()
-		lowest_index = indexes[0]
-
-		next_path = self.list[0][FILE_IDX_PATH]  # first service in list
-		for i in range(lowest_index, len(self.list)):
-			path = self.list[i][FILE_IDX_PATH]
-			if path not in selection_list:
-				next_path = path
-				break
-		#print("MVC: MovieSelection: getNextSelectedService: next_path: %s" % next_path)
-		return next_path
 
 	def bqtListFolders(self):
 		return MovieCache.getInstance().getDirList(self.getBookmarks()[0]).sort()

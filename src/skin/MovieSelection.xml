@@ -6,23 +6,23 @@ Copyright (C) 2018-2019 by dream-alpha
 	<eLabel backgroundColor="#818181" position="10,80" size="1780,1" />
 	<eLabel backgroundColor="#818181" position="1220,80" size="1,795" />
 	<ePixmap pixmap="MovieCockpit/img/red.svg"
-		position="10,5" size="300,70" alphatest="blend" />
+		position="10,0" size="300,70" alphatest="blend" />
 	<ePixmap pixmap="MovieCockpit/img/green.svg"
-		position="310,5" size="300,70" alphatest="blend" />
+		position="310,0" size="300,70" alphatest="blend" />
 	<ePixmap pixmap="MovieCockpit/img/yellow.svg"
-		position="610,5" size="300,70" alphatest="blend" />
+		position="610,0" size="300,70" alphatest="blend" />
 	<ePixmap pixmap="MovieCockpit/img/blue.svg"
-		position="910,5" size="300,70" alphatest="blend" />
+		position="910,0" size="300,70" alphatest="blend" />
 	<widget backgroundColor="#9f1313" font="Regular;30"
-		halign="center" name="key_red" position="10,5"
+		halign="center" name="key_red" position="10,0"
 		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 		size="300,70" transparent="1" valign="center" zPosition="1" />
 	<widget backgroundColor="#1f771f" font="Regular;30"
-		halign="center" name="key_green" position="310,5"
+		halign="center" name="key_green" position="310,0"
 		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 		size="300,70" transparent="1" valign="center" zPosition="1" />
 	<widget backgroundColor="#a08500" font="Regular;30"
-		halign="center" name="key_yellow" position="610,5"
+		halign="center" name="key_yellow" position="610,0"
 		foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 		size="300,70" transparent="1" valign="center" zPosition="1" />
 	<widget backgroundColor="#18188b" font="Regular;30"
