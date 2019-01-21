@@ -25,7 +25,7 @@ from Components.config import config
 from enigma import eListboxPythonMultiContent, gFont
 from ServiceCenter import ServiceCenter
 from MovieListGUI import MovieListGUI
-from MovieCache import MovieCache,\
+from FileCache import FileCache,\
 	TYPE_ISDIR, TYPE_ISLINK,\
 	FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_DESCRIPTION, FILE_IDX_LENGTH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
 from MediaTypes import extVideo, plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
@@ -61,7 +61,7 @@ class MovieList(MovieListGUI, object):
 			try:
 				f()
 			except Exception as e:
-				print("MVC-E: MovieList: selectionChanged: exception:\n" + str(e))
+				print("MVC-E: MovieList: selectionChanged: exception: %s" % e)
 
 	def getCurrentPath(self):
 		l = self.l.getCurrentSelection()
@@ -276,22 +276,17 @@ class MovieList(MovieListGUI, object):
 		return service
 
 	def createFileList(self, path):
-		filelist = MovieCache.getInstance().getFileList([path], config.MVC.directories_show.value)
+		filelist = FileCache.getInstance().getFileList([path], config.MVC.directories_show.value)
 		return filelist
 
 	def createCustomList(self, path):
 		#print("MVC: MovieList: createCustomList: path: %s" % path)
-		path = os.path.realpath(path)
 		customlist = []
-
 		if path not in self.getBookmarks():
-			customlist.append(MovieCache.getInstance().getFile(os.path.join(path, "..")))
-
-		if path in self.getBookmarks():
-			path = self.getBookmarks()[0]
+			customlist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
+		else:  # path is a bookmark
 			if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_show.value:
-				customlist.append(MovieCache.getInstance().getFile(self.getBookmark(path) + "/trashcan"))
-
+				customlist.append(FileCache.getInstance().getFile(path + "/trashcan"))
 		#print("MVC: MovieList: createCustomList: customlist: " + str(customlist))
 		return customlist
 
@@ -333,10 +328,10 @@ class MovieList(MovieListGUI, object):
 		customlist = self.createCustomList(path)
 		self.sortList(customlist + filelist)
 
-	def reloadListWithoutCache(self, path):
+	def reloadListAndDatabase(self, path):
 		# reload files and directories for current path without using cache
-		MovieCache.getInstance().reloadDatabase()
+		FileCache.getInstance().reloadDatabase()
 		self.reloadList(path, self.sort_mode)
 
 	def bqtListFolders(self):
-		return MovieCache.getInstance().getDirList(self.getBookmarks()[0]).sort()
+		return FileCache.getInstance().getDirList(self.getBookmarks()[0]).sort()

@@ -25,7 +25,7 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from skin import loadSkin
 from Tools.BoundFunction import boundFunction
-from MovieCache import MovieCache
+from FileCache import FileCache
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from Version import VERSION
@@ -34,12 +34,12 @@ from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
 
 
-def openSettings(session):
+def openSettings(session, **__):
 	print("MVC-I: plugin: openSettings")
 	session.open(ConfigScreen)
 
 
-def openMovieSelection(session):
+def openMovieSelection(session, **__):
 	print("MVC-I: plugin: openMovieSelection")
 	from MovieSelection import MovieSelection
 	session.openWithCallback(reloadMovieSelection, MovieSelection)
@@ -71,14 +71,14 @@ def autostart(reason, **kwargs):
 
 			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			ConfigScreen.setEPGLanguage()
-			MovieCache.getInstance()
+			FileCache.getInstance()
 			RecordingControl()
 			Trashcan.getInstance()
 			loadSkin(getSkinPath("MediaCenterLCD.xml"))
 
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
-		MovieCache.getInstance().close()
+		FileCache.getInstance().close()
 	else:
 		#print("MVC: plugin: autostart: reason not handled: %s" % reason)
 		pass

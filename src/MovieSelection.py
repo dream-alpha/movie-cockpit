@@ -45,8 +45,9 @@ from RecordingUtils import isRecording, stopRecording
 from CutList import CutList
 from FileOps import FileOps, FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 from FileUtils import readFile
-from MovieCache import FILE_IDX_PATH
+from FileCache import FILE_IDX_PATH
 from FileOpsProgress import FileOpsProgress
+from FileCacheReload import FileCacheReload
 from ConfigInit import sort_modes, function_key_names, KEY_RED_SHORT, KEY_RED_LONG, KEY_GREEN_SHORT, KEY_GREEN_LONG, KEY_YELLOW_SHORT,\
 	KEY_YELLOW_LONG, KEY_BLUE_SHORT, KEY_BLUE_LONG, KEY_INFO_SHORT, KEY_INFO_LONG, KEY_FUNC_TOGGLE_COVER, KEY_FUNC_DISABLED
 
@@ -168,8 +169,10 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 
 		if config.MVC.skin_layout.value == "MovieSelectionPIG.xml":
 			config.MVC.mini_tv.value = True
+			config.MVC.cover.value = False
 		elif config.MVC.skin_layout.value == "MovieSelectionCover.xml":
 			config.MVC.cover.value = True
+			config.MVC.mini_tv.value = False
 		else:
 			config.MVC.mini_tv.value = False
 			config.MVC.cover.value = False
@@ -180,7 +183,6 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 
 	def exit(self):
 		print("MVC-I: MovieSelection: exit")
-		self.return_path = self["list"].getCurrentPath()
 		self.delayTimer.stop()
 		self.close()
 
@@ -463,12 +465,13 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 		self["space_info"].setText(disk_space_info)
 
 	def updateTitle(self):
-		title = "MovieCockpit - "
-		# Display the current path
-		if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
-			title += _("trashcan")
-		else:
-			title += _("Recordings")
+		title = "MovieCockpit"
+		if self["list"].getCurrentDir():
+			title += " - "
+			if os.path.basename(self["list"].getCurrentDir()) == "trashcan":
+				title += _("trashcan")
+			else:
+				title += _("Recordings")
 		self.setTitle(title)
 
 	def updateSortMode(self):
@@ -517,7 +520,6 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 		skin_index = (skin_index + 1) % len(skin_layout_choices)
 		config.MVC.skin_layout.value = skin_layout_choices[skin_index][0]
 		#print("MVC: MovieSelection: toggleSkin: skin_layout: %s" % config.MVC.skin_layout.value)
-		self.return_path = self["list"].getCurrentPath()
 		self.close(self.session, True)
 
 	def reloadList(self, path, update_disk_space_info=False):
@@ -644,7 +646,9 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 		elif function == FUNC_EMPTY_TRASHCAN:
 			self.emptyTrashcan()
 		elif function == FUNC_RELOAD_WITHOUT_CACHE:
-			self["list"].reloadListWithoutCache(self["list"].getCurrentDir())
+			self.return_path = self["list"].getCurrentPath()
+			self.session.openWithCallback(self.reloadCacheCallback, FileCacheReload)
+#			self["list"].reloadListAndDatabase(self["list"].getCurrentDir())
 		elif function == FUNC_REMOVE_MARKER:
 			self.removeCutListMarker()
 		elif function == FUNC_DELETE_CUTLIST:
@@ -652,7 +656,6 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 		elif function == FUNC_OPEN_BOOKMARKS:
 			self.openBookmarks()
 		elif function == FUNC_RELOAD_MOVIE_SELECTION:
-			self.return_path = self["list"].getCurrentPath()
 			self.close(self.session, True)
 		elif function == FUNC_NOOP:
 			pass
@@ -660,11 +663,23 @@ class MovieSelection(Screen, HelpableScreen, FileOps, object):
 			print("MVC-E: MovieSelection: menuCallback: unknown function: %s" % function)
 
 	def openMenu(self):
+		self.return_path = self["list"].getCurrentPath()
 		self.session.openWithCallback(
 			self.menuCallback,
 			MovieSelectionMenu,
 			self["list"].getCurrentDir()
 		)
+
+###
+### Cache
+###
+
+	def reloadCacheCallback(self):
+		print("MVC: MovieSelection: reloadCacheCallback")
+		reload_dir = self.getBookmarks()[0]
+		if self.return_path:
+			reload_dir = os.path.dirname(self.return_path)
+		self.reloadList(reload_dir, update_disk_space_info=True)
 
 ###
 ### Movie Ops

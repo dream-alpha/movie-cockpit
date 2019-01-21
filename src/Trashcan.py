@@ -21,7 +21,7 @@
 import os
 from Components.config import config
 from DelayedFunction import DelayedFunction
-from MovieCache import MovieCache, FILE_IDX_PATH, FILE_IDX_TYPE
+from FileCache import FileCache, FILE_IDX_PATH, FILE_IDX_TYPE
 from MediaTypes import extVideo
 from FileOps import FileOps, FILE_OP_DELETE
 from Bookmarks import Bookmarks
@@ -59,13 +59,13 @@ class Trashcan(FileOps, Bookmarks, object):
 		print("MVC-I: Trashcan: __createTrashcan")
 		for bookmark in self.getBookmarks():
 			path = bookmark + "/trashcan"
-			if not MovieCache.getInstance().exists(path):
+			if not FileCache.getInstance().exists(path):
 				try:
 					os.makedirs(path)
-					MovieCache.getInstance().makeDir(path)
+					FileCache.getInstance().makeDir(path)
 					config.movie_trashcan_enable.value = True
 				except IOError as e:
-					print("MVC-E: Trashcan: __createTrashcan: exception: %s\n" % e)
+					print("MVC-E: Trashcan: __createTrashcan: exception: %s" % e)
 					config.MVC.movie_trashcan_enable.value = False
 					return RC_TRASHCAN_CREATE_DIR_FAILED
 		return RC_TRASHCAN_CREATED
@@ -82,7 +82,7 @@ class Trashcan(FileOps, Bookmarks, object):
 		print("MVC-I: Trashcan: purgeTrashcan: empty_trash: %s" % empty_trash)
 		files = 0
 		now = time.localtime()
-		filelist = MovieCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
+		filelist = FileCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			file_type = afile[FILE_IDX_TYPE]

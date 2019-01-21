@@ -25,7 +25,7 @@ from time import mktime
 from CutListUtils import unpackCutList
 from Components.config import config
 from enigma import eServiceCenter, iServiceInformation
-from MovieCache import MovieCache, TYPE_ISFILE, str2date
+from FileCache import FileCache, TYPE_ISFILE, str2date
 
 instance = None
 
@@ -90,7 +90,7 @@ class Info(object):
 
 	def __init__(self, service):
 		self.path = service and service.getPath()
-		_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = MovieCache.getInstance().getFile(self.path)
+		_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = FileCache.getInstance().getFile(self.path)
 		self.__filetype = filetype
 		self.__date = str2date(date)
 		self.__name = name if name != "trashcan" else _(name)
@@ -146,5 +146,5 @@ class Info(object):
 			size = self.__size
 		else:
 			if config.MVC.directories_info.value or (os.path.basename(self.path) == "trashcan" and config.MVC.movie_trashcan_info.value):
-				_count, size = MovieCache.getInstance().getCountSize(self.path)
+				_count, size = FileCache.getInstance().getCountSize(self.path)
 		return size

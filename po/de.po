@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Enhanced Movie Center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-18 13:55+0100\n"
-"PO-Revision-Date: 2019-01-18 13:55+0100\n"
+"POT-Creation-Date: 2019-01-21 11:33+0100\n"
+"PO-Revision-Date: 2019-01-21 11:34+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: de_DE\n"
@@ -118,11 +118,11 @@ msgstr "Fortschrittsbalken"
 msgid "Percent (%)"
 msgstr "Prozent (%)"
 
-#: ConfigInit.py:148 MovieSelection.py:256
+#: ConfigInit.py:148 MovieSelection.py:261
 msgid "Home"
 msgstr "Home"
 
-#: ConfigInit.py:149 MovieSelection.py:771 MovieSelectionMenu.py:75
+#: ConfigInit.py:149 MovieSelection.py:789 MovieSelectionMenu.py:75
 msgid "Delete"
 msgstr "Löschen"
 
@@ -138,7 +138,7 @@ msgstr "Cover Suche"
 msgid "Copy"
 msgstr "Kopieren"
 
-#: ConfigInit.py:153 MovieSelection.py:415 MovieSelectionMenu.py:87
+#: ConfigInit.py:153 MovieSelection.py:420 MovieSelectionMenu.py:87
 msgid "Bookmarks"
 msgstr "Lesezeichen"
 
@@ -146,7 +146,7 @@ msgstr "Lesezeichen"
 msgid "Cover on/off"
 msgstr "Cover an/aus"
 
-#: ConfigInit.py:155 MovieSelection.py:475
+#: ConfigInit.py:155 MovieSelection.py:481
 msgid "Sort Mode"
 msgstr "Sortierung"
 
@@ -162,7 +162,7 @@ msgstr "EPG-Info"
 msgid "TMDB info"
 msgstr "TMDB-Info"
 
-#: ConfigInit.py:159 MovieListGUI.py:244 MovieSelection.py:466
+#: ConfigInit.py:159 MovieListGUI.py:243 MovieSelection.py:472
 msgid "trashcan"
 msgstr "Papierkorb"
 
@@ -302,7 +302,7 @@ msgstr "dunkelgrau"
 msgid "Black"
 msgstr "schwarz"
 
-#: ConfigScreen.py:73 MovieOps.py:54
+#: ConfigScreen.py:73 FileProgress.py:44
 msgid "Cancel"
 msgstr "Abbruch"
 
@@ -959,13 +959,69 @@ msgstr "Einhängepunkt und Rechte prüfen"
 msgid "Select Location"
 msgstr "Wähle Ort"
 
-#: ConfigScreen.py:366 MovieSelection.py:677
+#: ConfigScreen.py:366 MovieSelection.py:695
 msgid "Select directory"
 msgstr "Wähle Verzeichnis aus"
 
 #: ConfigScreen.py:381
 msgid "Path does not exist"
 msgstr "Verzeichnis existiert nicht"
+
+#: FileCacheReload.py:38
+msgid "File cache reload in progress"
+msgstr "Laufendes Laden des Datei-Caches"
+
+#: FileCacheReload.py:49
+msgid "Loading"
+msgstr "Laden"
+
+#: FileCacheReload.py:49 FileOpsProgress.py:65
+msgid "of"
+msgstr "von"
+
+#: FileCacheReload.py:64 FileOpsProgress.py:80 FileProgress.py:129
+msgid "Please wait"
+msgstr "Bitte warten"
+
+#: FileCacheReload.py:71
+msgid "Initializing"
+msgstr "Initialisiere"
+
+#: FileOpsProgress.py:41
+msgid "File operation(s) in progress"
+msgstr "Laufende Datei Operation(en)"
+
+#: FileOpsProgress.py:62
+msgid "Deleting"
+msgstr "Lösche"
+
+#: FileOpsProgress.py:62
+msgid "Moving"
+msgstr "Verschiebe"
+
+#: FileOpsProgress.py:62
+msgid "Copying"
+msgstr "Kopiere"
+
+#: FileProgress.py:45
+msgid "Close"
+msgstr "Schliessen"
+
+#: FileProgress.py:46
+msgid "Hide"
+msgstr "Ausblenden"
+
+#: FileProgress.py:81
+msgid "Cancelling, please wait"
+msgstr "Breche ab, bitte warten"
+
+#: FileProgress.py:123 FileProgress.py:138
+msgid "Cancelled"
+msgstr "Abgebrochen"
+
+#: FileProgress.py:138
+msgid "Done"
+msgstr "Fertig"
 
 #: InfoBarSupport.py:65
 msgid "Jump to previous marked position"
@@ -1000,7 +1056,7 @@ msgstr "Beende Wiedergabe"
 msgid "Skipping movie, the file does not exist."
 msgstr "Überspringe Film, da die Datei nicht existiert."
 
-#: MovieCoverDownload.py:128
+#: MovieCoverDownload.py:127
 msgid "Downloading cover"
 msgstr "Lade Cover"
 
@@ -1029,15 +1085,15 @@ msgstr "Erscheinungsdatum"
 msgid "Vote"
 msgstr "Bewertung"
 
-#: MovieInfoTMDB.py:94 MovieSelection.py:230
+#: MovieInfoTMDB.py:94 MovieSelection.py:235
 msgid "Exit"
 msgstr "Beenden"
 
-#: MovieInfoTMDB.py:95 MovieSelection.py:243
+#: MovieInfoTMDB.py:95 MovieSelection.py:248
 msgid "Cursor page up"
 msgstr "Cursor Seite hoch"
 
-#: MovieInfoTMDB.py:96 MovieSelection.py:244
+#: MovieInfoTMDB.py:96 MovieSelection.py:249
 msgid "Cursor page down"
 msgstr "Cursor Seite runter"
 
@@ -1101,139 +1157,95 @@ msgstr "Cover und TMDB Informationen konnten nicht gespeichert werden"
 msgid "Cover/TMDB Info deleted successfully"
 msgstr "Cover und TMDB Informationen wurden erfolgreich gelöscht"
 
-#: MovieListGUI.py:246
+#: MovieListGUI.py:245
 msgid "Collection"
 msgstr "Sammlung"
 
-#: MovieListGUI.py:248
+#: MovieListGUI.py:247
 msgid "Link"
 msgstr "Link"
 
-#: MovieListGUI.py:250
+#: MovieListGUI.py:249
 msgid "Directory"
 msgstr "Verzeichnis"
 
-#: MovieListGUI.py:262
+#: MovieListGUI.py:261
 msgid "up"
 msgstr "hoch"
 
-#: MovieOps.py:47
-msgid "File operation(s) in progress..."
-msgstr "Laufende Datei Operation(en) ..."
-
-#: MovieOps.py:55
-msgid "Close"
-msgstr "Schliessen"
-
-#: MovieOps.py:56
-msgid "Hide"
-msgstr "Ausblenden"
-
-#: MovieOps.py:99
-msgid "Cancelling, please wait..."
-msgstr "Breche ab, bitte warten..."
-
-#: MovieOps.py:124
-msgid "Deleting"
-msgstr "Lösche"
-
-#: MovieOps.py:124
-msgid "Moving"
-msgstr "Verschiebe"
-
-#: MovieOps.py:124
-msgid "Copying"
-msgstr "Kopiere"
-
-#: MovieOps.py:127
-msgid "of"
-msgstr "von"
-
-#: MovieOps.py:160 MovieOps.py:186
-msgid "Cancelled"
-msgstr "Abgebrochen"
-
-#: MovieOps.py:173
-msgid "Please wait..."
-msgstr "Bitte warten..."
-
-#: MovieOps.py:186
-msgid "Done"
-msgstr "Fertig"
-
-#: MovieSelection.py:229
+#: MovieSelection.py:234
 msgid "Play"
 msgstr "Wiedergabe"
 
-#: MovieSelection.py:231 MovieSelection.py:232
+#: MovieSelection.py:236 MovieSelection.py:237
 msgid "Selection menu"
 msgstr "Funktionsauswahl"
 
-#: MovieSelection.py:245
+#: MovieSelection.py:250
 msgid "Cursor up"
 msgstr "Cursor hoch"
 
-#: MovieSelection.py:246
+#: MovieSelection.py:251
 msgid "Cursor down"
 msgstr "Cursor runter"
 
-#: MovieSelection.py:247
+#: MovieSelection.py:252
 msgid "Bouquet up"
 msgstr "Bouquet hoch"
 
-#: MovieSelection.py:248
+#: MovieSelection.py:253
 msgid "Bouquet down"
 msgstr "Bouquet runter"
 
-#: MovieSelection.py:249
+#: MovieSelection.py:254
 msgid "Selection on/off"
 msgstr "Auswahl an/aus"
 
-#: MovieSelection.py:250
+#: MovieSelection.py:255
 msgid "Selection off"
 msgstr "Auswahl zurücksetzen"
 
-#: MovieSelection.py:251
+#: MovieSelection.py:256
 msgid "Toggle skin"
 msgstr "Wechsle Skinlayout"
 
-#: MovieSelection.py:252
+#: MovieSelection.py:257
 msgid "Timer list"
 msgstr "Timerliste"
 
-#: MovieSelection.py:253
+#: MovieSelection.py:258
 msgid "Reset progress"
 msgstr "Filmfortschritt zurücksetzen"
 
-#: MovieSelection.py:254
+#: MovieSelection.py:259
 msgid "Date/Mountpoint"
 msgstr "Datum/Einhängepunkt"
 
-#: MovieSelection.py:255 MovieSelection.py:711
+#: MovieSelection.py:260 MovieSelection.py:729
 msgid "Stop recording(s)"
 msgstr "Beende Aufnahme(n)"
 
-#: MovieSelection.py:468
+#: MovieSelection.py:474
 msgid "Recordings"
 msgstr "Aufnahmen"
 
-#: MovieSelection.py:771
+#: MovieSelection.py:789
 msgid "Permanently delete"
 msgstr "Lösche endgültig"
 
-#: MovieSelection.py:773
+#: MovieSelection.py:791
 msgid "the selected video file(s), dir(s), link(s)"
 msgstr "die ausgewählte(n) Video Datei(en), Verzeichnis(se), Link(s)"
 
-#: MovieSelection.py:794
+#: MovieSelection.py:812
 msgid "Move file(s)"
 msgstr "Verschiebe Datei(en)"
 
-#: MovieSelection.py:816
+#: MovieSelection.py:834
 msgid "Copy file(s)"
 msgstr "Kopiere Datei(en)"
 
-#: MovieSelection.py:840
+#: MovieSelection.py:858
 msgid "Permanently delete all files in trashcan?"
 msgstr "Lösche alle Dateien endgültig aus dem Papierkorb?"
 

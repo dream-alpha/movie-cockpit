@@ -26,7 +26,7 @@ from Screens.MessageBox import MessageBox
 from Tools.BoundFunction import boundFunction
 from Components.config import config
 from Bookmarks import Bookmarks
-from MovieCache import MovieCache, FILE_IDX_FILENAME, FILE_IDX_EXT, FILE_IDX_NAME, FILE_IDX_PATH
+from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_EXT, FILE_IDX_NAME, FILE_IDX_PATH
 from MediaTypes import plyAll
 from MovieTMDB import MovieTMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, INFO_COVER_URL
 from MovieCover import MovieCover
@@ -37,7 +37,6 @@ substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", 
 
 class MovieCoverDownload(MovieTMDB, MovieCover, Bookmarks, object):
 	def __init__(self, session=None):
-		MovieCover.__init__(self)
 		self.cover_size = config.MVC.cover_size.value
 		self.session = session
 		self.tried = 0
@@ -69,7 +68,7 @@ class MovieCoverDownload(MovieTMDB, MovieCover, Bookmarks, object):
 					os.system("wget -O \"" + cover_path + "\" " + cover_url)
 					cover_found = 1
 				except Exception as e:
-					print('MVC-E: MovieCoverDownload: downloadCover: exception failure:\n', str(e))
+					print("MVC-E: MovieCoverDownload: downloadCover: exception: %s" % e)
 		else:
 			#print("MVC: MovieCoverDownload: downloadCover: cover_url is None")
 			pass
@@ -155,13 +154,13 @@ class MovieCoverDownload(MovieTMDB, MovieCover, Bookmarks, object):
 
 	def getCoverOfRecording(self, path):
 		self.filelist = []
-		self.filelist.append(MovieCache.getInstance().getFile(path))
+		self.filelist.append(FileCache.getInstance().getFile(path))
 		self.nextMovieInLine()
 
 	def getCovers(self):
 		self.tried = 0
 		self.cover_found = 0
 		bookmarks = self.getBookmarks()
-		self.filelist = MovieCache.getInstance().getFileList(bookmarks)
+		self.filelist = FileCache.getInstance().getFileList(bookmarks)
 		self.number_of_files = len(self.filelist)
 		self.nextMovieInLine()

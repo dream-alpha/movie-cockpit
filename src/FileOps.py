@@ -25,7 +25,7 @@ from MovieTMDB import MovieTMDB
 from RecordingUtils import isRecording, adjustTimerPathAfterMove
 from Tasker import tasker
 from MountPoints import MountPoints
-from MovieCache import MovieCache, TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK
+from FileCache import FileCache, TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK
 
 FILE_OP_DELETE = 1
 FILE_OP_MOVE = 2
@@ -45,7 +45,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			free = 0
 			used = 0
 			if file_type != TYPE_ISFILE:
-				_count, used = MovieCache.getInstance().getCountSize(path)
+				_count, used = FileCache.getInstance().getCountSize(path)
 				free = self.getMountPointSpaceFree(target_path)
 				#print("MVC: FileOps: execFileOp: move_dir: size: %s, free: %s" % (size, free))
 			if free >= used:
@@ -69,26 +69,26 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 	def __deleteCallback(self, path, target_path, file_type):
 		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if file_type == TYPE_ISFILE:
-			MovieCache.getInstance().delete(path)
+			FileCache.getInstance().delete(path)
 		if file_type == TYPE_ISDIR:
-			MovieCache.getInstance().deleteDir(path)
+			FileCache.getInstance().deleteDir(path)
 
 	def __moveCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if file_type == TYPE_ISFILE:
-			MovieCache.getInstance().move(path, target_path)
+			FileCache.getInstance().move(path, target_path)
 			# check if moved a file that is currently being recorded and fix path
 			if isRecording(path):
 				adjustTimerPathAfterMove(path, os.path.join(target_path, os.path.basename(path)))
 		if file_type == TYPE_ISDIR:
-			MovieCache.getInstance().moveDir(path, target_path)
+			FileCache.getInstance().moveDir(path, target_path)
 
 	def __copyCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if file_type == TYPE_ISFILE:
-			MovieCache.getInstance().copy(path, target_path)
+			FileCache.getInstance().copy(path, target_path)
 		if file_type == TYPE_ISDIR:
-			MovieCache.getInstance().copyDir(path, target_path)
+			FileCache.getInstance().copyDir(path, target_path)
 
 	def __execFileDelete(self, path, file_type):
 		print("MVC-I: FileOps: __execFileDelete: path: %s, file_type: %s" % (path, file_type))

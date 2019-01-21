@@ -22,17 +22,12 @@
 import os
 from enigma import ePicLoad, gPixmapPtr
 from Components.config import config
-from Components.Pixmap import Pixmap
 from Components.AVSwitch import AVSwitch
 from SkinUtils import getSkinPath
 from Bookmarks import Bookmarks
 
 
 class MovieCover(Bookmarks, object):
-
-	def __init__(self):
-		#print("MVC: MovieCover: MovieCover: __init__")
-		self["cover"] = Pixmap()
 
 	def getCoverPath(self, path):
 		#print("MVC: MovieCover getCoverPath: path: " + path)

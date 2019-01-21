@@ -154,7 +154,7 @@ class ParserEitFile(object):
 					else:
 						descriptor.decode('utf-8')
 				except (UnicodeDecodeError, AttributeError) as e:
-					print("MVC-E: ParserEitFile: convertToUtf8: exception:\n" + str(e))
+					print("MVC-E: ParserEitFile: convertToUtf8: exception: %s" % e)
 			return descriptor.strip()
 
 		def determineCodepage(byte):

@@ -66,7 +66,7 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 		self.setTitle(_("Select function"))
 		self.menu = []
 
-		if not self.isBookmark(os.path.realpath(current_dir)):
+		if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
 			self.menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
 			self.menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
 

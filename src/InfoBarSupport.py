@@ -205,7 +205,7 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			# InfoBarCueSheetSupport
 			return self.cueGetCurrentPosition() or 0
 		except Exception as e:
-			print("MVC-E: InfoBarSupport: getSeekPlayPosition: exception:\n" + str(e))
+			print("MVC-E: InfoBarSupport: getSeekPlayPosition: exception: %s" % e)
 		return 0
 
 	def getSeekLength(self):
@@ -215,7 +215,7 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			# Call private InfoBarCueSheetSupport function
 			seek = InfoBarCueSheetSupport._InfoBarCueSheetSupport__getSeekable(self)
 		except Exception as e:
-			print("MVC-E: InfoBarSupport: getSeekLength: exception:\n" + str(e))
+			print("MVC-E: InfoBarSupport: getSeekLength: exception: %s" % e)
 		if seek is not None:
 			__len = seek.getLength()
 			if not __len[0]:

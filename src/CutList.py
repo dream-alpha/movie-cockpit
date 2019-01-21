@@ -50,8 +50,8 @@ class CutList(object):
 		#print("MVC: CutList: updateFromCuesheet")
 		self.cut_list = mergeBackupCutsFile(self.cut_file, self.cut_list)
 		data = packCutList(self.cut_list)
-		from MovieCache import MovieCache
-		MovieCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
+		from FileCache import FileCache
+		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
 
 	def setCutList(self, cut_list):
 		#print("MVC: CutList: setCutList: " + str(cut_list))
@@ -78,31 +78,31 @@ class CutList(object):
 		self.__writeCutFile(self.cut_file, self.cut_list)
 
 	def deleteFileCutList(self):
-		from MovieCache import MovieCache
+		from FileCache import FileCache
 		data = ""
-		MovieCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
+		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
 		deleteFile(self.cut_file)
 
 	def reloadCutListFromFile(self):
-		from MovieCache import MovieCache
+		from FileCache import FileCache
 		data = readCutsFile(self.cut_file)
-		MovieCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
+		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
 		self.cut_list = verifyCutList(unpackCutList(data))
 		return self.cut_list
 
 	def __readCutFile(self, path):
-		from MovieCache import MovieCache, FILE_IDX_CUTS
+		from FileCache import FileCache, FILE_IDX_CUTS
 		cut_list = []
 		if path:
 			#print("MVC: CutList: __readCutFile: reading cut_list from cache: " + os.path.splitext(path)[0])
-			filedata = MovieCache.getInstance().getFile(os.path.splitext(path)[0])
+			filedata = FileCache.getInstance().getFile(os.path.splitext(path)[0])
 			data = filedata[FILE_IDX_CUTS]
 			cut_list = unpackCutList(data)
 			#print("MVC: CutList: __readCutFile: cut_list: " + str(cut_list))
 		return cut_list
 
 	def __writeCutFile(self, path, cut_list):
-		from MovieCache import MovieCache
+		from FileCache import FileCache
 		#print("MVC: CutList: __writeCutFile: %s, cut_list: %s" % (path, cut_list))
 		if path:
 			data = packCutList(cut_list)
@@ -111,7 +111,7 @@ class CutList(object):
 			# update file in cache
 			#print("MVC: CutList: __writeCutFile: cut_list: " + str(cut_list))
 			#print("MVC: CutList: __writeCutFile: updating cut_list in cache: " + os.path.splitext(path)[0])
-			MovieCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+			FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
 
 			# [Cutlist.Workaround]
 			# Always make a backup-copy when recording, it will be merged with enigma-cutfile after recording

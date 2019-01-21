@@ -72,7 +72,7 @@ class MovieTMDB(Bookmarks, object):
 				jsonresponse = urlopen(request).read()
 				response = json.loads(jsonresponse)
 			except Exception as e:
-				print("MVC-E: MovieTMDB: fetchData: exception: " + str(e))
+				print("MVC-E: MovieTMDB: fetchData: exception: %s" % e)
 				retry += 1
 				sleep(0.1)
 		return response

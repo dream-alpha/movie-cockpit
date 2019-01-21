@@ -52,8 +52,8 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 	def __init__(self, session, path, name):
 		#print("MVC: MovieInfoTMDB: __init__: path: %s, name: %s" % (path, name))
 		Screen.__init__(self, session)
-		MovieCover.__init__(self)
 		MovieCoverDownload.__init__(self, session)
+		self["cover"] = Pixmap()
 		self.name = name
 		self.search_name = self.getMovieNameWithoutPhrases(name)
 		self.movielist = None
@@ -228,7 +228,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 				shutil.copy2(TEMP_INFO_PATH, info_path)
 				self.showMsg(failed=False)
 			except Exception as e:
-				print('MVC-E: MovieInfoTMDB: saveTempData: exception failure:\n', str(e))
+				print('MVC-E: MovieInfoTMDB: saveTempData: exception failure: %s' % e)
 				self.showMsg(failed=True)
 		else:
 			self.showMsg(failed=True)

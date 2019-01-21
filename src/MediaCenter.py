@@ -70,7 +70,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		InfoBarTimeshift.__init__(self)
 		InfoBarSupport.__init__(self)
 		CutList.__init__(self)
-		MovieCover.__init__(self)
+		self["cover"] = Pixmap()
 
 		self.selected_subtitle = None
 		self.execing = None
@@ -249,7 +249,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 				tracks.selectTrack(0)  # fallback to track 1(0)
 			#print("MVC: MediaCenter: setAudioTrack: audio1")
 		except Exception as e:
-			print("MVC-E: MediaCenter: setAudioTrack: exception:\n" + str(e))
+			print("MVC-E: MediaCenter: setAudioTrack: exception: %s" % e)
 
 	def tryAudioTrack(self, tracks, audiolang, trackList, seltrack, useAc3):
 		for entry in audiolang:
@@ -292,10 +292,10 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 
 	def trySubEnable(self, slist, match):
 		for e in slist:
-			#print("e: " + str(e))
-			#print("match %s" % (langC[match][0]))
+			#print("MVC: MediaCenter: trySubEnable: e: %s" % e)
+			#print("MVC: MediaCenter: trySubEnable: match %s" % (langC[match][0]))
 			if langC[match][0] == e[2]:
-				#print("MVC: MediaCenter: trySubEnable: match: " + str(e))
+				#print("MVC: MediaCenter: trySubEnable: match: %s" % e)
 				if self.selected_subtitle != e[0]:
 					self.subtitles_enabled = False
 					self.selected_subtitle = e[0]
@@ -349,7 +349,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 							if self.trySubEnable(l, sublang):
 								break
 		except Exception as e:
-			print("MVC-E: MediaCenter: setSubtitleState: exception:\n" + str(e))
+			print("MVC-E: MediaCenter: setSubtitleState: exception: %s" % e)
 
 	def leavePlayer(self, reopen=True):
 		print("MVC-I: MediaCenter: leavePlayer: %s" % reopen)

@@ -23,7 +23,6 @@ import os
 from __init__ import _
 from time import time
 from CutListUtils import ptsToSeconds, getCutListLast, unpackCutList
-from MovieCache import MovieCache, TYPE_ISLINK, str2date
 from MediaTypes import extTS, extVideo
 from Bookmarks import Bookmarks
 from SkinUtils import getSkinPath
@@ -33,8 +32,8 @@ from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixm
 from Tools.LoadPixmap import LoadPixmap
 from skin import parseColor, parseFont, parseSize
 from enigma import eListboxPythonMultiContent, eListbox, RT_HALIGN_LEFT, RT_HALIGN_CENTER, loadPNG
+from FileCache import FileCache, TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK, str2date
 from RecordingUtils import isCutting, getRecording
-from MovieCache import TYPE_ISDIR, TYPE_ISFILE
 
 
 class MovieListGUI(GUIComponent, Bookmarks, object):
@@ -221,7 +220,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 
 		def getDateText(path, info_value, filetype):
 			datetext = ""
-			count, size = MovieCache.getInstance().getCountSize(path)
+			count, size = FileCache.getInstance().getCountSize(path)
 			counttext = "%d" % count
 
 			size /= (1024 * 1024 * 1024)  # GB
