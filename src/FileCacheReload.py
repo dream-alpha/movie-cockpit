@@ -31,7 +31,7 @@ from FileProgress import FileProgress
 class FileCacheReload(FileProgress, Bookmarks, object):
 
 	def __init__(self, session):
-		print("MVC: FileCacheReload: __init__")
+		#print("MVC: FileCacheReload: __init__")
 		FileProgress.__init__(self, session)
 		self.skinName = ["FileCacheReload"]
 		self.skin = readFile(getSkinPath("FileCacheReload.xml"))
@@ -40,22 +40,12 @@ class FileCacheReload(FileProgress, Bookmarks, object):
 		self.onShow.append(self.onDialogShow)
 
 	def onDialogShow(self):
-		print("MVC: FileCacheReload: onDialogShow")
+		#print("MVC: FileCacheReload: onDialogShow")
 		DelayedFunction(10, self.execFileCacheReload)
-
-	def updateProgress(self):
-		print("MVC: FileCacheReload: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
-		current_files = self.current_files if self.current_files <= self.total_files else self.total_files
-		msg = _("Loading") + ": " + str(current_files) + " " + _("of") + " " + str(self.total_files) + " ..."
-		self["operation"].setText(msg)
-		self["name"].setText(self.file_name)
-		percent_complete = int(round(float(self.current_files - 1) / float(self.total_files) * 100)) if self.total_files > 0 else 0
-		self["slider1"].setValue(percent_complete)
-		self["status"].setText(self.status)
 
 	def loadDatabaseDirs(self):
 		file_dirs = self.getBookmarks()
-		print("MVC: FileCache: loadDatabaseDirs: loading directories: " + str(file_dirs))
+		#print("MVC: FileCache: loadDatabaseDirs: loading directories: " + str(file_dirs))
 		self.execution_list = FileCache.getInstance().getDirsLoadList(file_dirs)
 
 	def doFileOp(self, entry):

@@ -220,6 +220,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 
 		def getDateText(path, info_value, filetype):
 			datetext = ""
+
 			count, size = FileCache.getInstance().getCountSize(path)
 			counttext = "%d" % count
 
@@ -248,7 +249,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 				else:
 					datetext = _("Directory")
 
-			#print("MVC: MovieListGUI: getValues: datetext: %s" % (datetext))
+			#print("MVC: MovieListGUI: getValues: count: %s, datetext: %s" % (count, datetext))
 			return count, datetext
 
 		def getDirValues(path, filetype):
@@ -269,15 +270,14 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 						pixmap = self.pic_trashcan
 
 			elif filetype == TYPE_ISDIR:
-				pixmap = self.pic_directory
-
 				if config.MVC.directories_ontop.value:
 					pixmap = self.pic_col_dir
 
 				if config.MVC.link_icons.value and filetype == TYPE_ISLINK:
 					pixmap = self.pic_link
 
-				_count, datetext = getDateText(path, config.MVC.directories_info.value, filetype)
+				if config.MVC_directories_info.value:
+					_count, datetext = getDateText(path, config.MVC.directories_info.value, filetype)
 
 			return datetext, pixmap
 
@@ -314,7 +314,7 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 
 			def getProgress(recording, length, cuts):
 				# All calculations are done in seconds
-				#print("MVC: MovieListGUI: getProgress: path: %s" % path
+				#print("MVC: MovieListGUI: getProgress: path: %s" % path)
 
 				# first get last and length
 				if recording:
@@ -323,8 +323,9 @@ class MovieListGUI(GUIComponent, Bookmarks, object):
 					length = end - begin
 				else:
 					# Get last position from cut file
+					cut_list = unpackCutList(cuts)
 					#print("MVC: MovieListGUI: getProgress: cut_list: " + str(cut_list))
-					last = ptsToSeconds(getCutListLast(unpackCutList(cuts)))
+					last = ptsToSeconds(getCutListLast(cut_list))
 					#print("MVC: MovieListGUI: getProgress: last: " + str(last))
 
 				# second calculate progress

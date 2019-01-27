@@ -34,7 +34,7 @@ from ConfigScreen import ConfigScreen
 
 FUNC_MOVIE_HOME = 0
 FUNC_DIR_UP = 1
-FUNC_RELOAD_WITHOUT_CACHE = 2
+FUNC_RELOAD_CACHE = 2
 FUNC_DELETE = 3
 FUNC_DELETE_PERMANENTLY = 4
 FUNC_EMPTY_TRASHCAN = 5
@@ -85,13 +85,13 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 		self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
 
 		self.menu.append((_("Bookmarks"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
-		self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_WITHOUT_CACHE)))
+		self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_CACHE)))
 		self.menu.append((_("Setup"), boundFunction(session.openWithCallback, self.openConfigScreenCallback, ConfigScreen)))
 
 		self["menu"] = List(self.menu)
 
 	def openConfigScreenCallback(self, reload_movie_selection=False):
-		print("MVC: MovieSelectionMenu: configScrenCallback: reload_movie_selection: %s" % reload_movie_selection)
+		#print("MVC: MovieSelectionMenu: configScrenCallback: reload_movie_selection: %s" % reload_movie_selection)
 		function = FUNC_RELOAD_MOVIE_SELECTION if reload_movie_selection else FUNC_NOOP
 		self.close(function)
 

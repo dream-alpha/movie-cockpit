@@ -135,13 +135,12 @@ KEY_FUNC_MOVE = 2
 KEY_FUNC_COVER_SEARCH = 3
 KEY_FUNC_COPY = 4
 KEY_FUNC_BOOKMARKS = 5
-KEY_FUNC_TOGGLE_COVER = 6
-KEY_FUNC_SORT_MODE = 7
-KEY_FUNC_SORT_ORDER = 8
-KEY_FUNC_EVENT_INFO = 9
-KEY_FUNC_TMDB_INFO = 10
-KEY_FUNC_TRASHCAN = 11
-KEY_FUNC_DISABLED = 12
+KEY_FUNC_SORT_MODE = 6
+KEY_FUNC_SORT_ORDER = 7
+KEY_FUNC_EVENT_INFO = 8
+KEY_FUNC_TMDB_INFO = 9
+KEY_FUNC_TRASHCAN = 10
+KEY_FUNC_DISABLED = 11
 
 
 function_key_names = [
@@ -151,7 +150,6 @@ function_key_names = [
 	_("Cover Search"),
 	_("Copy"),
 	_("Bookmarks"),
-	_("Cover on/off"),
 	_("Sort Mode"),
 	_("Sort Order"),
 	_("EPG info"),
@@ -225,7 +223,7 @@ class ConfigInit(MountPoints, object):
 		config.MVC.movie_shortredfunc        = ConfigSelection(default=str(KEY_FUNC_DELETE), choices=function_key_choices)
 		config.MVC.movie_shortgreenfunc      = ConfigSelection(default=str(KEY_FUNC_SORT_MODE), choices=function_key_choices)
 		config.MVC.movie_shortyellowfunc     = ConfigSelection(default=str(KEY_FUNC_MOVE), choices=function_key_choices)
-		config.MVC.movie_shortbluefunc       = ConfigSelection(default=str(KEY_FUNC_HOME), choices=function_key_choices)
+		config.MVC.movie_shortbluefunc       = ConfigSelection(default=str(KEY_FUNC_TRASHCAN), choices=function_key_choices)
 		config.MVC.movie_longgreenfunc       = ConfigSelection(default=str(KEY_FUNC_SORT_ORDER), choices=function_key_choices)
 		config.MVC.movie_longredfunc         = ConfigSelection(default=str(KEY_FUNC_DELETE), choices=function_key_choices)
 		config.MVC.movie_longyellowfunc      = ConfigSelection(default=str(KEY_FUNC_MOVE), choices=function_key_choices)
@@ -255,13 +253,11 @@ class ConfigInit(MountPoints, object):
 		config.MVC.movie_ignore_firstcuts    = ConfigYesNo(default=True)
 		config.MVC.movie_jump_first_mark     = ConfigYesNo(default=False)
 		config.MVC.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
-		config.MVC.movie_real_path           = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_enable     = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_show       = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_info       = ConfigSelection(default="C", choices=dirinfo_choices)
 		config.MVC.movie_trashcan_clean      = ConfigYesNo(default=True)
 		config.MVC.movie_trashcan_retention   = ConfigSelectionNumber(1, 99, 1, default=3)
-		config.MVC.movie_delete_validation   = ConfigYesNo(default=True)
 		config.MVC.directories_show          = ConfigYesNo(default=False)
 		config.MVC.directories_ontop         = ConfigYesNo(default=False)
 		config.MVC.directories_info          = ConfigSelection(default="", choices=dirinfo_choices)

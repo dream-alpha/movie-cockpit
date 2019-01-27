@@ -369,7 +369,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 					"MVCCloseAllAndZap"
 				)
 
-		print("MVC: MediaCenter: leavePlayer: stopping service")
+		#print("MVC: MediaCenter: leavePlayer: stopping service")
 		self.session.nav.stopService()
 
 		# [Cutlist.Workaround]

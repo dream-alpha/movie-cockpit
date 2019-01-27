@@ -20,7 +20,6 @@
 #
 
 import os
-from sqlite3 import dbapi2 as sqlite
 import datetime
 from ParserEitFile import ParserEitFile
 from ParserMetaFile import ParserMetaFile
@@ -29,6 +28,7 @@ from Components.config import config
 from Bookmarks import Bookmarks
 from MediaTypes import extTS, extVideo, extBlu
 from RecordingUtils import getRecording
+from FileCacheSQL import FileCacheSQL, SQL_DB_NAME
 
 # file indexes
 FILE_IDX_DIR = 0
@@ -52,20 +52,9 @@ TYPE_ISDIR = 2
 TYPE_ISLINK = 3
 
 
-def convertToUtf8(name):
-	try:
-		name.decode('utf-8')
-	except UnicodeDecodeError:
-		try:
-			name = name.decode("cp1252").encode("utf-8")
-		except UnicodeDecodeError:
-			name = name.decode("iso-8859-1").encode("utf-8")
-	return name
-
-
 def str2date(date_string):
 	date = None
-	#print("MVC: FileCache: str2date: " + date_string)
+	#print("MVC: FileCache: str2date: %s" % date_string)
 	try:
 		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 	except ValueError:
@@ -73,59 +62,22 @@ def str2date(date_string):
 	return date
 
 
-def parseDate(filename):
-	#print("MVC: FileCache: parseDate: filename = " + filename)
-	date = ""
-	# extract title from recording filename
-	filename = filename.strip()
-	if filename[0:8].isdigit():
-		if filename[8] == " " and filename[9:13].isdigit():
-			# Default: filename = YYYYMMDD TIME - service_name
-			d = filename[0:13]
-			dyear = d[0:4]
-			dmonth = d[4:6]
-			dday = d[6:8]
-			dhour = d[9:11]
-			dmin = d[11:13]
-			date = dyear + "-" + dmonth + "-" + dday + " " + dhour + ":" + dmin + ":" + "00"
-	#print("MVC: FileCache: parseDate: date = " + date)
-	return date
-
-
-def parseCutNo(filename):
-	#print("MVC: FileCache: parseCutNo: filename: " + filename)
-	cutno = ""
-	if filename[-4:-3] == "_" and filename[-3:].isdigit():
-		cutno = filename[-3:]
-		filename = filename[:-4]
-	#print("MVC: FileCache: parseCutNo: filename: " + filename + ", cutno: " + cutno)
-	return cutno, filename
-
-
 instance = None
 
 
-class FileCache(Bookmarks, object):
+class FileCache(FileCacheSQL, Bookmarks, object):
 
 	def __init__(self):
-		self.sql_db_name = "/etc/enigma2/moviecockpit.db"
-		first_load = not os.path.exists(self.sql_db_name)
+		FileCacheSQL.__init__(self)
+		first_load = not os.path.exists(SQL_DB_NAME)
 		print("MVC-I: FileCache: __init__: first_load: %s" % first_load)
-		self.sql_conn = sqlite.connect(self.sql_db_name)
-		self.sql_conn.execute('''CREATE TABLE IF NOT EXISTS recordings (directory TEXT, filetype INTEGER, path TEXT, fileName TEXT, fileExt TEXT, name TEXT, date TEXT, length INTEGER,\
-				description TEXT, extended_description TEXT, service_reference TEXT, size INTEGER, cuts TEXT, tags TEXT)''')
-		self.sql_conn.text_factory = str
-		self.cursor = self.sql_conn.cursor()
+		self.sqlCreateTable()
 		self.filelist = [] # cache starts empty
 		self.loaded_dirs = []
-		self.bookmarks = self.getBookmarks()
-		#print("MVC: FileCache: __init__: " + str(self.bookmarks))
 		if first_load:
 			#print("MVC: FileCache: __init__: sql_db does not exist")
-			self.loadDatabaseDirs(self.bookmarks)
-		else:
-			#print("MVC: FileCache: __init__: sql_db exists")
-			self.__loadCache(self.bookmarks)
+			self.loadDatabaseDirs(self.getBookmarks())
+		self.__loadCache(self.getBookmarks())
 		#print("MVC: FileCache: __init__: done")
 
 	@staticmethod
@@ -135,13 +87,73 @@ class FileCache(Bookmarks, object):
 			instance = FileCache()
 		return instance
 
-	def newFileEntry(self, directory="", filetype="0", path="", filename="", ext="", name="", date=str(datetime.datetime.fromtimestamp(0)), length=0, description="", extended_description="", service_reference="", size=0, cuts="", tags=""):
-		return (directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+	### database functions
+
+	def clearDatabase(self):
+		#print("MVC: FileCache: clearDatabase")
+		self.sqlClearTable()
+		self.filelist = []
+		self.loaded_dirs = []
 
 	def reloadDatabase(self):
 		#print("MVC: FileCache: reloadDatabase")
 		self.clearDatabase()
-		self.loadDatabaseDirs(self.bookmarks)
+		self.loadDatabaseDirs(self.getBookmarks())
+
+	def loadDatabaseFile(self, path):
+		#print("MVC: FileCache: loadDatabaseFile: %s" % path)
+		_filename, ext = os.path.splitext(path)
+		if ext in extVideo:
+			filedata = self.__newFileData(path)
+			self.add(filedata)
+		else:
+			#print("MVC: FileCache: loadDatabaseFile: file ext not supported: %s" % ext)
+			pass
+
+	def addToDatabase(self, filedata):
+		#print("MVC: FileCache: addToDatabase: path: %s" % filedata[FILE_IDX_PATH])
+		self.sqlInsert(filedata)
+
+	def updateDatabaseFile(self, path):
+		#print("MVC: FileCache: updateDatabaseFile: path: %s" % path)
+		self.delete(path)
+		self.loadDatabaseFile(path)
+
+	def addDatabaseFileType(self, path, file_type):
+
+		def convertToUtf8(name):
+			try:
+				name.decode('utf-8')
+			except UnicodeDecodeError:
+				try:
+					name = name.decode("cp1252").encode("utf-8")
+				except UnicodeDecodeError:
+					name = name.decode("iso-8859-1").encode("utf-8")
+			return name
+
+		#print("MVC: FileCache: addDatabaseFileType: path: %s, file_type: %s" % (path, file_type))
+		if file_type == TYPE_ISFILE:
+			filedata = self.__newFileData(path)
+			self.addToDatabase(filedata)
+		elif file_type in [TYPE_ISDIR, TYPE_ISLINK]:
+			ext, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
+			size, length = 0, 0
+			date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
+			name = convertToUtf8(os.path.basename(path))
+			self.addToDatabase((os.path.dirname(path), file_type, path, os.path.basename(path), ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+
+	def loadDatabaseDirs(self, movie_dirs):
+		#print("MVC: FileCache: loadDatabaseDirs: loading directories: %s" % movie_dirs)
+		execution_list = self.getDirsLoadList(movie_dirs)
+		for path, file_type in execution_list:
+			#print("MVC: FileCache: loadDatabaseDirs: path: %s" % path)
+			self.addDatabaseFileType(path, file_type)
+
+	def close(self):
+		#print("MVC: FileCache: close: closing database")
+		self.sqlClose()
+
+	### cache functions
 
 	def __loadCache(self, dirs):
 		#print("MVC: FileCache: __loadCache: dirs: %s" % dirs)
@@ -155,146 +167,244 @@ class FileCache(Bookmarks, object):
 
 		if not_loaded_dirs:
 			# WHERE clause
-			sql = "SELECT * FROM recordings WHERE "
+			where = ""
 			or_op = ""
 			for directory in not_loaded_dirs:
-				sql += or_op + "directory = \"" + directory + "\""
+				where += or_op + "directory = \"" + directory + "\""
 				or_op = " OR "
-			#print("MVC: FileCache: __loadCache: " + sql)
-			# do it
-			self.cursor.execute(sql)
-			filelist = self.cursor.fetchall()
-			self.sql_conn.commit()
-			#print("MVC: FileCache: __loadCache: len(filelist): " + str(len(filelist)))
+			#print("MVC: FileCache: __loadCache: where: %s" % where)
+			filelist = self.sqlSelect(where)
+			#print("MVC: FileCache: __loadCache: len(filelist): %s" % len(filelist))
 			self.loaded_dirs += not_loaded_dirs
 			#print("MVC: FileCache: __loadCache: loaded_dirs after merge: " + str(self.loaded_dirs))
 			self.filelist += filelist
-			#print("MVC: FileCache: __loadCache: len(self.filelist): " + str(len(self.filelist)))
+			#print("MVC: FileCache: __loadCache: len(self.filelist): %s" % len(self.filelist))
 #			self.dump(cache=True, detailed=False)
 		else:
 			#print("MVC: FileCache: __loadCache: all dirs are already loaded")
 			pass
 
-	def clearDatabase(self):
-		#print("MVC: FileCache: clearDatabase")
-		self.cursor.execute("DELETE FROM recordings")
-		self.sql_conn.commit()
-		self.filelist = []
-		self.loaded_dirs = []
+	### database row functions
 
-	def loadDatabaseFile(self, path):
-		#print("MVC: FileCache: loadDatabaseFile: " + path)
-		name, date, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", ""
-		size = 0
-		length = 0
+	def add(self, filedata):
+		#print("MVC: FileCache: add: path: %s" % filedata[FILE_IDX_PATH])
+		# add to SQL database
+		self.addToDatabase(filedata)
+		# add to memory cache as well
+		self.filelist.append(filedata)
+#		self.dump(cache=True, detailed=True)
+
+	def exists(self, path):
+		filedata = self.getFile(path)
+		return filedata is not None
+
+	def makeDir(self, path):
+		if not self.exists(path):
+			self.loadDatabaseDirs([path])
+		self.__loadCache([path])
+
+	def deleteDir(self, _path):
+		self.reloadDatabase()
+
+	def delete(self, path):
+		#print("MVC: FileCache: delete %s" % path)
+		path = os.path.splitext(path)[0]
+		filename = os.path.basename(path)
+		directory = os.path.dirname(path)
+		self.sqlDelete(directory, filename)
+
+		# delete from memory cache as well
+		filelist = []
+		for filedata in self.filelist:
+			if filedata[FILE_IDX_DIR] != directory or filedata[FILE_IDX_FILENAME] != filename:
+				filelist.append(filedata)
+		self.filelist = filelist
+#		self.dump(cache = True, detailed=False)
+
+	def update(self, path, pdirectory=None, pfiletype=None, ppath=None, pfilename=None, pext=None, pname=None, pdate=None, plength=None, pdescription=None, pextended_description=None, pservice_reference=None, psize=None, pcuts=None, ptags=None):
+		#print("MVC: FileCache: update: %s" % path)
+		filedata = self.getFile(path)
+		if filedata is not None:
+			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
+			if path:
+				if pdirectory is not None:
+					directory = pdirectory
+				if pfiletype is not None:
+					filetype = pfiletype
+				if ppath is not None:
+					path = ppath
+				if pfilename is not None:
+					filename = pfilename
+				if pext is not None:
+					ext = pext
+				if pname is not None:
+					name = pname
+				if pdate is not None:
+					date = pdate
+				if plength is not None:
+					length = plength
+				if pdescription is not None:
+					description = pdescription
+				if pextended_description is not None:
+					extended_description = pextended_description
+				if pservice_reference is not None:
+					service_reference = pservice_reference
+				if psize is not None:
+					size = psize
+				if pcuts is not None:
+					cuts = pcuts
+				if ptags is not None:
+					tags = ptags
+
+				self.delete(path)
+				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+
+	def copyDir(self, _src_path, _dest_path):
+		self.reloadDatabase()
+
+	def copy(self, src_path, dest_path):
+		src_path = os.path.normpath(src_path)
+		dest_path = os.path.normpath(dest_path)
+		#print("MVC: FileCache: copy: src_path: %s, dest_path: %s " % (src_path, dest_path))
+		filedata = self.getFile(src_path)
+		if filedata is not None:
+			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
+			path = os.path.join(dest_path, filename) + ext
+			# check of file already exists at destination
+			dest_file = self.getFile(path)
+			if dest_file is None:
+				#print("MVC: FileCache: copy: dest_path: %s" % path)
+				directory = dest_path
+				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+			else:
+				#print("MVC: FileCache: copy: file already exists at destination")
+				pass
+		else:
+			#print("MVC: FileCache: copy: source file not found")
+			pass
+
+	def moveDir(self, _src_path, _dest_path):
+		self.reloadDatabase()
+
+	def move(self, src_path, dest_path):
+		src_path = os.path.normpath(src_path)
+		dest_path = os.path.normpath(dest_path)
+		#print("MVC: FileCache: move: src_path: %s, dest_path: %s" % (src_path, dest_path))
+		srcfile = self.getFile(src_path)
+		if srcfile is not None:
+			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = srcfile
+			path = os.path.join(dest_path, filename) + ext
+			directory = dest_path
+			# check if file already exists at destination
+			dest_file = self.getFile(path)
+			if dest_file is None:
+				#print("MVC: FileCache: move: dest_path: %s" % path)
+				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+				self.delete(src_path)
+			else:
+				self.delete(src_path) # workaround
+				print("MVC-E: FileCache: move: source file already exists at destination: %s" % src_path)
+		else:
+			print("MVC-E: FileCache: move: source file not found: src_path: %s" % src_path)
+#		self.dump(cache=True, detailed=False)
+
+	def getFile(self, path):
+		path = os.path.splitext(path)[0]
+		filename = os.path.basename(path)
+		directory = os.path.dirname(path)
+		#print("MVC: FileCache: getfile: %s|%s" % (directory, filename))
+		#print("MVC: FileCache: getfile: loaded_dirs: %s" % self.loaded_dirs)
+		self.__loadCache([directory])
+
+		for filedata in self.filelist:
+			#print("MVC: FileCache: getFile: |%s|%s|%s|%s|" % (filedata[FILE_IDX_DIR], directory, filedata[FILE_IDX_FILENAME], filename))
+			if filedata[FILE_IDX_DIR] == directory and filedata[FILE_IDX_FILENAME] == filename:
+				return filedata
+
+		#print("MVC: FileCache: getFile: no file found")
+		return None
+
+	def __newFileData(self, path):
+
+		def parseCutNo(filename):
+			#print("MVC: FileCache: parseCutNo: filename: %s" % filename)
+			cutno = ""
+			if filename[-4:-3] == "_" and filename[-3:].isdigit():
+				cutno = filename[-3:]
+				filename = filename[:-4]
+			#print("MVC: FileCache: parseCutNo: filename: %s, cutno: %s" % (filename, cutno))
+			return cutno, filename
+
+		def parseDate(filename):
+			#print("MVC: FileCache: parseDate: filename: %s" % filename)
+			date = ""
+			# extract title from recording filename
+			filename = filename.strip()
+			if filename[0:8].isdigit():
+				if filename[8] == " " and filename[9:13].isdigit():
+					# Default: filename = YYYYMMDD TIME - service_name
+					d = filename[0:13]
+					dyear = d[0:4]
+					dmonth = d[4:6]
+					dday = d[6:8]
+					dhour = d[9:11]
+					dmin = d[11:13]
+					date = dyear + "-" + dmonth + "-" + dday + " " + dhour + ":" + dmin + ":" + "00"
+			#print("MVC: FileCache: parseDate: date: %s" % date)
+			return date
+
+		#print("MVC: FileCache: __newFileData: %s" % path)
 		filepath, ext = os.path.splitext(path)
 		filename = os.path.basename(filepath)
-		ext = ext.lower()
-		if ext in extVideo:
-			# Media file found
-			date = None
-			name = filename
-			fdate = str2date(parseDate(os.path.basename(path)))
-			#print("MVC: FileCache: loadDatabaseFile: file date: " + str(fdate))
-			if fdate:
-				date = str(fdate + datetime.timedelta(minutes=config.recording.margin_before.value))
+
+		description, extended_description, service_reference, tags = "", "", "", ""
+		length = 0
+		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
+		size = os.path.getsize(path)
+		name = filename
+		cuts = readCutsFile(path + ".cuts")
+
+		if ext in extTS:
+			filename_date = str2date(parseDate(os.path.basename(path)))
+			#print("MVC: FileCache: __newFileData: filename date: %s" % filename_date)
+			if filename_date:
+				date = str(filename_date + datetime.timedelta(minutes=config.recording.margin_before.value))
 
 			recording = getRecording(path, False)
 			if recording:
-				#print("MVC: FileCache: loadDatabaseFile: recording")
+				#print("MVC: FileCache: __newFileData: recording")
 				timer_begin, timer_end, _service_reference = recording
 				date = str(datetime.datetime.fromtimestamp(timer_begin))
 				length = timer_end - timer_begin
-				#print("MVC: FileCache: loadDatabaseFile: timer_begin: " + date)
-				#print("MVC: FileCache: loadDatabaseFile: length:      " + str(length / 60))
+				#print("MVC: FileCache: __newFileData: timer_begin: %s, length: %s" % (date, length / 60))
 
-			if not date:
-				date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
-
-			if ext in extTS:
-				name_splits = name.split(" - ")
-				if name_splits[2]:
-					name = name_splits[2]
-					cutno, _name = parseCutNo(name)
+			eit = ParserEitFile(path)
+			if eit:
+				eit_name = eit.getName()
+				if eit_name:
+					name = eit_name
+					cutno, _filename = parseCutNo(filename)
 					if cutno:
 						name = "%s (%s)" % (name, cutno)
 
-			cuts = readCutsFile(path + ".cuts")
+				if length == 0:
+					length = eit.getLengthInSeconds()
 
-			if ext in extTS:
-				eit = ParserEitFile(path)
-				if eit:
-					eit_name = eit.getName()
-					if eit_name:
-						name = eit_name
-						cutno, _filename = parseCutNo(filename)
-						if cutno:
-							name = "%s (%s)" % (name, cutno)
+				description = eit.getShortDescription()
+				extended_description = eit.getExtendedDescription()
 
-					if length == 0:
-						length = eit.getLengthInSeconds()
-
-					description = eit.getShortDescription()
-					extended_description = eit.getExtendedDescription()
-			else:
-				length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
-
-			if ext in extTS:
-				meta = ParserMetaFile(path)
-				if meta:
-					service_reference = meta.getServiceReference()
-					tags = meta.getTags()
-
-			size = os.path.getsize(path)
-
-			self.add((os.path.dirname(path), TYPE_ISFILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+			meta = ParserMetaFile(path)
+			if meta:
+				service_reference = meta.getServiceReference()
+				tags = meta.getTags()
 		else:
-			#print("MVC: FileCache: loadDatabaseFile: file ext not supported: " + ext)
-			pass
+			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-	def updateDatabaseFile(self, path):
-		#print("MVC: FileCache: updateDatabaseFile: path: %s" % path)
-		self.delete(path)
-		self.loadDatabaseFile(path)
+		return(os.path.dirname(path), TYPE_ISFILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
 
-	def addDatabaseFileType(self, path, file_type):
-		#print("MVC: FileCache: addDatabaseFileType: path: %s, file_type: %s" % (path, file_type))
-		if file_type == TYPE_ISFILE:
-			self.loadDatabaseFile(path)
-		elif file_type in [TYPE_ISDIR, TYPE_ISLINK]:
-			ext, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
-			size, length = 0, 0
-			date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
-			name = convertToUtf8(os.path.basename(path))
-			self.add((os.path.dirname(path), file_type, path, os.path.basename(path), ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+	### list functions
 
-	def loadDatabaseDir(self, movie_dir):
-		#print("MVC: FileCache: loadDatabaseDir: movie_dir: %s" % movie_dir)
-		try:
-			walk_listdir = os.listdir(movie_dir)
-		except IOError as e:
-			print("MVC-E: FileCache: loadDatabaseDir: exception: %s" % e)
-			return
-
-		for walk_name in walk_listdir:
-			path = os.path.join(movie_dir, walk_name)
-			if os.path.isfile(path):
-				self.addDatabaseFileType(path, TYPE_ISFILE)
-			elif os.path.islink(path):
-				self.addDatabaseFileType(path, TYPE_ISLINK)
-				self.loadDatabaseDir(path)
-			elif os.path.isdir(path):
-				self.addDatabaseFileType(path, TYPE_ISDIR)
-				self.loadDatabaseDir(path)
-			else:
-				#print("MVC: FileCache: loadDatabaseDir: file type not supported")
-				pass
-
-		self.addDatabaseFileType(os.path.join(movie_dir, ".."), TYPE_ISDIR)
-
-		self.loaded_dirs.append(movie_dir)
-
-	def getDirLoadList(self, movie_dir):
+	def __getDirLoadList(self, movie_dir):
 		#print("MVC: FileCache: getDirLoadList: movie_dir: %s" % movie_dir)
 		try:
 			walk_listdir = os.listdir(movie_dir)
@@ -309,42 +419,36 @@ class FileCache(Bookmarks, object):
 				if ext in extVideo:
 					self.load_list.append((path, TYPE_ISFILE))
 			elif os.path.islink(path):
-				print("MVC: FileCache: loadDatabaseDir: link:" + path)
+				#print("MVC: FileCache: loadDatabaseDir: link: %s" % path)
 				self.load_list.append((path, TYPE_ISLINK))
-				self.getDirLoadList(path)
+				self.__getDirLoadList(path)
 			elif os.path.isdir(path):
-				print("MVC: FileCache: loadDatabaseDir: dir:" + path)
+				#print("MVC: FileCache: loadDatabaseDir: dir: %s" % path)
 				self.load_list.append((path, TYPE_ISDIR))
-				self.getDirLoadList(path)
+				self.__getDirLoadList(path)
 
 		self.load_list.append((os.path.join(movie_dir, ".."), TYPE_ISDIR))
 
-		self.loaded_dirs.append(movie_dir)
 		return self.load_list
 
 	def getDirsLoadList(self, movie_dirs):
-		print("MVC: FileCache: getDirsLoadList: movie_dirs: %s" % movie_dirs)
+		#print("MVC: FileCache: getDirsLoadList: movie_dirs: %s" % movie_dirs)
 		self.load_list = []
 		for movie_dir in movie_dirs:
-			self.getDirLoadList(movie_dir)
+			self.__getDirLoadList(movie_dir)
 		return self.load_list
-
-	def loadDatabaseDirs(self, movie_dirs):
-		#print("MVC: FileCache: loadDatabaseDirs: loading directories: " + str(movie_dirs))
-		for movie_dir in movie_dirs:
-			#print("MVC: FileCache: loadDatabaseDirs: walking: " + movie_dir)
-			self.loadDatabaseDir(movie_dir)
 
 	def __resolveVirtualDirs(self, dirs):
 		#print("MVC: FileCache: __resolveVirtualDirs: dirs: %s" % dirs)
 		more_dirs = []
+		bookmarks = self.getBookmarks()
 		for adir in dirs:
-			if adir in self.bookmarks:
-				for bookmark in self.bookmarks:
+			if adir in bookmarks:
+				for bookmark in bookmarks:
 					if bookmark not in more_dirs:
 						more_dirs.append(bookmark)
 			elif os.path.basename(adir) == "trashcan":
-				for bookmark in self.bookmarks:
+				for bookmark in bookmarks:
 					trashcan_dir = bookmark + "/trashcan"
 					if trashcan_dir not in more_dirs:
 						more_dirs.append(trashcan_dir)
@@ -356,14 +460,13 @@ class FileCache(Bookmarks, object):
 		return more_dirs
 
 	def getFileList(self, dirs, include_dirs=False):
-		#print("MVC: FileCache: getFileList:    get_dirs: %s" % dirs)
-		#print("MVC: FileCache: getFileList: loaded_dirs: %s" % self.loaded_dirs)
+		#print("MVC: FileCache: getFileList: dirs: %s, loaded_dirs: %s" % (dirs, self.loaded_dirs))
 		extMovie = extVideo - extBlu
 		more_dirs = self.__resolveVirtualDirs(dirs)
 		self.__loadCache(more_dirs)
 		filelist = []
 		for filedata in self.filelist:
-			#print("MVC: FileCache: getFileList: dir: " + filedata[FILE_IDX_DIR] + ", filename: " + filedata[FILE_IDX_FILENAME] + ", ext: " + filedata[FILE_IDX_EXT])
+			#print("MVC: FileCache: getFileList: dir: %s, filename: %s, ext: %s" % (filedata[FILE_IDX_DIR], filedata[FILE_IDX_FILENAME], filedata[FILE_IDX_EXT]))
 			if (
 				filedata[FILE_IDX_DIR] in more_dirs
 				and filedata[FILE_IDX_TYPE] == TYPE_ISFILE
@@ -380,164 +483,16 @@ class FileCache(Bookmarks, object):
 		return filelist
 
 	def getDirList(self, dirs):
-		#print("MVC: FileCache: getDirlist: " + str(dirs))
+		#print("MVC: FileCache: getDirlist: %s" % dirs)
 		more_dirs = self.__resolveVirtualDirs(dirs)
 		self.__loadCache(more_dirs)
-
 		subdirlist = []
 		for filedata in self.filelist:
 			if filedata[FILE_IDX_TYPE] > TYPE_ISFILE and filedata[FILE_IDX_FILENAME] != "trashcan" and filedata[FILE_IDX_FILENAME] != "..":
 				subdirlist.append(filedata)
 		return subdirlist
 
-	def add(self, filedata):
-		#print("MVC: FileCache: add: " + filedata[FILE_IDX_PATH])
-		self.cursor.execute("INSERT INTO recordings VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", filedata)
-		self.sql_conn.commit()
-		# add to memory cache as well
-		self.filelist.append(filedata)
-#		self.dump(cache=True, detailed=True)
-
-	def exists(self, path):
-		filedata = self.getFile(path)
-		directory, _filetype, _path, _filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, _size, _cuts, _tags = filedata
-		return directory != ""
-
-	def makeDir(self, path):
-		if not self.exists(path):
-			self.loadDatabaseDir(path)
-
-	def deleteDir(self, _path):
-		self.reloadDatabase()
-
-	def delete(self, path):
-		#print("MVC: FileCache: delete " + path)
-		path = os.path.splitext(path)[0]
-		filename = os.path.basename(path)
-		directory = os.path.dirname(path)
-		sql = 'DELETE FROM recordings WHERE directory=? AND filename=?'
-		#print("MVC: FileCache: delete: sql = " + sql)
-		self.cursor.execute(sql, (directory, filename))
-		self.sql_conn.commit()
-
-		# delete from memory cache as well
-		filelist = []
-		for filedata in self.filelist:
-			if filedata[FILE_IDX_DIR] != directory or filedata[FILE_IDX_FILENAME] != filename:
-				filelist.append(filedata)
-		self.filelist = filelist
-#		self.dump(cache = True, detailed=False)
-
-	def update(self, path, pdirectory=None, pfiletype=None, ppath=None, pfilename=None, pext=None, pname=None, pdate=None, plength=None, pdescription=None, pextended_description=None, pservice_reference=None, psize=None, pcuts=None, ptags=None):
-		#print("MVC: FileCache: update: " + path)
-		filedata = self.getFile(path)
-		directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
-		if path:
-			if pdirectory is not None:
-				directory = pdirectory
-			if pfiletype is not None:
-				filetype = pfiletype
-			if ppath is not None:
-				path = ppath
-			if pfilename is not None:
-				filename = pfilename
-			if pext is not None:
-				ext = pext
-			if pname is not None:
-				name = pname
-			if pdate is not None:
-				date = pdate
-			if plength is not None:
-				length = plength
-			if pdescription is not None:
-				description = pdescription
-			if pextended_description is not None:
-				extended_description = pextended_description
-			if pservice_reference is not None:
-				service_reference = pservice_reference
-			if psize is not None:
-				size = psize
-			if pcuts is not None:
-				cuts = pcuts
-			if ptags is not None:
-				tags = ptags
-
-			self.delete(path)
-			self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
-
-	def updateSize(self, path, size):
-		self.update(path, psize=size)
-
-	def copyDir(self, _src_path, _dest_path):
-		self.reloadDatabase()
-
-	def copy(self, src_path, dest_path):
-#		src_path = os.path.normpath(src_path)
-		dest_path = os.path.normpath(dest_path)
-		#print("MVC: FileCache: copy " + src_path + "|" + dest_path)
-		source_dir = os.path.basename(src_path)
-		self.__loadCache([source_dir])
-
-		filedata = self.getFile(src_path)
-		directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
-		if filename:
-			path = os.path.join(dest_path, filename) + ext
-
-			# check of file already exists at destination
-			dest_file = self.getFile(path)
-			if not dest_file[FILE_IDX_DIR]:
-				#print("MVC: FileCache: copy: dest_path: " + path)
-				directory = dest_path
-				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
-			else:
-				#print("MVC: FileCache: copy: file already exists at destination")
-				pass
-		else:
-			#print("MVC: FileCache: copy: source file not found")
-			pass
-
-	def moveDir(self, _src_path, _dest_path):
-		self.reloadDatabase()
-
-	def move(self, src_path, dest_path):
-		src_path = os.path.normpath(src_path)
-		dest_path = os.path.normpath(dest_path)
-		#print("MVC: FileCache: move " + src_path + "|" + dest_path)
-		srcfile = self.getFile(src_path)
-		directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = srcfile
-		if filename:
-			path = os.path.join(dest_path, filename) + ext
-			directory = dest_path
-			# check if file already exists at destination
-			dest_file = self.getFile(path)
-			if not dest_file[FILE_IDX_PATH]:
-				#print("MVC: FileCache: move: dest_path: " + path)
-				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
-				self.delete(src_path)
-			else:
-				self.delete(src_path) # workaround
-				print("MVC-E: FileCache: move: file already exists at destination: %s" % src_path)
-		else:
-			#print("MVC: FileCache: move: source file not found")
-			pass
-#		self.dump(cache=True, detailed=False)
-
-	def getFile(self, path):
-		path = os.path.splitext(path)[0]
-		filename = os.path.basename(path)
-		directory = os.path.dirname(path)
-		#print("MVC: FileCache: getfile: " + directory + "|" + filename)
-		#print("MVC: FileCache: getfile: loaded_dirs: " + str(self.loaded_dirs))
-
-		self.__loadCache([directory])
-
-		for filedata in self.filelist:
-			#print("MVC: FileCache: getFile: |" + filedata[FILE_IDX_DIR] + "|" + directory + "|" + filedata[FILE_IDX_FILENAME] + "|" + filename + "|")
-			if filedata[FILE_IDX_DIR] == directory and filedata[FILE_IDX_FILENAME] == filename:
-				return filedata
-
-		#print("MVC: FileCache: getFile: no file found")
-		return self.newFileEntry()
+	### utils
 
 	def dump(self, cache=True, detailed=False):
 		if not cache:
@@ -571,34 +526,31 @@ class FileCache(Bookmarks, object):
 				#print("MVC: FileCache: dump: link exists")
 				pass
 			else:
-				#print("MVC: FileCache: dump: path does not exist: " + path)
+				#print("MVC: FileCache: dump: path does not exist: %s" % path)
 				pass
 
-		#print("MVC: FileCache: dump: number of files: " + str(len(rows)))
+		#print("MVC: FileCache: dump: number of files: %s" % len(rows))
 
-	def getCountSize(self, in_path):
-		#print("MVC: FileCache: getCountSize: " + in_path)
+	def getCountSize(self, path):
+		#print("MVC: FileCache: getCountSize: path: %s" % path)
 		self.count = self.size = 0
-		self.__getCountSize(in_path)
+		dirs = self.__resolveVirtualDirs([path])
+		for adir in dirs:
+			self.__getCountSize(adir)
 		#print("MVC: FileCache: getCountSize: %s, %s" % (self.count, self.size))
 		return self.count, self.size
 
 	def __getCountSize(self, in_path):
-		#print("MVC: FileCache: __getCountSize: " + in_path)
+		#print("MVC: FileCache: __getCountSize: in_path: %s" % in_path)
 		self.__loadCache([in_path])
 
 		for directory, filetype, path, filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, size, _cuts, _tags in self.filelist:
 			#print("MVC: FileCache: __getCountSize: %s, %s" % (path, filetype))
 			if path and filetype == TYPE_ISFILE and directory == in_path:
-				#print("MVC: FileCache: __getCountSize file: " + path)
+				#print("MVC: FileCache: __getCountSize: path: %s " % path)
 				self.count += 1
 				self.size += size
 			if path and filetype > TYPE_ISFILE and directory.startswith(in_path) and filename != "..":
 				self.__getCountSize(path)
 
 		#print("MVC: FileCache: __getCountSize: %s, %s, %s" % (in_path, self.count, self.size))
-
-	def close(self):
-		#print("MVC: FileCache: close: closing database")
-		self.sql_conn.commit()
-		self.sql_conn.close()

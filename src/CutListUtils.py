@@ -41,11 +41,8 @@ CUT_TYPE_LENGTH = 5
 def readCutsFile(path):
 	#print("MVC: CutListUtils: readCutsFile: " + path)
 	data = ""
-#	cut_list = []
 	if os.path.isfile(path):
 		data = readFile(path)
-#		cut_list = unpackCutList(data)
-	#print("MVC: CutListUtils: readCutsFile: cut_list: " + str(cut_list))
 	return data
 
 
@@ -77,7 +74,7 @@ def mergeBackupCutsFile(path, cut_list):
 		writeCutsFile(path, packCutList(cut_list))
 		deleteFile(backup_cut_file)
 	else:
-		#print("MVC: CutListUtils: mergeBackupCutsFile: no Backup-File found: " + backup_path)
+		#print("MVC: CutListUtils: mergeBackupCutsFile: no Backup-File found: " + backup_cut_file)
 		pass
 	return cut_list
 

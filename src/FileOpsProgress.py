@@ -34,7 +34,7 @@ ACTIVITY_TIMER_DELAY = 1000
 class FileOpsProgress(FileProgress, FileOps, object):
 
 	def __init__(self, session, selection_list):
-		print("MVC: FileOpsProgress: __init__")
+		#print("MVC: FileOpsProgress: __init__")
 		FileProgress.__init__(self, session)
 		self.skinName = ["FileOpsProgress"]
 		self.skin = readFile(getSkinPath("FileOpsProgress.xml"))
@@ -45,7 +45,7 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		self.onShow.append(self.onDialogShow)
 
 	def onDialogShow(self):
-		print("MVC: FileOpsProgress: onDialogShow")
+		#print("MVC: FileOpsProgress: onDialogShow")
 		self.execFileOpsProgress()
 
 	def doActivityTimer(self):

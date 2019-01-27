@@ -43,7 +43,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 	skin = readFile(getSkinPath("ConfigScreen.xml"))
 
 	def __init__(self, session):
-		self.session = session
 		Screen.__init__(self, session)
 		self.skinName = "ConfigScreenMenu"
 
@@ -65,7 +64,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			{
 				"showVirtualKeyboard": self.keyText,
 			},
-			-2
+			-2  # higher priority
 		)
 
 		self["VirtualKB"].setEnabled(False)
@@ -184,9 +183,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Enable trashcan")                               , config.MVC.movie_trashcan_enable    , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
 			(_("Show trashcan directory")                       , config.MVC.movie_trashcan_show      , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
 			(_("Show trashcan information")                     , config.MVC.movie_trashcan_info      , None                  , None                  , 0     , [-2, -1]    , _("Help Dynamic trashcan")),
-			(_("Delete validation")                             , config.MVC.movie_delete_validation  , None                  , None                  , 0     , [-3]        , _("Help Delete validation")),
-			(_("Enable auto trashcan cleanup")                  , config.MVC.movie_trashcan_clean     , None                  , None                  , 0     , [-4]        , _("Help Enable auto trashcan cleanup")),
-			(_("File retention period in trashcan")             , config.MVC.movie_trashcan_retention , None                  , None                  , 0     , [-5, -1]    , _("Help How many days files may remain in trashcan")),
+			(_("Enable auto trashcan cleanup")                  , config.MVC.movie_trashcan_clean     , None                  , None                  , 0     , [-3]        , _("Help Enable auto trashcan cleanup")),
+			(_("File retention period in trashcan")             , config.MVC.movie_trashcan_retention , None                  , None                  , 0     , [-4, -1]    , _("Help How many days files may remain in trashcan")),
 			(self.section                                       , _("LANGUAGE")                       , None                  , None                  , 1     , []          , ""),
 			(_("Preferred EPG language")                        , config.MVC.epglang                  , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
 			(_("Enable playback auto-subtitling")               , config.MVC.autosubs                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
@@ -341,7 +339,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		self.close(not self.needs_restart_flag)
 
 	@staticmethod
-	def setEPGLanguage():
+	def setEPGLanguage(_element=None):
 		if config.MVC.epglang.value:
 			#print("MVC: plugin: Setting EPG language: %s" % config.MVC.epglang.value)
 			eServiceEvent.setEPGLanguage(config.MVC.epglang.value)

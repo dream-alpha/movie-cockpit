@@ -1,7 +1,6 @@
 ﻿#!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2011 by betonme
 # Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
@@ -55,7 +54,6 @@ class ParserMetaFile(object):
 		lines = None
 		if os.path.isfile(path):
 			lines = readFile(path).splitlines()
-
 			# Parse the lines
 			if lines:
 				# Strip lines and extract information

@@ -72,6 +72,7 @@ def adjustTimerPathAfterMove(source_path, destination_path):
 
 
 def getRecording(path, include_margin_before=True):
+#	import datetime
 	recording = None
 	timer = isRecording(path)
 	if timer:
@@ -82,7 +83,7 @@ def getRecording(path, include_margin_before=True):
 			service = eServiceReference(sidDVB, 0, path)
 			#print("MVC: RecordingUtils: getRecording: service path: " + service.getPath())
 			recording_start = ServiceCenter.getInstance().info(service).getStartTime()
-			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
+#			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
 			delta = recording_start - timer.begin
 			if delta > 0 and delta < config.recording.margin_before.value * 60:  # includes 5 seconds contingency
 				#print("MVC: RecordingUtils: getRecording: late recording but within margin_before")
@@ -95,7 +96,7 @@ def getRecording(path, include_margin_before=True):
 				rec_start = timer.begin
 		else:
 			recording_start = int(os.stat(path).st_ctime)  # timestamp from file
-			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
+#			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
 			delta = recording_start - timer.begin
 			if delta > config.recording.margin_before.value * 60:
 				#print("MVC: RecordingUtils: getRecording: late recording")

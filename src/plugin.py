@@ -80,8 +80,7 @@ def autostart(reason, **kwargs):
 		print("MVC-I: plugin: --- shutdown")
 		FileCache.getInstance().close()
 	else:
-		#print("MVC: plugin: autostart: reason not handled: %s" % reason)
-		pass
+		print("MVC-I: plugin: autostart: reason not handled: %s" % reason)
 
 
 def Plugins(**__):

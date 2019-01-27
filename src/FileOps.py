@@ -47,7 +47,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if file_type != TYPE_ISFILE:
 				_count, used = FileCache.getInstance().getCountSize(path)
 				free = self.getMountPointSpaceFree(target_path)
-				#print("MVC: FileOps: execFileOp: move_dir: size: %s, free: %s" % (size, free))
+				#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
 			if free >= used:
 				c = self.__execFileMove(path, target_path, file_type)
 				cmd.append(c)

@@ -19,7 +19,6 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-import os
 from __init__ import _
 from time import mktime
 from CutListUtils import unpackCutList
@@ -89,8 +88,13 @@ class ServiceInfo(object):
 class Info(object):
 
 	def __init__(self, service):
+		filetype, name, date, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", "", ""
+		size = length = 0
 		self.path = service and service.getPath()
-		_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = FileCache.getInstance().getFile(self.path)
+		if self.path:
+			filedata = FileCache.getInstance().getFile(self.path)
+			if filedata is not None:
+				_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
 		self.__filetype = filetype
 		self.__date = str2date(date)
 		self.__name = name if name != "trashcan" else _(name)
@@ -145,6 +149,5 @@ class Info(object):
 		if self.__filetype == TYPE_ISFILE:
 			size = self.__size
 		else:
-			if config.MVC.directories_info.value or (os.path.basename(self.path) == "trashcan" and config.MVC.movie_trashcan_info.value):
-				_count, size = FileCache.getInstance().getCountSize(self.path)
+			_count, size = FileCache.getInstance().getCountSize(self.path)
 		return size

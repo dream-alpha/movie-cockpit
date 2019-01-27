@@ -31,7 +31,7 @@ from Bookmarks import Bookmarks
 class FileProgress(Screen, Bookmarks, object):
 
 	def __init__(self, session):
-		print("MVC: FileProgress: __init__")
+		#print("MVC: FileProgress: __init__")
 		Screen.__init__(self, session)
 
 		self["slider1"] = Slider(0, 100)
@@ -66,14 +66,14 @@ class FileProgress(Screen, Bookmarks, object):
 
 	def cancel(self):
 		if self.hidden:
-			print("MVC: FileProgress: cancel: unhide")
+			#print("MVC: FileProgress: cancel: unhide")
 			self.toggleHide()
 		else:
 			if self.cancelled or (self.current_files > self.total_files):
-				print("MVC: FileProgress: cancel: exit")
+				#print("MVC: FileProgress: cancel: exit")
 				self.exit()
 			else:
-				print("MVC: FileProgress: cancel: trigger")
+				#print("MVC: FileProgress: cancel: trigger")
 				self.request_cancel = True
 				self["key_red"].hide()
 				self["key_blue"].hide()
@@ -82,11 +82,11 @@ class FileProgress(Screen, Bookmarks, object):
 
 	def exit(self):
 		if self.hidden:
-			print("MVC: FileProgress: unhide: trigger")
+			#print("MVC: FileProgress: unhide: trigger")
 			self.toggleHide()
 		else:
 			if self.cancelled or (self.current_files > self.total_files):
-				print("MVC: FileProgress: exit: close")
+				#print("MVC: FileProgress: exit: close")
 				self.close()
 
 	def toggleHide(self):
@@ -102,8 +102,17 @@ class FileProgress(Screen, Bookmarks, object):
 		f.close()
 
 	def updateProgress(self):
-		# is overridden in child classes
-		return
+		#print("MVC: MovieCoversDownload: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
+		current_files = self.current_files if self.current_files <= self.total_files else self.total_files
+		msg = _("Downloading") + ": " + str(current_files) + " " + _("of") + " " + str(self.total_files) + " ..."
+		self["operation"].setText(msg)
+		self["name"].setText(self.file_name)
+		percent_complete = int(round(float(self.current_files - 1) / float(self.total_files) * 100)) if self.total_files > 0 else 0
+		self["slider1"].setValue(percent_complete)
+		self["status"].setText(self.status)
+
+	def completionStatus(self):
+		return _("Done")
 
 	def doFileOp(self, _entry):
 		# is overridden in child classes
@@ -129,11 +138,14 @@ class FileProgress(Screen, Bookmarks, object):
 				self.status = _("Please wait") + " ..."
 				self.doFileOp(entry)
 			else:
-				print("MVC: FileProgress: nextFileOp: done.")
+				#print("MVC: FileProgress: nextFileOp: done.")
 				if self.hidden:
 					self.toggleHide()
 				self["key_red"].hide()
 				self["key_blue"].hide()
 				self["key_green"].show()
-				self.status = _("Cancelled") if self.cancelled else _("Done")
+				if self.cancelled:
+					self.status = _("Cancelled")
+				else:
+					self.status = self.completionStatus()
 				self.updateProgress()

@@ -179,10 +179,11 @@ class MovieTMDB(Bookmarks, object):
 		if cat == "tvshow":
 			response = self.fetchData("http://api.themoviedb.org/3/tv/" + str(p_id) + "?api_key=3b6703b8734fee1b598de9ed7bbd3b47&language=" + lang)
 
+		info = None
 		if response:
 			#print("MVC: MovieTMDB: getMovieTMDBInfo: response:" + str(response))
 			blurb, runtime, genres, countries, releasedate, vote, cover_url = parseMovieData(response, cat)
 			if cover_url is not None:
 				cover_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.cover_size.value, cover_url)
-			return blurb, runtime, genres, countries, releasedate, vote, cover_url
-		return None
+			info = (blurb, runtime, genres, countries, releasedate, vote, cover_url)
+		return info

@@ -39,6 +39,7 @@ from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
 from MovieCover import MovieCover
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL
+from MovieCoversDownload import MovieCoversDownload
 
 PAGE_DETAILS = 0   # details
 PAGE_SELECTION = 1 # selection list
@@ -118,6 +119,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 		#print("MVC: MovieInfoTMDB: selectionChanged")
 		if self.page == PAGE_SELECTION:
 			self.getInfoAndCoverForCurrentSelection(TEMP_INFO_PATH, TEMP_COVER_PATH)
+			self.switchPage()
 
 	def getInfoAndCoverForCurrentSelection(self, info_path, cover_path):
 		deleteFile(TEMP_COVER_PATH)
@@ -129,13 +131,13 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 			self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.MVC.cover_language.value)
 			self.saveInfo(info_path, self.info)
 			self.downloadCover(self.info[INFO_COVER_URL], cover_path)
-		self.switchPage()
 
 	def getThisCover(self):
 		#print("MVC: MovieInfoTMDB: getThisCover: search_name: %s" % self.search_name)
 		self.page = PAGE_DETAILS
 		self.cover_path = TEMP_COVER_PATH
 		self.info_path = TEMP_INFO_PATH
+		self.info = None
 
 		self.movielist = self.getMovieList(self.search_name)
 		if self.movielist:
@@ -147,6 +149,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 		else:
 			#print("MVC: MovieInfoTMDB: getThisCover: no movielist available")
 			pass
+		self.switchPage()
 
 	def switchPage(self):
 		#print("MVC: MovieInfoTMDB: switchPage: " + str(self.page))
@@ -304,5 +307,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 
 	def getAllCovers(self):
 		#print("MVC: MovieInfoTMDB: getAllCovers")
-		self.getCovers()
-		# will not return here
+		self.session.openWithCallback(self.getAllCoversCallback, MovieCoversDownload)
+
+	def getAllCoversCallback(self):
+		self.movielist = None

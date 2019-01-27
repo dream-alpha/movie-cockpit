@@ -23,11 +23,9 @@ import os
 from enigma import eServiceReference
 from Components.config import config
 from enigma import eListboxPythonMultiContent, gFont
-from ServiceCenter import ServiceCenter
 from MovieListGUI import MovieListGUI
 from FileCache import FileCache,\
-	TYPE_ISDIR, TYPE_ISLINK,\
-	FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_DESCRIPTION, FILE_IDX_LENGTH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
+	TYPE_ISDIR, TYPE_ISLINK, FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
 from MediaTypes import extVideo, plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
 from datetime import datetime
 
@@ -74,12 +72,6 @@ class MovieList(MovieListGUI, object):
 	def getCurrentIndex(self):
 		return self.instance.getCurrentIndex()
 
-	def getCurrentEvent(self):
-		l = self.l.getCurrentSelection()
-		service = self.getPlayerService(l[FILE_IDX_PATH], "", l[FILE_IDX_EXT])
-		#print("MVC: MovieList: getCurrentEvent: service: %s" % (service.getPath() if service else None))
-		return ServiceCenter.getInstance().info(service).getEvent()
-
 	def postWidgetCreate(self, instance):
 		instance.setWrapAround(True)
 		instance.setContent(self.l)
@@ -89,19 +81,8 @@ class MovieList(MovieListGUI, object):
 		instance.setContent(None)
 		self.selectionChanged_conn = None
 
-	def removePath(self, path):
-		for l in self.list:
-			if l[FILE_IDX_PATH] == path:
-				self.list.remove(l)
-				break
-		self.l.setList(self.list)
-
-	def removePathOfType(self, path, filetype):
-		for l in self.list:
-			if l[FILE_IDX_PATH] == path and l[FILE_IDX_TYPE] == filetype:
-				self.list.remove(l)
-				break
-		self.l.setList(self.list)
+	def getList(self):
+		return self.list
 
 	def __len__(self):
 		return len(self.getList())
@@ -114,34 +95,35 @@ class MovieList(MovieListGUI, object):
 				self.selection_list.append(single[FILE_IDX_PATH])
 		return self.selection_list
 
-	def resetSelectionList(self):
-		#print("MVC: MovieList: resetSelectionList")
+	def unselectAll(self):
+		#print("MVC: MovieList: unselectAll")
 		self.selection_list = []
 		self.invalidateList()
 
-	def selectService(self, path):
-		#print("MVC: MovieList: selectService: path: %s" % path)
+	def selectPath(self, path):
+		#print("MVC: MovieList: selectPath: path: %s" % path)
 		self.selection_list.append(path)
-		self.invalidateService(path)
+		self.invalidatePath(path)
 
-	def unselectService(self, path):
-		#print("MVC: MovieList: unselectService: path: %s" % path)
+	def unselectPath(self, path):
+		#print("MVC: MovieList: unselectPath: path: %s" % path)
 		if path in self.selection_list:
 			self.selection_list.remove(path)
-			self.invalidateService(path)
+			self.invalidatePath(path)
 
-	def selectSelectionList(self):
-		#print("MVC: MovieList: selectSelectionList")
-		for movie in self.list:
-			self.selectService(movie[FILE_IDX_PATH])
+	def selectAll(self):
+		#print("MVC: MovieList: selectAll")
+		for entry in self.list:
+			self.selectPath(entry[FILE_IDX_PATH])
 
 	def invalidateCurrent(self):
 		self.l.invalidateEntry(self.getCurrentIndex())
 
-	def invalidateService(self, path):
-		index = self.getIndexOfPath(path)
-		if index >= 0:
-			self.l.invalidateEntry(index)  # force redraw of the item
+	def invalidatePath(self, path):
+		for i, entry in enumerate(self.list):
+			if entry[FILE_IDX_PATH] == path:
+				self.l.invalidateEntry(i)
+				break
 
 	def invalidateList(self):
 		self.selection_list = []
@@ -169,67 +151,31 @@ class MovieList(MovieListGUI, object):
 		self.instance.moveSelectionTo(index)
 
 	def moveToPath(self, path):
-		index = self.getIndexOfPath(path)
-		if index >= 0:
-			self.instance.moveSelectionTo(index)
-		else:
-			self.moveTop()
+		index = 0
+		for i, entry in enumerate(self.list):
+			if entry[FILE_IDX_PATH] == path:
+				index = i
+				break
+		self.moveToIndex(index)
 
 	def currentSelIsPlayable(self):
-		return self.getExtOfIndex(self.getCurrentIndex()) in extVideo
-
-	def currentSelIsDirectory(self):
-		return self.getTypeOfIndex(self.getCurrentIndex()) == TYPE_ISDIR
+		return self.getEntry4Index(self.getCurrentIndex())[FILE_IDX_EXT] in extVideo
 
 	def currentSelIsVirtual(self):
-		return self.getTypeOfIndex(self.getCurrentIndex()) in virAll
+		return self.getEntry4Index(self.getCurrentIndex())[FILE_IDX_TYPE] in virAll
 
-	def indexIsDirectory(self, index):
-		return self.getTypeOfIndex(index) == TYPE_ISDIR
-
-	def indexIsPlayable(self, index):
-		return self.getExtOfIndex(index) in extVideo
-
-	def getCurrentSelDescription(self):
-		return self.getListEntry(self.getCurrentIndex())[FILE_IDX_DESCRIPTION]
-
-	def getList(self):
-		return self.list
-
-	def getListEntry(self, index):
+	def getEntry4Index(self, index):
 		return self.list[index]
 
-	def getTypeOfIndex(self, index):
-		return self.list[index][FILE_IDX_TYPE]
-
-	def getTypeOfPath(self, path):
-		file_type = None
+	def getEntry4Path(self, path):
+		list_entry = None
 		for entry in self.list:
 			if entry[FILE_IDX_PATH] == path:
-				file_type = entry[FILE_IDX_TYPE]
+				list_entry = entry
 				break
-		return file_type
+		return list_entry
 
-	def getExtOfIndex(self, index):
-		return self.list[index][FILE_IDX_EXT]
-
-	def getNameOfService(self, path):
-		name = ""
-		for entry in self.list:
-			if path and entry[FILE_IDX_PATH] == path:
-				name = entry[FILE_IDX_NAME]
-				break
-		return name
-
-	def getLengthOfService(self, path):
-		length = 0
-		for entry in self.list:
-			if path and entry[FILE_IDX_PATH] == path:
-				length = entry[FILE_IDX_LENGTH]
-				break
-		return length
-
-	def getIndexOfPath(self, path):
+	def getIndex4Path(self, path):
 		index = -1
 		for i, entry in enumerate(self.list):
 			if path and entry[FILE_IDX_PATH] == path:
@@ -237,27 +183,15 @@ class MovieList(MovieListGUI, object):
 				break
 		return index
 
-	def getServiceOfPath(self, path):
-		name = ""
-		ext = ""
+	def getService4Path(self, path):
+		service = None
 		for entry in self.list:
-			if path and entry[FILE_IDX_PATH] == path:
-				name = entry[FILE_IDX_NAME]
-				ext = entry[FILE_IDX_EXT]
+			if entry[FILE_IDX_PATH] == path:
+				service = self.getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
 				break
-		return self.getPlayerService(path, name, ext)
+		return service
 
-	def getServiceOfIndex(self, index):
-		#print("MVC: MovieList: getServiceOfIndex: index: %s" % index)
-		path = self.list[index][FILE_IDX_PATH]
-		name = self.list[index][FILE_IDX_NAME]
-		ext = self.list[index][FILE_IDX_EXT]
-		return self.getPlayerService(path, name, ext)
-
-	def getPathOfIndex(self, index):
-		return self.list[index] and self.list[index][FILE_IDX_PATH]
-
-	def getPlayerService(self, path, name="", ext=None):
+	def getService(self, path, name="", ext=None):
 		if ext in plyDVB:
 			service = eServiceReference(sidDVB, 0, path)
 		elif ext in plyDVD:
@@ -272,7 +206,7 @@ class MovieList(MovieListGUI, object):
 			service.setData(0, DEFAULT_VIDEO_PID)
 			service.setData(1, DEFAULT_AUDIO_PID)
 		service.setName(name)
-		#print("MVC: MovieList: getPlayerService: service valid = %s for %s" % (service.valid(), path))
+		#print("MVC: MovieList: getService: service valid = %s for %s" % (service.valid(), path))
 		return service
 
 	def createFileList(self, path):
@@ -317,21 +251,16 @@ class MovieList(MovieListGUI, object):
 			else:
 				sortlist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
 
-		self.list = tmplist + sortlist
-		self.l.setList(self.list)
+		return tmplist + sortlist
 
 	def reloadList(self, path, sort_mode):
 		#print("MVC: MovieList: reloadList: path: %s" % path)
 		self.sort_mode = sort_mode
-		self.resetSelectionList()
+		self.unselectAll()
 		filelist = self.createFileList(path)
-		customlist = self.createCustomList(path)
-		self.sortList(customlist + filelist)
-
-	def reloadListAndDatabase(self, path):
-		# reload files and directories for current path without using cache
-		FileCache.getInstance().reloadDatabase()
-		self.reloadList(path, self.sort_mode)
+		filelist += self.createCustomList(path)
+		self.list = self.sortList(filelist)
+		self.l.setList(self.list)
 
 	def bqtListFolders(self):
 		return FileCache.getInstance().getDirList(self.getBookmarks()[0]).sort()

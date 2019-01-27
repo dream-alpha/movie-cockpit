@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Enhanced Movie Center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-21 11:33+0100\n"
-"PO-Revision-Date: 2019-01-21 11:34+0100\n"
+"POT-Creation-Date: 2019-01-24 10:15+0100\n"
+"PO-Revision-Date: 2019-01-24 10:19+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: de_DE\n"
@@ -898,19 +898,12 @@ msgstr ""
 msgid "File cache reload in progress"
 msgstr ""
 
-#: FileCacheReload.py:49
-msgid "Loading"
-msgstr ""
-
-#: FileCacheReload.py:49 FileOpsProgress.py:65
-msgid "of"
-msgstr ""
-
-#: FileCacheReload.py:64 FileOpsProgress.py:80 FileProgress.py:129
+#: FileCacheReload.py:54 FileOpsProgress.py:80 FileProgress.py:138
+#: MovieCoversDownload.py:54
 msgid "Please wait"
 msgstr ""
 
-#: FileCacheReload.py:71
+#: FileCacheReload.py:61 MovieCoversDownload.py:68
 msgid "Initializing"
 msgstr ""
 
@@ -930,6 +923,10 @@ msgstr ""
 msgid "Copying"
 msgstr ""
 
+#: FileOpsProgress.py:65 FileProgress.py:107 MovieCoversDownload.py:64
+msgid "of"
+msgstr ""
+
 #: FileProgress.py:45
 msgid "Close"
 msgstr ""
@@ -942,12 +939,16 @@ msgstr ""
 msgid "Cancelling, please wait"
 msgstr ""
 
-#: FileProgress.py:123 FileProgress.py:138
-msgid "Cancelled"
+#: FileProgress.py:107
+msgid "Downloading"
 msgstr ""
 
-#: FileProgress.py:138
+#: FileProgress.py:115
 msgid "Done"
+msgstr ""
+
+#: FileProgress.py:132 FileProgress.py:148
+msgid "Cancelled"
 msgstr ""
 
 #: InfoBarSupport.py:65
@@ -983,8 +984,16 @@ msgstr ""
 msgid "Skipping movie, the file does not exist."
 msgstr ""
 
-#: MovieCoverDownload.py:127
-msgid "Downloading cover"
+#: MovieCoversDownload.py:40
+msgid "Movie covers download in progress"
+msgstr ""
+
+#: MovieCoversDownload.py:64
+msgid "Download done"
+msgstr ""
+
+#: MovieCoversDownload.py:64
+msgid "new covers"
 msgstr ""
 
 #: MovieInfoEPG.py:47
@@ -992,95 +1001,95 @@ msgstr ""
 msgid "%d min"
 msgstr ""
 
-#: MovieInfoTMDB.py:70
+#: MovieInfoTMDB.py:71
 msgid "Runtime"
 msgstr ""
 
-#: MovieInfoTMDB.py:72
+#: MovieInfoTMDB.py:73
 msgid "Genre"
 msgstr ""
 
-#: MovieInfoTMDB.py:74
+#: MovieInfoTMDB.py:75
 msgid "Production Countries"
 msgstr ""
 
-#: MovieInfoTMDB.py:76
+#: MovieInfoTMDB.py:77
 msgid "Release Date"
 msgstr ""
 
-#: MovieInfoTMDB.py:78
+#: MovieInfoTMDB.py:79
 msgid "Vote"
 msgstr ""
 
-#: MovieInfoTMDB.py:94 MovieSelection.py:235
+#: MovieInfoTMDB.py:95 MovieSelection.py:235
 msgid "Exit"
 msgstr ""
 
-#: MovieInfoTMDB.py:95 MovieSelection.py:248
+#: MovieInfoTMDB.py:96 MovieSelection.py:248
 msgid "Cursor page up"
 msgstr ""
 
-#: MovieInfoTMDB.py:96 MovieSelection.py:249
+#: MovieInfoTMDB.py:97 MovieSelection.py:249
 msgid "Cursor page down"
 msgstr ""
 
-#: MovieInfoTMDB.py:97
+#: MovieInfoTMDB.py:98
 msgid "Select cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:98
+#: MovieInfoTMDB.py:99
 msgid "Save temporary cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:106
+#: MovieInfoTMDB.py:107
 msgid "Delete cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:107
+#: MovieInfoTMDB.py:108
 msgid "Save cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:108
+#: MovieInfoTMDB.py:109
 msgid "Get covers"
 msgstr ""
 
-#: MovieInfoTMDB.py:109
+#: MovieInfoTMDB.py:110
 msgid "Get cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:114
+#: MovieInfoTMDB.py:115
 msgid "Movie Information TMDb"
 msgstr ""
 
-#: MovieInfoTMDB.py:154 MovieInfoTMDB.py:197 MovieInfoTMDB.py:296
+#: MovieInfoTMDB.py:155 MovieInfoTMDB.py:198 MovieInfoTMDB.py:297
 msgid "Search results for"
 msgstr ""
 
-#: MovieInfoTMDB.py:175
+#: MovieInfoTMDB.py:176
 msgid "Minutes"
 msgstr ""
 
-#: MovieInfoTMDB.py:198
+#: MovieInfoTMDB.py:199
 msgid "Nothing was found"
 msgstr ""
 
-#: MovieInfoTMDB.py:211
+#: MovieInfoTMDB.py:212
 msgid "Cover/TMDB Info exists"
 msgstr ""
 
-#: MovieInfoTMDB.py:213
+#: MovieInfoTMDB.py:214
 msgid "Do you want to replace the existing cover/TMDB info?"
 msgstr ""
 
-#: MovieInfoTMDB.py:239
+#: MovieInfoTMDB.py:240
 msgid "Cover/TMDB info saved successfully"
 msgstr ""
 
-#: MovieInfoTMDB.py:241
+#: MovieInfoTMDB.py:242
 msgid "Saving Cover/TMDB info failed"
 msgstr ""
 
-#: MovieInfoTMDB.py:261
+#: MovieInfoTMDB.py:262
 msgid "Cover/TMDB Info deleted successfully"
 msgstr ""
 
