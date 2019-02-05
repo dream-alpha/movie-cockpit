@@ -24,17 +24,19 @@ import os
 def readFile(path):
 	try:
 		return file(path).read()
-	except IOError as e:
+	except (IOError, TypeError) as e:
 		print("MVC-E: FileUtils: readFile: path: %s, exception: %s" % (path, e))
 		return ""
 
-def writeFile(path, text):
-	f = open(path, "w")
-	f.write(text)
+def writeFile(path, data):
+	try:
+		file(path, "w").write(data)
+		file(path).close()
+	except (IOError, TypeError) as e:
+		print("MVC_E: FileUtils: writeFile: path: %s, excpetion: %s" % (path, e))
 
 def deleteFile(path):
-	if os.path.exists(path):
-		try:
-			os.remove(path)
-		except IOError as e:
-			print("MVC-E: FileUtils: deleteFile: exception: path: %s, exception: %s" % (path, e))
+	try:
+		os.remove(path)
+	except (IOError, TypeError) as e:
+		print("MVC-E: FileUtils: deleteFile: exception: path: %s, exception: %s" % (path, e))

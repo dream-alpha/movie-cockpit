@@ -21,10 +21,10 @@
 
 from __init__ import _
 from time import mktime
-from CutListUtils import unpackCutList
 from Components.config import config
+from CutListUtils import unpackCutList
 from enigma import eServiceCenter, iServiceInformation
-from FileCache import FileCache, TYPE_ISFILE, str2date
+from FileCache import FileCache, FILE_TYPE_IS_FILE, str2date
 
 instance = None
 
@@ -106,7 +106,6 @@ class Info(object):
 		self.__size = size
 		self.__tags = tags
 		self.__cut_list = unpackCutList(cuts)
-		self.__id = 0
 
 	def getName(self):
 		#EventName NAME
@@ -118,6 +117,9 @@ class Info(object):
 	def getTags(self):
 		return self.__tags
 
+	def getEventId(self):
+		return 0
+
 	def getEventName(self):
 		return self.__name
 
@@ -128,10 +130,6 @@ class Info(object):
 	def getExtendedDescription(self):
 		#EventName EXTENDED_DESCRIPTION
 		return self.__extendeddescription
-
-	def getEventId(self):
-		#EventName ID
-		return self.__id
 
 	def getBeginTimeString(self):
 		return self.__date.strftime(config.MVC.movie_date_format.value)
@@ -146,7 +144,7 @@ class Info(object):
 		return self.getLength()
 
 	def getSize(self):
-		if self.__filetype == TYPE_ISFILE:
+		if self.__filetype == FILE_TYPE_IS_FILE:
 			size = self.__size
 		else:
 			_count, size = FileCache.getInstance().getCountSize(self.path)

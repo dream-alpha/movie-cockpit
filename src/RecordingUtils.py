@@ -31,9 +31,8 @@ def isRecording(path):
 	#print("MVC: RecordingUtils: isRecording: path: %s" % path)
 	timer = None
 	if path:
-		filename = os.path.basename(path)
 		for __timer in NavigationInstance.instance.RecordTimer.timer_list:
-			if __timer.isRunning() and not __timer.justplay and filename == os.path.basename(__timer.Filename):
+			if __timer.isRunning() and not __timer.justplay and path == __timer.Filename:
 				timer = __timer
 				break
 	return timer
@@ -60,15 +59,6 @@ def isCutting(path):
 	#print("MVC: RecordingUtils: isCutting: path: %s" % path)
 	filename, _ext = os.path.splitext(path)
 	return (filename.endswith("_") and not os.path.exists(filename + ".eit"))
-
-
-def adjustTimerPathAfterMove(source_path, destination_path):
-	timer = isRecording(source_path)
-	if timer:
-		timer.dirname = os.path.dirname(destination_path)
-		timer.move_recording_cmd = 'mv "' + timer.Filename + '."* "' + timer.dirname + '/"'
-		timer.Filename = destination_path
-		print("MVC-I: RecordingUtils adjustTimerPathAfterMove: fixed path: " + destination_path)
 
 
 def getRecording(path, include_margin_before=True):

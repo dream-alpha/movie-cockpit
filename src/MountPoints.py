@@ -19,9 +19,9 @@
 #	<http://www.gnu.org/licenses/>.
 
 import os
-from Components.config import config
+from Bookmarks import Bookmarks
 
-class MountPoints(object):
+class MountPoints(Bookmarks, object):
 
 	def __disk_usage(self, path):
 		st = os.statvfs(path)
@@ -31,26 +31,29 @@ class MountPoints(object):
 		percent_used = round((float(used) / total) * 100, 1) if total > 0 else 0
 		return percent_used, free
 
-	def isMountPoint(self, path, first=True):
+	def getMountPoint(self, path, first=True):
 		if first:
 			path = os.path.realpath(path)
 		if os.path.ismount(path) or not path:
 			return path
-		return self.isMountPoint(os.path.dirname(path), False)
+		return self.getMountPoint(os.path.dirname(path), False)
 
 	def getMountPointsSpaceUsedPercent(self):
 		space_used_percent = ""
-		for videodir in config.movielist.videodirs.value:
-			mountpoint = self.isMountPoint(videodir)
-			percent_used = self.getMountPointSpaceUsedPercent(mountpoint)
-			if space_used_percent != "":
-				space_used_percent += ", "
-			space_used_percent += mountpoint + (": %.1f" % percent_used) + "%"
-		config.MVC.disk_space_info.value = space_used_percent
+		bookmarks = self.getBookmarks()
+		mountpoints = []
+		for bookmark in bookmarks:
+			mountpoint = self.getMountPoint(bookmark)
+			if mountpoint not in mountpoints:
+				mountpoints.append(mountpoint)
+				percent_used = self.__getMountPointSpaceUsedPercent(mountpoint)
+				if space_used_percent != "":
+					space_used_percent += ", "
+				space_used_percent += mountpoint + (": %.1f" % percent_used) + "%"
 		#print("MVC: MountPoints: getMountPointsSpaceUsedPercent: space_used_percent: %s" % space_used_percent)
 		return space_used_percent
 
-	def getMountPointSpaceUsedPercent(self, path):
+	def __getMountPointSpaceUsedPercent(self, path):
 		percent_used = 0
 		if os.path.exists(path):
 			percent_used, _free = self.__disk_usage(path)

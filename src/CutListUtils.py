@@ -23,8 +23,7 @@ import os
 import struct
 import shutil
 from bisect import insort
-from Components.config import config
-from FileUtils import readFile, deleteFile
+from FileUtils import readFile, writeFile, deleteFile
 
 cutsParser = struct.Struct('>QI')  # big-endian, 64-bit PTS and 32-bit type
 
@@ -38,53 +37,34 @@ CUT_TYPE_LAST = 3
 CUT_TYPE_LENGTH = 5
 
 
-def readCutsFile(path):
-	#print("MVC: CutListUtils: readCutsFile: " + path)
-	data = ""
-	if os.path.isfile(path):
-		data = readFile(path)
-	return data
-
-
-def writeCutsFile(path, data):
-	f = open(path, 'wb')
-	f.write(data)
-	f.close()
-
-
-def backupCutsFilePath(path):
-	return path + ".save"
-
-
 def backupCutsFile(path):
-	backup_path = backupCutsFilePath(path)
+	backup_path = path + ".cuts.save"
 	if os.path.exists(path):
 		shutil.copy2(path, backup_path)
 
 
 def mergeBackupCutsFile(path, cut_list):
 	#print("MVC: CutListUtils: mergeBackupCutsFile")
-	backup_cut_file = backupCutsFilePath(path)
+	backup_cut_file = path + ".cuts.save"
 	if os.path.exists(backup_cut_file):
 		#print("MVC: CutListUtils: mergeBackupCutsFile: reading from Backup-File")
-		data = readCutsFile(backup_cut_file)
+		data = readFile(backup_cut_file)
 		backup_cut_list = unpackCutList(data)
 		#print("MVC: CutListUtils: mergeBackupCutsFile: backup_cut_list: %s" % backup_cut_list)
 		cut_list = mergeCutList(cut_list, backup_cut_list)
-		writeCutsFile(path, packCutList(cut_list))
+		writeFile(path + ".cuts", packCutList(cut_list))
 		deleteFile(backup_cut_file)
 	else:
 		#print("MVC: CutListUtils: mergeBackupCutsFile: no Backup-File found: " + backup_cut_file)
 		pass
 	return cut_list
 
-def verifyCutList(cut_list):
-	if config.MVC.movie_ignore_firstcuts.value:
-		# Don't care about the first 10 seconds
-		for cp in cut_list:
-			pts, _what = cp
-			if pts < secondsToPts(10):
-				cut_list.remove(cp)
+def removeFirstMarks(cut_list):
+	# Don't care about the first 10 seconds
+	for cp in cut_list:
+		pts, _what = cp
+		if pts < secondsToPts(10):
+			cut_list.remove(cp)
 	return cut_list
 
 

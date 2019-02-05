@@ -114,88 +114,90 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		#    _                                                      , config element
 		#          _                                                ,                                      , function called on save
 		#          _                                                ,                                      ,                       , function called if user has pressed OK
-		#          _                                                ,                                      ,                       ,                      , usage setup level from E2
-		#          _                                                ,                                      ,                       ,                      ,   0: simple+
-		#          _                                                ,                                      ,                       ,                      ,   1: intermediate+
-		#          _                                                ,                                      ,                       ,                      ,   2: expert+
-		#          _                                                ,                                      ,                       ,                      ,       , depends on relative parent entries
-		#          _                                                ,                                      ,                       ,                      ,       ,   parent config value < 0 = true
-		#          _                                                ,                                      ,                       ,                      ,       ,   parent config value > 0 = false
-		#          _                                                ,                                      ,                       ,                      ,       ,             , _context sensitive help text
-		#          _                                                ,                                      ,                       ,                      ,       ,             ,                                                         ,
-		#       _ 0                                                 , 1                                    , 2                     , 3                    , 4     , 5           , 6                                                       ,
+		#          _                                                ,                                      ,                       ,                       , usage setup level from E2
+		#          _                                                ,                                      ,                       ,                       ,   0: simple+
+		#          _                                                ,                                      ,                       ,                       ,   1: intermediate+
+		#          _                                                ,                                      ,                       ,                       ,   2: expert+
+		#          _                                                ,                                      ,                       ,                       ,       , depends on relative parent entries
+		#          _                                                ,                                      ,                       ,                       ,       ,   parent config value < 0 = true
+		#          _                                                ,                                      ,                       ,                       ,       ,   parent config value > 0 = false
+		#          _                                                ,                                      ,                       ,                       ,       ,             , _context sensitive help text
+		#          _                                                ,                                      ,                       ,                       ,       ,             ,                                                         ,
+		#       _ 0                                                 , 1                                    , 2                     , 3                     , 4     , 5           , 6                                                       ,
 		self.MVCConfig = [
-			(self.section                                       , _("GENERAL")                        , None                  , None                  , 0     , []          , ""),
-			(_("About")                                         , config.MVC.fake_entry               , None                  , self.showInfo         , 0     , []          , _("HELP About")),
-			(_("Disable plugin")                                , config.MVC.ml_disable               , self.needsRestart     , None                  , 1     , []          , _("Help Disable Plugin")),
-			(_("Start plugin with key")                         , config.MVC.movie_launch             , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with key")),
-			(_("Show settings in extensions menu")              , config.MVC.extmenu_plugin           , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
-			(_("Show plugin in extensions menu")                , config.MVC.extmenu_list             , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
-			(_("Movie home at start")                           , config.MVC.start_home               , None                  , None                  , 0     , []          , _("Help Movie home at start")),
-			(_("Default sort mode")                             , config.MVC.movie_sort               , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
-			(self.section                                       , _("KEY-MAPPING")                    , None                  , None                  , 0     , []          , ""),
-			(_("Bouquet buttons behavior")                      , config.MVC.bqt_keys                 , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
-			(_("List entries to skip")                          , config.MVC.list_skip_size           , None                  , None                  , 0     , []          , _("Help List entries to skip")),
-			(_("Red button function")                           , config.MVC.movie_shortredfunc       , None                  , None                  , 0     , []          , _("Help Red button function")),
-			(_("Long red button function")                      , config.MVC.movie_longredfunc        , None                  , None                  , 0     , []          , _("Help Long Red button function")),
-			(_("Green button function")                         , config.MVC.movie_shortgreenfunc     , None                  , None                  , 0     , []          , _("Help Green button function")),
-			(_("Long green button function")                    , config.MVC.movie_longgreenfunc      , None                  , None                  , 0     , []          , _("Help Long Green button function")),
-			(_("Yellow button function")                        , config.MVC.movie_shortyellowfunc    , None                  , None                  , 0     , []          , _("Help Yellow button function")),
-			(_("Long yellow button function")                   , config.MVC.movie_longyellowfunc     , None                  , None                  , 0     , []          , _("Help Long Yellow button function")),
-			(_("Blue button function")                          , config.MVC.movie_shortbluefunc      , None                  , None                  , 0     , []          , _("Help Blue button function")),
-			(_("Long blue button function")                     , config.MVC.movie_longbluefunc       , None                  , None                  , 0     , []          , _("Help Long Blue button function")),
-			(_("Info button function")                          , config.MVC.movie_shortinfofunc      , None                  , None                  , 0     , []          , _("Help Info Button")),
-			(_("Long info button function")                     , config.MVC.movie_longinfofunc       , None                  , None                  , 0     , []          , _("Help Long Info Button")),
-			(self.section                                       , _("PLAYBACK")                       , None                  , None                  , 0     , []          , ""),
-			(_("No resume below 10 seconds")                    , config.MVC.movie_ignore_firstcuts   , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
-			(_("Jump to first mark when playing movie")         , config.MVC.movie_jump_first_mark    , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
-			(_("Zap to Live TV of recording")                   , config.MVC.record_eof_zap           , None                  , None                  , 1     , []          , _("Help Zap to Live TV of recording")),
-			(_("Automatic timers list cleaning")                , config.MVC.timer_autoclean          , None                  , None                  , 1     , []          , _("Help Automatic timers list cleaning")),
-			(self.section                                       , _("DISPLAY-SETTINGS")               , None                  , None                  , 0     , []          , ""),
-			(_("Show directories")                              , config.MVC.directories_show         , None                  , None                  , 0     , []          , _("Help Show directories")),
-			(_("Show directories within movie list")            , config.MVC.directories_ontop        , None                  , None                  , 0     , [-1]        , _("Help Show directories within movielist")),
-			(_("Show directories information")                  , config.MVC.directories_info         , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
-			(_("Cursor predictive move after selection")        , config.MVC.moviecenter_selmove      , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
-			(_("Description field update delay")                , config.MVC.movie_description_delay  , None                  , None                  , 2     , []          , _("Help Description field update delay")),
-			(self.section                                       , _("SKIN-SETTINGS")                  , None                  , None                  , 0     , []          , ""),
-			(_("Skin layout")                                   , config.MVC.skin_layout              , None                  , None                  , 0     , []          , _("Help Skin layout")),
-			(_("Show mountpoints")                              , config.MVC.movie_mountpoints        , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
-			(_("Date format")                                   , config.MVC.movie_date_format        , None                  , None                  , 0     , []          , _("Help Date format")),
-			(_("Horizontal alignment for date field")	    , config.MVC.datetext_alignment       , None                  , None                  , 0     , []          , _("Help Horizontal alignment for date field")),
-			(_("Show movie icons")                              , config.MVC.movie_icons              , None                  , None                  , 0     , []          , _("Help Show movie icons")),
-			(_("Show link arrow")                               , config.MVC.link_icons               , None                  , None                  , 0     , [-1]        , _("Help Show link arrow")),
-			(_("Show movie picons")                             , config.MVC.movie_picons             , None                  , None                  , 0     , []          , _("Help Show movie picons")),
-			(_("Path to movie picons")                          , config.MVC.movie_picons_path        , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Path to movie picons")),
-			(_("Show movie progress")                           , config.MVC.movie_progress           , None                  , None                  , 0     , []          , _("Help Show movie progress")),
-			(_("Watching in progress percent")                  , config.MVC.movie_watching_percent   , None                  , None                  , 0     , [-1]        , _("Help Short watching percent")),
-			(_("Finished watching percent")                     , config.MVC.movie_finished_percent   , None                  , None                  , 0     , [-2]        , _("Help Finished watching percent")),
-			(_("Default color for recording movie")             , config.MVC.color_recording          , None                  , None                  , 0     , [-3]        , _("Help Default color recording")),
-			(_("Default color for highlighted movie")           , config.MVC.color_highlight          , None                  , None                  , 0     , [-4]        , _("Help Default color highlighted")),
-			(self.section                                       , _("MOVIE-COVER")                    , None                  , None                  , 0     , []          , ""),
-			(_("Show fallback cover")                           , config.MVC.cover_fallback           , None                  , None                  , 0     , []          , _("Help Cover fallback")),
-			(_("Search cover language")                         , config.MVC.cover_language           , None                  , None                  , 0     , []          , _("Help Cover language")),
-			(_("Search cover size")                             , config.MVC.cover_size               , None                  , None                  , 0     , []          , _("Help Cover size")),
-			(_("Download replace existing cover")               , config.MVC.cover_replace_existing   , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
-			(_("Download cover to flash")                       , config.MVC.cover_flash              , None                  , None                  , 0     , []          , _("Help Cover in flash")),
-			(_("Download cover bookmark")                       , config.MVC.cover_bookmark           , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Cover bookmark")),
-			(_("Download cover automatically for recording")    , config.MVC.cover_auto_download      , None                  , None                  , 0     , []          , _("Help Cover auto download")),
-			(self.section                                       , _("TRASHCAN")                       , None                  , None                  , 0     , []          , ""),
-			(_("Enable trashcan")                               , config.MVC.movie_trashcan_enable    , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
-			(_("Show trashcan directory")                       , config.MVC.movie_trashcan_show      , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
-			(_("Show trashcan information")                     , config.MVC.movie_trashcan_info      , None                  , None                  , 0     , [-2, -1]    , _("Help Dynamic trashcan")),
-			(_("Enable auto trashcan cleanup")                  , config.MVC.movie_trashcan_clean     , None                  , None                  , 0     , [-3]        , _("Help Enable auto trashcan cleanup")),
-			(_("File retention period in trashcan")             , config.MVC.movie_trashcan_retention , None                  , None                  , 0     , [-4, -1]    , _("Help How many days files may remain in trashcan")),
-			(self.section                                       , _("LANGUAGE")                       , None                  , None                  , 1     , []          , ""),
-			(_("Preferred EPG language")                        , config.MVC.epglang                  , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
-			(_("Enable playback auto-subtitling")               , config.MVC.autosubs                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
-			(_("Primary playback subtitle language")            , config.MVC.sublang1                 , None                  , None                  , 1     , [-1]        , _("Help Primary playback subtitle language")),
-			(_("Secondary playback subtitle language")          , config.MVC.sublang2                 , None                  , None                  , 1     , [-2]        , _("Help Secondary playback subtitle language")),
-			(_("Tertiary playback subtitle language")           , config.MVC.sublang3                 , None                  , None                  , 1     , [-3]        , _("Help Tertiary playback subtitle language")),
-			(_("Enable playback auto-language selection")       , config.MVC.autoaudio                , None                  , None                  , 1     , []          , _("Help Enable playback auto-language selection")),
-			(_("Enable playback AC3-track first")               , config.MVC.autoaudio_ac3            , None                  , None                  , 1     , [-1]        , _("Help Enable playback AC3-track first")),
-			(_("Primary playback audio language")               , config.MVC.audlang1                 , None                  , None                  , 1     , [-2]        , _("Help Primary playback audio language")),
-			(_("Secondary playback audio language")             , config.MVC.audlang2                 , None                  , None                  , 1     , [-3]        , _("Help Secondary playback audio language")),
-			(_("Tertiary playback audio language")              , config.MVC.audlang3                 , None                  , None                  , 1     , [-4]        , _("Help Tertiary playback audio language")),
+			(self.section                                       , _("GENERAL")                         , None                  , None                  , 0     , []          , ""),
+			(_("About")                                         , config.MVC.fake_entry                , None                  , self.showInfo         , 0     , []          , _("HELP About")),
+			(_("Disable plugin")                                , config.MVC.plugin_disable            , self.needsRestart     , None                  , 1     , []          , _("Help Disable Plugin")),
+			(_("Start plugin with key")                         , config.MVC.plugin_launch_key         , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with key")),
+			(_("Show settings in extensions menu")              , config.MVC.plugin_extmenu_settings   , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
+			(_("Show plugin in extensions menu")                , config.MVC.plugin_extmenu_plugin     , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
+			(_("Movie home at start")                           , config.MVC.list_start_home           , None                  , None                  , 0     , []          , _("Help Movie home at start")),
+			(_("Default sort mode")                             , config.MVC.list_sort                 , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
+			(self.section                                       , _("KEY-MAPPING")                     , None                  , None                  , 0     , []          , ""),
+			(_("Bouquet buttons behavior")                      , config.MVC.list_bouquet_keys         , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
+			(_("List entries to skip")                          , config.MVC.list_skip_size            , None                  , None                  , 0     , []          , _("Help List entries to skip")),
+			(_("Red button function")                           , config.MVC.key_shortredfunc          , None                  , None                  , 0     , []          , _("Help Red button function")),
+			(_("Long red button function")                      , config.MVC.key_longredfunc           , None                  , None                  , 0     , []          , _("Help Long Red button function")),
+			(_("Green button function")                         , config.MVC.key_shortgreenfunc        , None                  , None                  , 0     , []          , _("Help Green button function")),
+			(_("Long green button function")                    , config.MVC.key_longgreenfunc         , None                  , None                  , 0     , []          , _("Help Long Green button function")),
+			(_("Yellow button function")                        , config.MVC.key_shortyellowfunc       , None                  , None                  , 0     , []          , _("Help Yellow button function")),
+			(_("Long yellow button function")                   , config.MVC.key_longyellowfunc        , None                  , None                  , 0     , []          , _("Help Long Yellow button function")),
+			(_("Blue button function")                          , config.MVC.key_shortbluefunc         , None                  , None                  , 0     , []          , _("Help Blue button function")),
+			(_("Long blue button function")                     , config.MVC.key_longbluefunc          , None                  , None                  , 0     , []          , _("Help Long Blue button function")),
+			(_("Info button function")                          , config.MVC.key_shortinfofunc         , None                  , None                  , 0     , []          , _("Help Info Button")),
+			(_("Long info button function")                     , config.MVC.key_longinfofunc          , None                  , None                  , 0     , []          , _("Help Long Info Button")),
+			(self.section                                       , _("PLAYBACK")                        , None                  , None                  , 0     , []          , ""),
+			(_("No resume below 10 seconds")                    , config.MVC.movie_ignore_firstcuts    , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
+			(_("Jump to first mark when playing movie")         , config.MVC.movie_jump_first_mark     , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
+			(_("Zap to live TV of recording")                   , config.MVC.record_eof_zap            , None                  , None                  , 1     , []          , _("Help Zap to Live TV of recording")),
+			(_("Automatic timers list cleaning")                , config.MVC.timer_autoclean           , None                  , None                  , 1     , []          , _("Help Automatic timers list cleaning")),
+			(self.section                                       , _("DISPLAY-SETTINGS")                , None                  , None                  , 0     , []          , ""),
+			(_("Show directories")                              , config.MVC.directories_show          , None                  , None                  , 0     , []          , _("Help Show directories")),
+			(_("Show directories within movie list")            , config.MVC.directories_ontop         , None                  , None                  , 0     , [-1]        , _("Help Show directories within movielist")),
+			(_("Show directories information")                  , config.MVC.directories_info          , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
+			(_("Cursor predictive move after selection")        , config.MVC.list_selmove              , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
+			(_("Description field update delay")                , config.MVC.movie_description_delay   , None                  , None                  , 2     , []          , _("Help Description field update delay")),
+			(self.section                                       , _("SKIN-SETTINGS")                   , None                  , None                  , 0     , []          , ""),
+			(_("Skin layout")                                   , config.MVC.skin_layout               , None                  , None                  , 0     , []          , _("Help Skin layout")),
+			(_("Show mountpoints")                              , config.MVC.movie_mountpoints         , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
+			(_("Date format")                                   , config.MVC.movie_date_format         , None                  , None                  , 0     , []          , _("Help Date format")),
+			(_("Horizontal alignment for date field")	    , config.MVC.movie_date_text_alignment , None                  , None                  , 0     , []          , _("Help Horizontal alignment for date field")),
+			(_("Show movie icons")                              , config.MVC.movie_icons               , None                  , None                  , 0     , []          , _("Help Show movie icons")),
+			(_("Show movie picons")                             , config.MVC.movie_picons              , None                  , None                  , 0     , []          , _("Help Show movie picons")),
+			(_("Path to movie picons")                          , config.MVC.movie_picons_path         , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Path to movie picons")),
+			(_("Show movie progress")                           , config.MVC.movie_progress            , None                  , None                  , 0     , []          , _("Help Show movie progress")),
+			(_("Watching in progress percent")                  , config.MVC.movie_watching_percent    , None                  , None                  , 0     , [-1]        , _("Help Short watching percent")),
+			(_("Finished watching percent")                     , config.MVC.movie_finished_percent    , None                  , None                  , 0     , [-2]        , _("Help Finished watching percent")),
+			(_("Default color for recording movie")             , config.MVC.color_recording           , None                  , None                  , 0     , []          , _("Help Default color recording")),
+			(_("Default color for highlighted recording movie") , config.MVC.color_recording_highlight , None                  , None                  , 0     , []          , _("Help Default color recording highlighted")),
+			(_("Default color for highlighted movie")           , config.MVC.color_highlight           , None                  , None                  , 0     , []          , _("Help Default color highlighted")),
+			(_("Default color for selected movie")              , config.MVC.color_selected            , None                  , None                  , 0     , []          , _("Help Default color selected")),
+			(_("Default color for highlighted selected movie")  , config.MVC.color_selected_highlight  , None                  , None                  , 0     , []          , _("Help Default color selected highlighted")),
+			(self.section                                       , _("MOVIE-COVER")                     , None                  , None                  , 0     , []          , ""),
+			(_("Show fallback cover")                           , config.MVC.cover_fallback            , None                  , None                  , 0     , []          , _("Help Cover fallback")),
+			(_("Search cover language")                         , config.MVC.cover_language            , None                  , None                  , 0     , []          , _("Help Cover language")),
+			(_("Search cover size")                             , config.MVC.cover_size                , None                  , None                  , 0     , []          , _("Help Cover size")),
+			(_("Download replace existing cover")               , config.MVC.cover_replace_existing    , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
+			(_("Download cover to flash")                       , config.MVC.cover_flash               , None                  , None                  , 0     , []          , _("Help Cover in flash")),
+			(_("Download cover bookmark")                       , config.MVC.cover_bookmark            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Cover bookmark")),
+			(_("Download cover automatically for recording")    , config.MVC.cover_auto_download       , None                  , None                  , 0     , []          , _("Help Cover auto download")),
+			(self.section                                       , _("TRASHCAN")                        , None                  , None                  , 0     , []          , ""),
+			(_("Enable trashcan")                               , config.MVC.trashcan_enable           , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
+			(_("Show trashcan directory")                       , config.MVC.trashcan_show             , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
+			(_("Show trashcan information")                     , config.MVC.trashcan_info             , None                  , None                  , 0     , [-2, -1]    , _("Help Trashcan info")),
+			(_("Enable auto trashcan cleanup")                  , config.MVC.trashcan_clean            , None                  , None                  , 0     , [-3]        , _("Help Enable auto trashcan cleanup")),
+			(_("File retention period in trashcan")             , config.MVC.trashcan_retention        , None                  , None                  , 0     , [-4, -1]    , _("Help How many days files may remain in trashcan")),
+			(self.section                                       , _("LANGUAGE")                        , None                  , None                  , 1     , []          , ""),
+			(_("Preferred EPG language")                        , config.MVC.epglang                   , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
+			(_("Enable playback auto-subtitling")               , config.MVC.autosubs                  , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
+			(_("Primary playback subtitle language")            , config.MVC.sublang1                  , None                  , None                  , 1     , [-1]        , _("Help Primary playback subtitle language")),
+			(_("Secondary playback subtitle language")          , config.MVC.sublang2                  , None                  , None                  , 1     , [-2]        , _("Help Secondary playback subtitle language")),
+			(_("Tertiary playback subtitle language")           , config.MVC.sublang3                  , None                  , None                  , 1     , [-3]        , _("Help Tertiary playback subtitle language")),
+			(_("Enable playback auto-language selection")       , config.MVC.autoaudio                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-language selection")),
+			(_("Enable playback AC3-track first")               , config.MVC.autoaudio_ac3             , None                  , None                  , 1     , [-1]        , _("Help Enable playback AC3-track first")),
+			(_("Primary playback audio language")               , config.MVC.audlang1                  , None                  , None                  , 1     , [-2]        , _("Help Primary playback audio language")),
+			(_("Secondary playback audio language")             , config.MVC.audlang2                  , None                  , None                  , 1     , [-3]        , _("Help Secondary playback audio language")),
+			(_("Tertiary playback audio language")              , config.MVC.audlang3                  , None                  , None                  , 1     , [-4]        , _("Help Tertiary playback audio language")),
 		]
 
 	def handleInputHelpers(self):
@@ -330,7 +332,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 								if self.list[i + parent][2](self.MVCConfig[i + parent][1]):
 									# Stop exiting, user has to correct the config
 									return
-						except Exception:
+						except Exception as e:
+							print("MVC-E: ConfigScreen: keySaveNew: i: %s, exception: %s" % (i, e))
 							continue
 					entry[1].save()
 		configfile.save()
@@ -345,11 +348,12 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			eServiceEvent.setEPGLanguage(config.MVC.epglang.value)
 
 	def activateTrashcan(self, element):
-		if element:
+		if element.value:
 			rc = Trashcan.getInstance().enableTrashcan()
 			if rc > 0:
 				msg = _("Cannot create trashcan") + "\n" + _("Check mounts and permissions")
 				self.session.open(MessageBox, msg, MessageBox.TYPE_INFO, 10)
+			config.MVC.trashcan_enable.save()
 
 	def needsRestart(self, _element=None):
 		self.needs_restart_flag = True

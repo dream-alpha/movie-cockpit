@@ -30,7 +30,7 @@ from Screens.InfoBarGenerics import InfoBarExtensions, InfoBarSeek, InfoBarMenu,
 	InfoBarPiP, InfoBarEPG, InfoBarShowHide, InfoBarNotifications, InfoBarServiceNotifications, Notifications
 from Screens.MessageBox import MessageBox
 from DelayedFunction import DelayedFunction
-from CutListUtils import secondsToPts, ptsToSeconds, verifyCutList, getCutListLast
+from CutListUtils import secondsToPts, ptsToSeconds, removeFirstMarks, getCutListLast
 from CutList import CutList
 
 
@@ -46,7 +46,9 @@ class InfoBarTimeshift(object):
 
 class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
 	InfoBarSimpleEventView, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin,
-	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG, object):
+	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG, CutList, object):
+
+	ENABLE_RESUME_SUPPORT = True
 
 	def __init__(self):
 		self.allowPiP = True
@@ -90,15 +92,19 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			self.session.nav.playService(service)
 
 	# InfoBarCueSheetSupport
+
+	def getCutList(self):
+		return self.cut_list
+
 	def downloadCuesheet(self):
 		#print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
-		self.cut_list = CutList(self.service.getPath()).getCutList()
+		self.cut_list = self.fetchCutList(self.service.getPath())
 		#print("MVC: InfoBarSupport: downloadCuesheet: cut_list: %s" % self.cut_list)
 
 	def uploadCuesheet(self):
 		#print("MVC: InfoBarSupport: uploadCuesheet: self.service: %s" % (self.service.getPath() if self.service else None))
 		#print("MVC: InfoBarSupport: uploadCuesheet: cut_list: %s" % self.cut_list)
-		CutList(self.service.getPath()).setCutList(self.cut_list)
+		self.writeCutList(self.service.getPath(), self.cut_list)
 
 	def __serviceStarted(self):
 		print("MVC-I: InfoBarSupport: __serviceStarted: self.is_closing: %s" % self.is_closing)
@@ -108,32 +114,31 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 			if config.usage.on_movie_start.value == "beginning" and config.MVC.movie_jump_first_mark.value:
 				self.jumpToFirstMark()
 			else:
-				if self.ENABLE_RESUME_SUPPORT:
-					last = getCutListLast(verifyCutList(self.cut_list))
-					if last > 0:
-						self.resume_point = last
-						l = ptsToSeconds(last)
-						val = config.usage.on_movie_start.value
-						if val == "ask" or val == "ask yes" or val == "ask no":
-							Notifications.AddNotificationWithCallback(
-								self.playLastCallback,
-								MessageBox,
-								_("Do you want to resume this playback?")
-								+ "\n"
-								+ (_("Resume position at %s") % ("%d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60))),
-								timeout=10,
-								default=not (val == "ask no")
-							)
-						elif val == "resume":
-							Notifications.AddNotificationWithCallback(
-								self.playLastCallback,
-								MessageBox,
-								_("Resuming playback"),
-								timeout=2,
-								type=MessageBox.TYPE_INFO
-							)
-					elif config.MVC.movie_jump_first_mark.value:
-						self.jumpToFirstMark()
+				last = 0
+				if config.MVC.movie_ignore_firstcuts.value:
+					last = getCutListLast(removeFirstMarks(self.cut_list))
+				if last > 0:
+					self.resume_point = last
+					l = ptsToSeconds(last)
+					val = config.usage.on_movie_start.value
+					if val == "ask" or val == "ask yes" or val == "ask no":
+						Notifications.AddNotificationWithCallback(
+							self.playLastCallback,
+							MessageBox,
+							_("Do you want to resume this playback?")
+							+ "\n"
+							+ (_("Resume position at %s") % ("%d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60))),
+							timeout=10,
+							default=not (val == "ask no")
+						)
+					elif val == "resume":
+						Notifications.AddNotificationWithCallback(
+							self.playLastCallback,
+							MessageBox,
+							_("Resuming playback"),
+							timeout=2,
+							type=MessageBox.TYPE_INFO
+						)
 				elif config.MVC.movie_jump_first_mark.value:
 					self.jumpToFirstMark()
 

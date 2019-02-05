@@ -37,7 +37,7 @@ class MovieCoversDownload(MovieCoverDownload, FileProgress, Bookmarks, object):
 		self.covers_found = 0
 		self.skinName = ["MovieCoversDownload"]
 		self.skin = readFile(getSkinPath("FileCacheReload.xml"))
-		self.setTitle(_("Movie covers download in progress") + " ...")
+		self.setTitle(_("Download movie covers") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)
 

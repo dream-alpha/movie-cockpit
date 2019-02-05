@@ -211,7 +211,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 				self.session.openWithCallback(
 					self.saveCallback,
 					MessageBox,
-					_("Cover/TMDB Info exists")
+					_("Cover/TMDB Info already exists")
 					+ "\n"
 					+ _("Do you want to replace the existing cover/TMDB info?"),
 					MessageBox.TYPE_YESNO

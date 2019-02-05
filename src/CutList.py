@@ -21,11 +21,8 @@
 
 import os
 from RecordingUtils import isRecording
-from CutListUtils import packCutList, unpackCutList, readCutsFile, writeCutsFile,\
-	replaceLast, replaceLength, removeMarks, mergeBackupCutsFile, verifyCutList, backupCutsFile
-from FileUtils import deleteFile
-
-# [Cutlist.Workaround] Creates a backup of the cutlist during recording and merge it with the cutlist-file from enigma after recording
+from CutListUtils import packCutList, unpackCutList, replaceLast, replaceLength, removeMarks, mergeBackupCutsFile, backupCutsFile
+from FileUtils import readFile, writeFile, deleteFile
 
 # http://git.opendreambox.org/?p=enigma2.git;a=blob;f=doc/FILEFORMAT
 
@@ -35,87 +32,72 @@ from FileUtils import deleteFile
 
 class CutList(object):
 
-	ENABLE_RESUME_SUPPORT = True
-
-	def __init__(self, path=None):
-		#print("MVC: CutList: __init__: path: %s" % path)
-		self.cut_list = []
-		self.cut_file = None
-		if path:
-			self.cut_file = path + ".cuts"
-			self.cut_list = self.__readCutFile(self.cut_file)
-			#print("MVC: CutList: __init__: cuts were read form cache: %s" % self.cut_list)
-
-	def updateFromCuesheet(self):
+	def updateFromCuesheet(self, path):
 		#print("MVC: CutList: updateFromCuesheet")
-		self.cut_list = mergeBackupCutsFile(self.cut_file, self.cut_list)
-		data = packCutList(self.cut_list)
-		from FileCache import FileCache
-		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
+		cut_list = mergeBackupCutsFile(path, self.__getCutFile(path))
+		self.__putCutFile(path, cut_list)
 
-	def setCutList(self, cut_list):
+	def writeCutList(self, path, cut_list):
 		#print("MVC: CutList: setCutList: " + str(cut_list))
-		self.cut_list = cut_list
-		self.__writeCutFile(self.cut_file, self.cut_list)
+		self.__putCutFile(path, cut_list)
 
-	def getCutList(self):
-		return self.cut_list
+	def fetchCutList(self, path):
+		return self.__getCutFile(path)
 
-	def resetLastCutList(self):
-		#print("MVC: resetLastCutList: self.cut_file: %s, self.cut_list: %s" % (self.cut_file, self.cut_list))
-		self.cut_list = replaceLast(self.cut_list, 0)
-		#print("MVC: resetLastCutList: self.cut_list: %s" % self.cut_list)
-		self.__writeCutFile(self.cut_file, self.cut_list)
+	def resetLastCutList(self, path):
+		#print("MVC: resetLastCutList: path: %s, cut_list: %s" % (path, cut_list))
+		cut_list = replaceLast(self.__getCutFile(path), 0)
+		#print("MVC: resetLastCutList: cut_list: %s" % cut_list)
+		self.__putCutFile(path, cut_list)
 
-	def updateCutList(self, play, length):
+	def updateCutList(self, path, play, length):
 		#print("MVC: CutList: updateCutList: play: " + str(play) + ", length: " + str(length))
-		self.cut_list = replaceLast(self.cut_list, play)
-		self.cut_list = replaceLength(self.cut_list, length)
-		self.__writeCutFile(self.cut_file, self.cut_list)
+		cut_list = replaceLast(self.__getCutFile(path), play)
+		cut_list = replaceLength(cut_list, length)
+		self.__putCutFile(path, cut_list)
 
-	def removeMarksCutList(self):
-		self.cut_list = removeMarks(self.cut_list)
-		self.__writeCutFile(self.cut_file, self.cut_list)
+	def removeMarksCutList(self, path):
+		cut_list = removeMarks(self.__getCutFile(path))
+		self.__putCutFile(path, cut_list)
 
-	def deleteFileCutList(self):
+	def deleteFileCutList(self, path):
 		from FileCache import FileCache
 		data = ""
-		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
-		deleteFile(self.cut_file)
+		FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+		deleteFile(path)
 
-	def reloadCutListFromFile(self):
+	def reloadCutListFromFile(self, path):
 		from FileCache import FileCache
-		data = readCutsFile(self.cut_file)
-		FileCache.getInstance().update(os.path.splitext(self.cut_file)[0], pcuts=data)
-		self.cut_list = verifyCutList(unpackCutList(data))
-		return self.cut_list
+		data = readFile(path + ".cuts")
+		FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+		cut_list = unpackCutList(data)
+		return cut_list
 
-	def __readCutFile(self, path):
+	def __getCutFile(self, path):
 		from FileCache import FileCache, FILE_IDX_CUTS
 		cut_list = []
 		if path:
-			#print("MVC: CutList: __readCutFile: reading cut_list from cache: " + os.path.splitext(path)[0])
+			#print("MVC: CutList: __getCutFile: reading cut_list from cache: " + os.path.splitext(path)[0])
 			filedata = FileCache.getInstance().getFile(os.path.splitext(path)[0])
 			data = filedata[FILE_IDX_CUTS]
 			cut_list = unpackCutList(data)
-			#print("MVC: CutList: __readCutFile: cut_list: " + str(cut_list))
+			#print("MVC: CutList: __getCutFile: cut_list: " + str(cut_list))
 		return cut_list
 
-	def __writeCutFile(self, path, cut_list):
+	def __putCutFile(self, path, cut_list):
 		from FileCache import FileCache
-		#print("MVC: CutList: __writeCutFile: %s, cut_list: %s" % (path, cut_list))
+		#print("MVC: CutList: __putCutFile: %s, cut_list: %s" % (path, cut_list))
 		if path:
 			data = packCutList(cut_list)
-			writeCutsFile(path, data)
+			writeFile(path + ".cuts", data)
 
 			# update file in cache
-			#print("MVC: CutList: __writeCutFile: cut_list: " + str(cut_list))
-			#print("MVC: CutList: __writeCutFile: updating cut_list in cache: " + os.path.splitext(path)[0])
+			#print("MVC: CutList: __putCutFile: updating cut_list in cache: " + os.path.splitext(path)[0])
 			FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
 
 			# [Cutlist.Workaround]
 			# Always make a backup-copy when recording, it will be merged with enigma-cutfile after recording
 			ts_path, __ = os.path.splitext(path)
 			if isRecording(ts_path):
-				#print("MVC: CutList: __writeCutFile: creating backup file: " + path)
+				#print("MVC: CutList: __putCutFile: creating backup file: " + path)
 				backupCutsFile(ts_path)

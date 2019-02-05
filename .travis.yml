@@ -2,7 +2,7 @@ sudo: required
 language: python
 install: true
 script: wget -O- https://raw.githubusercontent.com/dream-alpha/pybake/master/src/pybake.py | python - -i . -o $HOME
-before_deploy: git tag 1.7.5
+before_deploy: git tag 1.8.13
 deploy:
   provider: releases
   api_key:

@@ -38,7 +38,7 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		FileProgress.__init__(self, session)
 		self.skinName = ["FileOpsProgress"]
 		self.skin = readFile(getSkinPath("FileOpsProgress.xml"))
-		self.setTitle(_("File operation(s) in progress") + " ...")
+		self.setTitle(_("File operation(s)") + " ...")
 		self.execution_list = selection_list
 		self.activityTimer = eTimer()
 		self.activityTimer_conn = self.activityTimer.timeout.connect(self.doActivityTimer)

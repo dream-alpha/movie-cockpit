@@ -38,7 +38,6 @@ from Components.Language import language
 from Tools.Notifications import AddPopup
 from ServiceReference import ServiceReference
 from DelayedFunction import DelayedFunction
-from CutList import CutList
 from CutListUtils import secondsToPts, backupCutsFile
 from InfoBarSupport import InfoBarSupport, InfoBarTimeshift
 from Components.Sources.MVCCurrentService import MVCCurrentService
@@ -58,7 +57,7 @@ class MVCMoviePlayerSummary(Screen, object):
 		self["Service"] = MVCCurrentService(session.nav, parent)
 
 
-class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift, InfoBarSupport, object):
+class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarSupport, object):
 
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
@@ -69,7 +68,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		HelpableScreen.__init__(self)
 		InfoBarTimeshift.__init__(self)
 		InfoBarSupport.__init__(self)
-		CutList.__init__(self)
+
 		self["cover"] = Pixmap()
 
 		self.selected_subtitle = None
@@ -147,7 +146,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 		else:
 			self.session.open(
 				MessageBox,
-				_("Skipping movie, the file does not exist.") + "\n" + self.service.getPath(),
+				_("Movie file does not exist.") + "\n" + self.service.getPath(),
 				MessageBox.TYPE_ERROR,
 				10
 			)
@@ -189,6 +188,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			#print("MVC: MediaCenter: getPosition: getPlayPosition(): %s" % pos)
 			if not pos[0]:
 				position = pos[1]
+
 		if self.skip:
 			position = 0
 		if self.skip > 0:
@@ -363,7 +363,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 			#print("MVC: MediaCenter: leavePlayer: closed due to EOF")
 			if config.MVC.record_eof_zap.value == "1":
 				AddPopup(
-					_("Zap to Live TV of recording"),
+					_("Zap to live TV of recording"),
 					MessageBox.TYPE_INFO,
 					3,
 					"MVCCloseAllAndZap"
@@ -380,9 +380,8 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 				backupCutsFile(path + ".cuts")
 
 			#print("MVC: MediaCenter: leavePlayer: update cuts: " + self.service.getPath())
-			cuts = CutList(self.service.getPath())
-			#print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(cuts.getCutList()))
-			cut_list = cuts.reloadCutListFromFile()
+			#print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(self.cut_list))
+			cut_list = self.reloadCutListFromFile(self.service.getPath())
 			print("MVC-I: MediaCenter: leavePlayer: cut_list after  reload: " + str(cut_list))
 
 		self.close(reopen)
@@ -413,14 +412,13 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, CutList, InfoBarTimeshift,
 
 	def updateServiceCutList(self, service):
 		print("MVC-I: MediaCenter: updateCutList")
-		cuts = CutList(service.getPath())
 		if self.getSeekPlayPosition() == 0:
 			if self.realSeekLength:
-				cuts.updateCutList(self.realSeekLength, self.realSeekLength)
+				self.updateCutList(service.getPath(), self.realSeekLength, self.realSeekLength)
 			else:
-				cuts.updateCutList(self.getSeekLength(), self.getSeekLength())
+				self.updateCutList(service.getPath(), self.getSeekLength(), self.getSeekLength())
 		else:
-			cuts.updateCutList(self.getSeekPlayPosition(), self.getSeekLength())
+			self.updateCutList(service.getPath(), self.getSeekPlayPosition(), self.getSeekLength())
 		#print("MVC: MediaCenter: updateCutList: pos: " + str(self.getSeekPlayPosition()) + ", length: " + str(self.getSeekLength()))
 
 

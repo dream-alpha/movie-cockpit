@@ -119,7 +119,7 @@ class FileProgress(Screen, Bookmarks, object):
 		return
 
 	def nextFileOp(self):
-		print("MVC-I: FileProgress: nextFileOp")
+		#print("MVC: FileProgress: nextFileOp")
 
 		self.current_files += 1
 		if self.request_cancel and (self.current_files <= self.total_files):

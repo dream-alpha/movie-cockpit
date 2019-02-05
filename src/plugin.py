@@ -56,8 +56,8 @@ def autostart(reason, **kwargs):
 	if reason == 0:  # startup
 		if "session" in kwargs:
 			session = kwargs["session"]
-			if not config.MVC.ml_disable.value:
-				launch_key = config.MVC.movie_launch.value
+			if not config.MVC.plugin_disable.value:
+				launch_key = config.MVC.plugin_launch_key.value
 				if launch_key == "showMovies":
 					InfoBar.showMovies = boundFunction(openMovieSelection, session)
 				elif launch_key == "showTv":
@@ -96,7 +96,7 @@ def Plugins(**__):
 			],
 			fnc=autostart))
 
-	if config.MVC.extmenu_plugin.value:
+	if config.MVC.plugin_extmenu_settings.value:
 		descriptors.append(
 			PluginDescriptor(name="MovieCockpit" + " - " + _("Setup"),
 			description=_("Open Setup"),
@@ -107,7 +107,7 @@ def Plugins(**__):
 			],
 			fnc=openSettings))
 
-	if config.MVC.extmenu_list.value and not config.MVC.ml_disable.value:
+	if config.MVC.plugin_extmenu_plugin.value and not config.MVC.plugin_disable.value:
 		descriptors.append(
 			PluginDescriptor(name="MovieCockpit",
 			description=_("Manage recordings"),

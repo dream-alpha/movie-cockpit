@@ -22,10 +22,9 @@
 import os
 from MovieCover import MovieCover
 from MovieTMDB import MovieTMDB
-from RecordingUtils import isRecording, adjustTimerPathAfterMove
 from Tasker import tasker
 from MountPoints import MountPoints
-from FileCache import FileCache, TYPE_ISFILE, TYPE_ISDIR, TYPE_ISLINK
+from FileCache import FileCache, FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR
 
 FILE_OP_DELETE = 1
 FILE_OP_MOVE = 2
@@ -44,7 +43,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 		elif op == FILE_OP_MOVE:
 			free = 0
 			used = 0
-			if file_type != TYPE_ISFILE:
+			if file_type != FILE_TYPE_IS_FILE:
 				_count, used = FileCache.getInstance().getCountSize(path)
 				free = self.getMountPointSpaceFree(target_path)
 				#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
@@ -68,47 +67,42 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 
 	def __deleteCallback(self, path, target_path, file_type):
 		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().delete(path)
-		if file_type == TYPE_ISDIR:
+		if file_type == FILE_TYPE_IS_DIR:
 			FileCache.getInstance().deleteDir(path)
 
 	def __moveCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().move(path, target_path)
-			# check if moved a file that is currently being recorded and fix path
-			if isRecording(path):
-				adjustTimerPathAfterMove(path, os.path.join(target_path, os.path.basename(path)))
-		if file_type == TYPE_ISDIR:
+		if file_type == FILE_TYPE_IS_DIR:
 			FileCache.getInstance().moveDir(path, target_path)
 
 	def __copyCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().copy(path, target_path)
-		if file_type == TYPE_ISDIR:
+		if file_type == FILE_TYPE_IS_DIR:
 			FileCache.getInstance().copyDir(path, target_path)
 
 	def __execFileDelete(self, path, file_type):
 		print("MVC-I: FileOps: __execFileDelete: path: %s, file_type: %s" % (path, file_type))
 		c = []
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			c.append('rm -f "' + self.getCoverPath(path) + '"')
 			c.append('rm -f "' + self.getInfoPath(path) + '"')
 			path, _ext = os.path.splitext(path)
 			c.append('rm -f "' + path + '."*')
-		elif file_type == TYPE_ISDIR:
+		elif file_type == FILE_TYPE_IS_DIR:
 			c.append('rm -rf "' + path + '"')
-		elif file_type == TYPE_ISLINK:
-			c.append('rm -f "' + path + '"')
 		#print("MVC: FileOps: __execFileDelete: c: %s" % c)
 		return c
 
 	def __execFileMove(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(path, target_path)
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			#print("MVC: FileOps: __execFileMove: %s, %s" % (self.getCoverPath(path), os.path.splitext(self.getCoverPath(target_path))[0]))
 			c.append('mv "' + self.getCoverPath(path) + '" "' + os.path.splitext(self.getCoverPath(target_path))[0] + '/"')
 			c.append('mv "' + self.getInfoPath(path) + '" "' + os.path.splitext(self.getInfoPath(target_path))[0] + '/"')
@@ -116,11 +110,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '."*')
 			c.append('mv "' + path + '."* "' + target_path + '/"')
-		elif file_type == TYPE_ISDIR:
-			if os.path.basename(target_path) == "trashcan":
-				c.append('touch "' + path + '"')
-			c.append('mv "' + path + '" "' + target_path + '"')
-		elif file_type == TYPE_ISLINK:
+		elif file_type == FILE_TYPE_IS_DIR:
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
@@ -130,19 +120,17 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 	def __execFileCopy(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __execFileCopy: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		c = self.__changeFileOwner(path, target_path)
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			path, _ext = os.path.splitext(path)
 			c.append('cp "' + path + '."* "' + target_path + '/"')
-		elif file_type == TYPE_ISDIR:
-			c.append('cp -ar "' + path + '" "' + target_path + '"')
-		elif file_type == TYPE_ISLINK:
+		elif file_type == FILE_TYPE_IS_DIR:
 			c.append('cp -ar "' + path + '" "' + target_path + '"')
 		#print("MVC: FileOps: __execFileCopy: c: %s" % c)
 		return c
 
 	def __changeFileOwner(self, path, target_path):
 		c = []
-		if self.isMountPoint(target_path) != self.isMountPoint(path):
+		if self.getMountPoint(target_path) != self.getMountPoint(path):
 			# need to change file ownership to match target filesystem file creation
 			tfile = "\"" + target_path + "/owner_test" + "\""
 			path = path.replace("'", "\'")

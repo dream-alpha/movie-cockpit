@@ -25,12 +25,10 @@ from Components.config import config
 from enigma import eListboxPythonMultiContent, gFont
 from MovieListGUI import MovieListGUI
 from FileCache import FileCache,\
-	TYPE_ISDIR, TYPE_ISLINK, FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
-from MediaTypes import extVideo, plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
+	FILE_TYPE_IS_DIR, FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
+from MediaTypes import plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
 from datetime import datetime
 
-virAll = frozenset([TYPE_ISDIR, TYPE_ISLINK])
-virToE = frozenset([])
 
 class MovieList(MovieListGUI, object):
 
@@ -121,7 +119,7 @@ class MovieList(MovieListGUI, object):
 
 	def invalidatePath(self, path):
 		for i, entry in enumerate(self.list):
-			if entry[FILE_IDX_PATH] == path:
+			if entry and entry[FILE_IDX_PATH] == path:
 				self.l.invalidateEntry(i)
 				break
 
@@ -153,16 +151,10 @@ class MovieList(MovieListGUI, object):
 	def moveToPath(self, path):
 		index = 0
 		for i, entry in enumerate(self.list):
-			if entry[FILE_IDX_PATH] == path:
+			if entry and entry[FILE_IDX_PATH] == path:
 				index = i
 				break
 		self.moveToIndex(index)
-
-	def currentSelIsPlayable(self):
-		return self.getEntry4Index(self.getCurrentIndex())[FILE_IDX_EXT] in extVideo
-
-	def currentSelIsVirtual(self):
-		return self.getEntry4Index(self.getCurrentIndex())[FILE_IDX_TYPE] in virAll
 
 	def getEntry4Index(self, index):
 		return self.list[index]
@@ -170,7 +162,7 @@ class MovieList(MovieListGUI, object):
 	def getEntry4Path(self, path):
 		list_entry = None
 		for entry in self.list:
-			if entry[FILE_IDX_PATH] == path:
+			if entry and entry[FILE_IDX_PATH] == path:
 				list_entry = entry
 				break
 		return list_entry
@@ -178,7 +170,7 @@ class MovieList(MovieListGUI, object):
 	def getIndex4Path(self, path):
 		index = -1
 		for i, entry in enumerate(self.list):
-			if path and entry[FILE_IDX_PATH] == path:
+			if entry and entry[FILE_IDX_PATH] == path:
 				index = i
 				break
 		return index
@@ -186,7 +178,7 @@ class MovieList(MovieListGUI, object):
 	def getService4Path(self, path):
 		service = None
 		for entry in self.list:
-			if entry[FILE_IDX_PATH] == path:
+			if entry and entry[FILE_IDX_PATH] == path:
 				service = self.getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
 				break
 		return service
@@ -210,57 +202,57 @@ class MovieList(MovieListGUI, object):
 		return service
 
 	def createFileList(self, path):
-		filelist = FileCache.getInstance().getFileList([path], config.MVC.directories_show.value)
-		return filelist
+		file_list = FileCache.getInstance().getFileList([path], config.MVC.directories_show.value)
+		return file_list
 
 	def createCustomList(self, path):
 		#print("MVC: MovieList: createCustomList: path: %s" % path)
-		customlist = []
+		custom_list = []
 		if path not in self.getBookmarks():
-			customlist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
+			custom_list.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
 		else:  # path is a bookmark
-			if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_show.value:
-				customlist.append(FileCache.getInstance().getFile(path + "/trashcan"))
-		#print("MVC: MovieList: createCustomList: customlist: " + str(customlist))
-		return customlist
+			if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
+				custom_list.append(FileCache.getInstance().getFile(path + "/trashcan"))
+		#print("MVC: MovieList: createCustomList: custom_list: " + str(custom_list))
+		return custom_list
 
-	def sortList(self, sortlist):
+	def sortList(self, sort_list):
 
 		def date2ms(date_string):
 			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
 
-		virToD = virToE if config.MVC.directories_ontop.value else virAll
+		filetype_list = [] if config.MVC.directories_ontop.value else [FILE_TYPE_IS_DIR]
 		# This will find all unsortable items
-		tmplist = [i for i in sortlist if i[FILE_IDX_TYPE] in virToD or i[FILE_IDX_NAME] == ".."]
+		tmp_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
 		# Extract list items to be sorted
-		sortlist = [i for i in sortlist if i[FILE_IDX_TYPE] not in virToD and i[FILE_IDX_NAME] != ".."]
+		sort_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
 		# Always sort via extension and sorttitle
-		tmplist.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
+		tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
 
 		mode, order = self.sort_mode
 
 		if mode == "D": # Date sort
 			if not order:
-				sortlist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
+				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
 			else:
-				sortlist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
+				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
 
 		elif mode == "A": # Alpha sort
 			if not order:
-				sortlist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
+				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
 			else:
-				sortlist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
+				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
 
-		return tmplist + sortlist
+		return tmp_list + sort_list
 
 	def reloadList(self, path, sort_mode):
 		#print("MVC: MovieList: reloadList: path: %s" % path)
 		self.sort_mode = sort_mode
 		self.unselectAll()
-		filelist = self.createFileList(path)
-		filelist += self.createCustomList(path)
-		self.list = self.sortList(filelist)
+		file_list = self.createFileList(path)
+		custom_list = self.createCustomList(path)
+		self.list = custom_list + self.sortList(file_list)
 		self.l.setList(self.list)
 
-	def bqtListFolders(self):
+	def getDirList(self):
 		return FileCache.getInstance().getDirList(self.getBookmarks()[0]).sort()

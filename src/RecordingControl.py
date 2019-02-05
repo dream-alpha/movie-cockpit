@@ -25,9 +25,10 @@ import NavigationInstance
 from timer import TimerEntry
 from DelayedFunction import DelayedFunction
 from Tasker import tasker
+from CutList import CutList
 
 
-class RecordingControl(object):
+class RecordingControl(CutList, object):
 	def __init__(self):
 		print("MVC-I: RecordingControl: __init__")
 		# Register for recording events
@@ -58,12 +59,12 @@ class RecordingControl(object):
 				FileCache.getInstance().update(timer.Filename, psize=os.path.getsize(timer.Filename))
 				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
 				# [Cutlist.Workaround] Initiate the Merge
-				self.mergeCutListAfterRecording(timer.Filename)
+				self.updateFromCuesheet(timer.Filename)
 				if hasattr(timer, "move_recording_cmd"):
 					#print("MVC: RecordingControl: recordingEvent: file had been moved while recording was in progress, moving left over files...")
 					tasker.shellExecute(timer.move_recording_cmd)
 				if config.MVC.timer_autoclean.value:
-					DelayedFunction(2000, self.timerCleanup)  # postpone to avoid crash in basic timer delete by user
+					DelayedFunction(2000, NavigationInstance.instance.RecordTimer.cleanup)  # postpone to avoid crash in basic timer delete by user
 
 	def autoCoverDownload(self, path):
 		from MovieCoverDownload import MovieCoverDownload
@@ -83,11 +84,6 @@ class RecordingControl(object):
 					#print("MVC: RecordingControl: check4ActiveRecordings: loadDatabaseFile: " + timer.Filename)
 					FileCache.getInstance().loadDatabaseFile(timer.Filename)
 
-	def mergeCutListAfterRecording(self, path):
-		#print("MVC: RecordingControl: mergeCutListAfterRecording: %s" % path)
-		from CutList import CutList
-		CutList(path).updateFromCuesheet()
-
 	def reloadList(self, path):
 		#print("MVC: RecordingControl: reloadList")
 		try:
@@ -95,9 +91,6 @@ class RecordingControl(object):
 			movie_selection = MovieSelection.getInstance()
 			if movie_selection:
 				#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
-				movie_selection.reloadList(path, update_disk_space_info=True)
+				movie_selection.reloadListRecording(path, update_disk_space_info=True)
 		except Exception as e:
 			print("MVC-E: RecordingControl: reloadList: movie_selection.reloadList exception: %s" % e)
-
-	def timerCleanup(self):
-		NavigationInstance.instance.RecordTimer.cleanup()

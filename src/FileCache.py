@@ -23,12 +23,13 @@ import os
 import datetime
 from ParserEitFile import ParserEitFile
 from ParserMetaFile import ParserMetaFile
-from CutListUtils import readCutsFile, unpackCutList, ptsToSeconds, getCutListLength
+from CutListUtils import unpackCutList, ptsToSeconds, getCutListLength
 from Components.config import config
 from Bookmarks import Bookmarks
 from MediaTypes import extTS, extVideo, extBlu
 from RecordingUtils import getRecording
 from FileCacheSQL import FileCacheSQL, SQL_DB_NAME
+from FileUtils import readFile
 
 # file indexes
 FILE_IDX_DIR = 0
@@ -47,9 +48,8 @@ FILE_IDX_CUTS = 12
 FILE_IDX_TAGS = 13
 
 # filetype values
-TYPE_ISFILE = 1
-TYPE_ISDIR = 2
-TYPE_ISLINK = 3
+FILE_TYPE_IS_FILE = 1
+FILE_TYPE_IS_DIR = 2
 
 
 def str2date(date_string):
@@ -132,10 +132,10 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 			return name
 
 		#print("MVC: FileCache: addDatabaseFileType: path: %s, file_type: %s" % (path, file_type))
-		if file_type == TYPE_ISFILE:
+		if file_type == FILE_TYPE_IS_FILE:
 			filedata = self.__newFileData(path)
 			self.addToDatabase(filedata)
-		elif file_type in [TYPE_ISDIR, TYPE_ISLINK]:
+		elif file_type == FILE_TYPE_IS_DIR:
 			ext, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
 			size, length = 0, 0
 			date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
@@ -362,7 +362,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 		size = os.path.getsize(path)
 		name = filename
-		cuts = readCutsFile(path + ".cuts")
+		cuts = readFile(path + ".cuts")
 
 		if ext in extTS:
 			filename_date = str2date(parseDate(os.path.basename(path)))
@@ -400,7 +400,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-		return(os.path.dirname(path), TYPE_ISFILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+		return(os.path.dirname(path), FILE_TYPE_IS_FILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
 
 	### list functions
 
@@ -409,7 +409,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		try:
 			walk_listdir = os.listdir(movie_dir)
 		except IOError as e:
-			print("MVC-E: FileCache: getDirLoadList: exception: %s" % e)
+			print("MVC-E: FileCache: __getDirLoadList: exception: %s" % e)
 			return self.load_list
 
 		for walk_name in walk_listdir:
@@ -417,17 +417,15 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 			if os.path.isfile(path):
 				_filename, ext = os.path.splitext(path)
 				if ext in extVideo:
-					self.load_list.append((path, TYPE_ISFILE))
-			elif os.path.islink(path):
-				#print("MVC: FileCache: loadDatabaseDir: link: %s" % path)
-				self.load_list.append((path, TYPE_ISLINK))
-				self.__getDirLoadList(path)
+					self.load_list.append((path, FILE_TYPE_IS_FILE))
 			elif os.path.isdir(path):
-				#print("MVC: FileCache: loadDatabaseDir: dir: %s" % path)
-				self.load_list.append((path, TYPE_ISDIR))
+				#print("MVC: FileCache: __getDirLoadList: dir: %s" % path)
+				self.load_list.append((path, FILE_TYPE_IS_DIR))
 				self.__getDirLoadList(path)
+			elif os.path.islink(path):
+				print("MVC-I: FileCache: __getDirLoadList: unsupported link: %s" % path)
 
-		self.load_list.append((os.path.join(movie_dir, ".."), TYPE_ISDIR))
+		self.load_list.append((os.path.join(movie_dir, ".."), FILE_TYPE_IS_DIR))
 
 		return self.load_list
 
@@ -469,11 +467,11 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 			#print("MVC: FileCache: getFileList: dir: %s, filename: %s, ext: %s" % (filedata[FILE_IDX_DIR], filedata[FILE_IDX_FILENAME], filedata[FILE_IDX_EXT]))
 			if (
 				filedata[FILE_IDX_DIR] in more_dirs
-				and filedata[FILE_IDX_TYPE] == TYPE_ISFILE
+				and filedata[FILE_IDX_TYPE] == FILE_TYPE_IS_FILE
 				and filedata[FILE_IDX_EXT] in extMovie
 			) or (
 				include_dirs
-				and filedata[FILE_IDX_TYPE] > TYPE_ISFILE
+				and filedata[FILE_IDX_TYPE] > FILE_TYPE_IS_FILE
 				and filedata[FILE_IDX_DIR] in more_dirs
 				and filedata[FILE_IDX_FILENAME] != ".."
 				and filedata[FILE_IDX_FILENAME] != "trashcan"
@@ -488,7 +486,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		self.__loadCache(more_dirs)
 		subdirlist = []
 		for filedata in self.filelist:
-			if filedata[FILE_IDX_TYPE] > TYPE_ISFILE and filedata[FILE_IDX_FILENAME] != "trashcan" and filedata[FILE_IDX_FILENAME] != "..":
+			if filedata[FILE_IDX_TYPE] > FILE_TYPE_IS_FILE and filedata[FILE_IDX_FILENAME] != "trashcan" and filedata[FILE_IDX_FILENAME] != "..":
 				subdirlist.append(filedata)
 		return subdirlist
 
@@ -546,11 +544,11 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 
 		for directory, filetype, path, filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, size, _cuts, _tags in self.filelist:
 			#print("MVC: FileCache: __getCountSize: %s, %s" % (path, filetype))
-			if path and filetype == TYPE_ISFILE and directory == in_path:
+			if path and filetype == FILE_TYPE_IS_FILE and directory == in_path:
 				#print("MVC: FileCache: __getCountSize: path: %s " % path)
 				self.count += 1
 				self.size += size
-			if path and filetype > TYPE_ISFILE and directory.startswith(in_path) and filename != "..":
+			if path and filetype > FILE_TYPE_IS_FILE and directory.startswith(in_path) and filename != "..":
 				self.__getCountSize(path)
 
 		#print("MVC: FileCache: __getCountSize: %s, %s, %s" % (in_path, self.count, self.size))

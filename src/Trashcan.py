@@ -35,7 +35,7 @@ instance = None
 class Trashcan(FileOps, Bookmarks, object):
 
 	def __init__(self):
-		if config.MVC.movie_trashcan_enable.value:
+		if config.MVC.trashcan_enable.value:
 			self.__schedulePurge()
 		config.MVC.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
 
@@ -47,7 +47,7 @@ class Trashcan(FileOps, Bookmarks, object):
 		return instance
 
 	def __schedulePurge(self):
-		if config.MVC.movie_trashcan_enable.value and config.MVC.movie_trashcan_clean.value:
+		if config.MVC.trashcan_enable.value and config.MVC.trashcan_clean.value:
 			# recall function in 24 hours
 			seconds = 24 * 60 * 60
 			DelayedFunction(1000 * seconds, self.__schedulePurge)
@@ -63,17 +63,17 @@ class Trashcan(FileOps, Bookmarks, object):
 				try:
 					os.makedirs(path)
 					FileCache.getInstance().makeDir(path)
-					config.movie_trashcan_enable.value = True
+					config.trashcan_enable.value = True
 				except IOError as e:
 					print("MVC-E: Trashcan: __createTrashcan: exception: %s" % e)
-					config.MVC.movie_trashcan_enable.value = False
+					config.MVC.trashcan_enable.value = False
 					return RC_TRASHCAN_CREATE_DIR_FAILED
 		return RC_TRASHCAN_CREATED
 
 	def enableTrashcan(self):
 		print("MVC-I: Trashcan: enable")
 		rc = 0
-		if not config.MVC.movie_trashcan_enable.value:
+		if not config.MVC.trashcan_enable.value:
 			rc = self.__createTrashcan()
 		return rc
 
@@ -89,7 +89,7 @@ class Trashcan(FileOps, Bookmarks, object):
 			# Only check media files
 			_filename, ext = os.path.splitext(path)
 			if ext in extVideo and os.path.exists(path):
-				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.movie_trashcan_retention.value)):
+				if empty_trash or now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.trashcan_retention.value)):
 					#print("MVC: Trashcan: purgeTrashcan: path: " + path)
 					self.execFileOp(FILE_OP_DELETE, path, None, file_type, callback)
 					files += 1

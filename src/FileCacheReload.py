@@ -35,7 +35,7 @@ class FileCacheReload(FileProgress, Bookmarks, object):
 		FileProgress.__init__(self, session)
 		self.skinName = ["FileCacheReload"]
 		self.skin = readFile(getSkinPath("FileCacheReload.xml"))
-		self.setTitle(_("File cache reload in progress") + " ...")
+		self.setTitle(_("File cache reload") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)
 
