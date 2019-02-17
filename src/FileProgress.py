@@ -102,7 +102,7 @@ class FileProgress(Screen, Bookmarks, object):
 		f.close()
 
 	def updateProgress(self):
-		#print("MVC: MovieCoversDownload: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
+		#print("MVC: MovieCoversProgress: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
 		current_files = self.current_files if self.current_files <= self.total_files else self.total_files
 		msg = _("Downloading") + ": " + str(current_files) + " " + _("of") + " " + str(self.total_files) + " ..."
 		self["operation"].setText(msg)

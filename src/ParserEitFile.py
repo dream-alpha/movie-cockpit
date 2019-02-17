@@ -272,7 +272,6 @@ class ParserEitFile(object):
 			#print("MVC: ParserEitFile: parseContentDescriptor")
 			self.content_descriptor.append("n/a")
 
-		self.eit = {}
 		epglang = config.MVC.epglang.value
 		lang = (language_iso639_2to3(epglang.lower()[:2])).upper()
 

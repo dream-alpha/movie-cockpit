@@ -202,8 +202,10 @@ class MovieList(MovieListGUI, object):
 		return service
 
 	def createFileList(self, path):
-		file_list = FileCache.getInstance().getFileList([path], config.MVC.directories_show.value)
-		return file_list
+		filelist = FileCache.getInstance().getFileList([path])
+		if config.MVC.directories_show.value:
+			filelist += FileCache.getInstance().getDirList([path])
+		return filelist
 
 	def createCustomList(self, path):
 		#print("MVC: MovieList: createCustomList: path: %s" % path)
@@ -249,9 +251,9 @@ class MovieList(MovieListGUI, object):
 		#print("MVC: MovieList: reloadList: path: %s" % path)
 		self.sort_mode = sort_mode
 		self.unselectAll()
-		file_list = self.createFileList(path)
+		filelist = self.createFileList(path)
 		custom_list = self.createCustomList(path)
-		self.list = custom_list + self.sortList(file_list)
+		self.list = custom_list + self.sortList(filelist)
 		self.l.setList(self.list)
 
 	def getDirList(self):

@@ -31,7 +31,8 @@ from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixm
 from Tools.LoadPixmap import LoadPixmap
 from skin import parseColor, parseFont, parseSize
 from enigma import eListboxPythonMultiContent, eListbox, RT_HALIGN_LEFT, RT_HALIGN_CENTER, loadPNG
-from FileCache import FileCache, FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR, str2date
+from FileCache import FileCache, FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR
+from ServiceCenter import str2date
 from RecordingUtils import isCutting, getRecording
 from MountPoints import MountPoints
 

@@ -1,4 +1,6 @@
 #!/bin/sh
+mv /etc/enigma2/moviecockpit.db /etc/enigma2/moviecockpit.db.bak
+
 echo "***********************************"
 echo "*          MovieCockpit           *"
 echo "*               by                *"

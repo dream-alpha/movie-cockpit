@@ -36,20 +36,20 @@ class MVCClockToText(Converter, object):
 	TIMESTAMP = 6
 
 	def __init__(self, text_type):
-		Converter.__init__(self, type)
+		Converter.__init__(self, text_type)
 		if text_type == "WithSeconds":
 			self.text_type = self.WITH_SECONDS
 		elif text_type == "InMinutes":
 			self.text_type = self.IN_MINUTES
-		elif type == "Date":
+		elif text_type == "Date":
 			self.text_type = self.DATE
-		elif type == "AsLength":
+		elif text_type == "AsLength":
 			self.text_type = self.AS_LENGTH
-		elif type == "Timestamp":
+		elif text_type == "Timestamp":
 			self.text_type = self.TIMESTAMP
-		elif str(type).find("Format") != -1:
+		elif str(text_type).find("Format") != -1:
 			self.text_type = self.FORMAT
-			self.fmt_string = type[7:]
+			self.fmt_string = text_type[7:]
 		else:
 			self.text_type = self.DEFAULT
 

@@ -21,7 +21,7 @@
 
 import os
 from RecordingUtils import isRecording
-from CutListUtils import packCutList, unpackCutList, replaceLast, replaceLength, removeMarks, mergeBackupCutsFile, backupCutsFile
+from CutListUtils import packCutList, unpackCutList, replaceLast, replaceLength, removeMarks, mergeCutList, backupCutsFile
 from FileUtils import readFile, writeFile, deleteFile
 
 # http://git.opendreambox.org/?p=enigma2.git;a=blob;f=doc/FILEFORMAT
@@ -34,8 +34,20 @@ class CutList(object):
 
 	def updateFromCuesheet(self, path):
 		#print("MVC: CutList: updateFromCuesheet")
-		cut_list = mergeBackupCutsFile(path, self.__getCutFile(path))
-		self.__putCutFile(path, cut_list)
+		backup_cut_file = path + ".cuts.save"
+		if os.path.exists(backup_cut_file):
+			#print("MVC: CutListUtils: mergeBackupCutsFile: reading from Backup-File")
+			cut_list = self.__getCutFile(path)
+			data = readFile(backup_cut_file)
+			backup_cut_list = unpackCutList(data)
+			#print("MVC: CutList: updateFromCuesheet: backup_cut_list: %s" % backup_cut_list)
+			cut_list = mergeCutList(cut_list, backup_cut_list)
+			writeFile(path + ".cuts", packCutList(cut_list))
+			deleteFile(backup_cut_file)
+			self.__putCutFile(path, cut_list)
+		else:
+			#print("MVC: CutList: updateFromCuesheet: no Backup-File found: %s" % backup_cut_file)
+			pass
 
 	def writeCutList(self, path, cut_list):
 		#print("MVC: CutList: setCutList: " + str(cut_list))
@@ -63,13 +75,13 @@ class CutList(object):
 	def deleteFileCutList(self, path):
 		from FileCache import FileCache
 		data = ""
-		FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+		FileCache.getInstance().update(path, pcuts=data)
 		deleteFile(path)
 
 	def reloadCutListFromFile(self, path):
 		from FileCache import FileCache
 		data = readFile(path + ".cuts")
-		FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+		FileCache.getInstance().update(path, pcuts=data)
 		cut_list = unpackCutList(data)
 		return cut_list
 
@@ -77,8 +89,8 @@ class CutList(object):
 		from FileCache import FileCache, FILE_IDX_CUTS
 		cut_list = []
 		if path:
-			#print("MVC: CutList: __getCutFile: reading cut_list from cache: " + os.path.splitext(path)[0])
-			filedata = FileCache.getInstance().getFile(os.path.splitext(path)[0])
+			#print("MVC: CutList: __getCutFile: reading cut_list from cache: %s" % path)
+			filedata = FileCache.getInstance().getFile(path)
 			data = filedata[FILE_IDX_CUTS]
 			cut_list = unpackCutList(data)
 			#print("MVC: CutList: __getCutFile: cut_list: " + str(cut_list))
@@ -92,8 +104,8 @@ class CutList(object):
 			writeFile(path + ".cuts", data)
 
 			# update file in cache
-			#print("MVC: CutList: __putCutFile: updating cut_list in cache: " + os.path.splitext(path)[0])
-			FileCache.getInstance().update(os.path.splitext(path)[0], pcuts=data)
+			#print("MVC: CutList: __putCutFile: updating cut_list in cache: %s" % path)
+			FileCache.getInstance().update(path, pcuts=data)
 
 			# [Cutlist.Workaround]
 			# Always make a backup-copy when recording, it will be merged with enigma-cutfile after recording

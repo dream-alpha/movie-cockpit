@@ -2,8 +2,7 @@
 <!--
 Copyright (C) 2018-2019 by dream-alpha
 -->
-<screen flags="wfNoBorder" name="MVCMediaCenter"
-	position="0,825" size="1920,225">
+<screen flags="wfNoBorder" position="0,825" size="1920,225">
 	<ePixmap alphatest="off" pixmap="skin_default/infobar.png"
 		position="0,0" size="1920,225" zPosition="-1" />
 	<widget backgroundColor="#263c59" font="Regular;40" noWrap="1"

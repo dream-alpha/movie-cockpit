@@ -22,6 +22,7 @@ import os
 from Components.config import config
 from DelayedFunction import DelayedFunction
 from FileCache import FileCache, FILE_IDX_PATH, FILE_IDX_TYPE
+from FileCacheLoad import FileCacheLoad
 from MediaTypes import extVideo
 from FileOps import FileOps, FILE_OP_DELETE
 from Bookmarks import Bookmarks
@@ -62,7 +63,8 @@ class Trashcan(FileOps, Bookmarks, object):
 			if not FileCache.getInstance().exists(path):
 				try:
 					os.makedirs(path)
-					FileCache.getInstance().makeDir(path)
+					if not FileCache.getInstance().exists(path):
+						FileCacheLoad.getInstance().makeDir(path)
 					config.trashcan_enable.value = True
 				except IOError as e:
 					print("MVC-E: Trashcan: __createTrashcan: exception: %s" % e)

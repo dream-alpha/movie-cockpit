@@ -25,42 +25,37 @@ from SkinUtils import getSkinPath
 from FileUtils import readFile
 from Bookmarks import Bookmarks
 from DelayedFunction import DelayedFunction
-from FileCache import FileCache
+from FileCacheLoad import FileCacheLoad
 from FileProgress import FileProgress
 
-class FileCacheReload(FileProgress, Bookmarks, object):
+class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 
 	def __init__(self, session):
-		#print("MVC: FileCacheReload: __init__")
+		#print("MVC: FileCacheLoadProgress: __init__")
 		FileProgress.__init__(self, session)
-		self.skinName = ["FileCacheReload"]
-		self.skin = readFile(getSkinPath("FileCacheReload.xml"))
+		self.skinName = ["FileCacheLoadProgress"]
+		self.skin = readFile(getSkinPath("FileCacheLoadProgress.xml"))
 		self.setTitle(_("File cache reload") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)
 
 	def onDialogShow(self):
-		#print("MVC: FileCacheReload: onDialogShow")
-		DelayedFunction(10, self.execFileCacheReload)
-
-	def loadDatabaseDirs(self):
-		file_dirs = self.getBookmarks()
-		#print("MVC: FileCache: loadDatabaseDirs: loading directories: " + str(file_dirs))
-		self.execution_list = FileCache.getInstance().getDirsLoadList(file_dirs)
+		#print("MVC: FileCacheLoadProgress: onDialogShow")
+		DelayedFunction(10, self.execFileCacheLoadProgress)
 
 	def doFileOp(self, entry):
 		path, file_type = entry
 		self.file_name = os.path.basename(path)
 		self.status = _("Please wait") + " ..."
 		self.updateProgress()
-		FileCache.getInstance().addDatabaseFileType(path, file_type)
+		FileCacheLoad.getInstance().loadDatabaseFile(path, file_type)
 		DelayedFunction(10, self.nextFileOp)
 
-	def execFileCacheReload(self):
-		print("MVC-I: FileCacheReload: execFileCacheReload")
+	def execFileCacheLoadProgress(self):
+		print("MVC-I: FileCacheLoadProgress: execFileCacheLoadProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
-		FileCache.getInstance().clearDatabase()
-		self.loadDatabaseDirs()
+		FileCacheLoad.getInstance().clearDatabase()
+		self.execution_list = FileCacheLoad.getInstance().getDirsLoadList(self.getBookmarks())
 		self.total_files = len(self.execution_list)
 		DelayedFunction(10, self.nextFileOp)

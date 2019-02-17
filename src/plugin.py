@@ -19,19 +19,21 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+import os
 from __init__ import _
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from skin import loadSkin
 from Tools.BoundFunction import boundFunction
-from FileCache import FileCache
+from FileCacheLoad import FileCacheLoad
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from Version import VERSION
 from SkinUtils import getSkinPath
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
+from FileCacheSQL import SQL_DB_NAME
 
 
 def openSettings(session, **__):
@@ -71,14 +73,15 @@ def autostart(reason, **kwargs):
 
 			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			ConfigScreen.setEPGLanguage()
-			FileCache.getInstance()
+			if not os.path.exists(SQL_DB_NAME):
+				FileCacheLoad.getInstance().loadDatabase()
 			RecordingControl()
 			Trashcan.getInstance()
 			loadSkin(getSkinPath("MediaCenterLCD.xml"))
 
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
-		FileCache.getInstance().close()
+		FileCacheLoad.getInstance().closeDatabase()
 	else:
 		print("MVC-I: plugin: autostart: reason not handled: %s" % reason)
 

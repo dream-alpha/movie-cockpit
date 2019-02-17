@@ -25,6 +25,7 @@ from MovieTMDB import MovieTMDB
 from Tasker import tasker
 from MountPoints import MountPoints
 from FileCache import FileCache, FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR
+from FileCacheLoad import FileCacheLoad
 
 FILE_OP_DELETE = 1
 FILE_OP_MOVE = 2
@@ -70,21 +71,21 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().delete(path)
 		if file_type == FILE_TYPE_IS_DIR:
-			FileCache.getInstance().deleteDir(path)
+			FileCacheLoad.getInstance().deleteDir(path)
 
 	def __moveCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().move(path, target_path)
 		if file_type == FILE_TYPE_IS_DIR:
-			FileCache.getInstance().moveDir(path, target_path)
+			FileCacheLoad.getInstance().moveDir(path, target_path)
 
 	def __copyCallback(self, path, target_path, file_type):
 		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
 		if file_type == FILE_TYPE_IS_FILE:
 			FileCache.getInstance().copy(path, target_path)
 		if file_type == FILE_TYPE_IS_DIR:
-			FileCache.getInstance().copyDir(path, target_path)
+			FileCacheLoad.getInstance().copyDir(path, target_path)
 
 	def __execFileDelete(self, path, file_type):
 		print("MVC-I: FileOps: __execFileDelete: path: %s, file_type: %s" % (path, file_type))

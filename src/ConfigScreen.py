@@ -33,6 +33,7 @@ from Components.ActionMap import ActionMap
 from enigma import eTimer, ePoint
 from Components.ConfigList import ConfigListScreen
 from enigma import eServiceEvent
+from Screens.Standby import TryQuitMainloop
 from FileUtils import readFile
 from Version import VERSION
 from SkinUtils import getSkinPath
@@ -337,9 +338,17 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 							continue
 					entry[1].save()
 		configfile.save()
+
 		if self.needs_restart_flag:
-			self.session.open(MessageBox, _("Some changes require a GUI restart"), MessageBox.TYPE_INFO, 10)
-		self.close(not self.needs_restart_flag)
+			self.session.openWithCallback(self.restartGUI, MessageBox, _("Some changes require a GUI restart, do you want to restart now?"), MessageBox.TYPE_YESNO)
+		else:
+			self.close(True)
+
+	def restartGUI(self, answer):
+		if answer:
+			self.session.open(TryQuitMainloop, 3)
+		else:
+			self.close(True)
 
 	@staticmethod
 	def setEPGLanguage(_element=None):

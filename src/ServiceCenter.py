@@ -20,13 +20,25 @@
 #
 
 from __init__ import _
+import datetime
 from time import mktime
 from Components.config import config
-from CutListUtils import unpackCutList
 from enigma import eServiceCenter, iServiceInformation
-from FileCache import FileCache, FILE_TYPE_IS_FILE, str2date
+from FileCache import FileCache, FILE_TYPE_IS_FILE
+from CutListUtils import unpackCutList
 
 instance = None
+
+
+def str2date(date_string):
+	date = None
+	#print("MVC: FileCache: str2date: %s" % date_string)
+	try:
+		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+	except ValueError:
+		print("MVC-E: FileCache: str2date: exception: %s" % date_string)
+		date = datetime.datetime.fromtimestamp(0)
+	return date
 
 
 class ServiceCenter(object):

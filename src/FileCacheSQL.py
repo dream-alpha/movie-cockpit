@@ -27,8 +27,9 @@ SQL_DB_NAME = "/etc/enigma2/moviecockpit.db"
 
 class FileCacheSQL(object):
 	def __init__(self):
+		print("MVC-I: FileCacheSQL: __init__")
 		self.sql_conn = sqlite.connect(SQL_DB_NAME)
-		self.cursor = None
+		self.sqlCreateTable()
 
 	def sqlCreateTable(self):
 		self.sql_conn.execute(
@@ -50,10 +51,10 @@ class FileCacheSQL(object):
 		self.sql_conn.commit()
 		return filelist
 
-	def sqlDelete(self, directory, filename):
-		sql = 'DELETE FROM recordings WHERE directory=? AND filename=?'
+	def sqlDelete(self, where):
+		sql = "DELETE FROM recordings WHERE " + where
 		#print("MVC: FileCacheSQL: sqlDelete: sql: %s" % sql)
-		self.cursor.execute(sql, (directory, filename))
+		self.cursor.execute(sql)
 		self.sql_conn.commit()
 
 	def sqlInsert(self, filedata):

@@ -39,7 +39,7 @@ from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
 from MovieCover import MovieCover
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL
-from MovieCoversDownload import MovieCoversDownload
+from MovieCoversProgress import MovieCoversProgress
 
 PAGE_DETAILS = 0   # details
 PAGE_SELECTION = 1 # selection list
@@ -307,7 +307,9 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 
 	def getAllCovers(self):
 		#print("MVC: MovieInfoTMDB: getAllCovers")
-		self.session.openWithCallback(self.getAllCoversCallback, MovieCoversDownload)
+		self.session.openWithCallback(self.getAllCoversCallback, MovieCoversProgress)
 
 	def getAllCoversCallback(self):
 		self.movielist = None
+		self.getInfoAndCoverForCurrentSelection(TEMP_INFO_PATH, TEMP_COVER_PATH)
+		self.switchPage()

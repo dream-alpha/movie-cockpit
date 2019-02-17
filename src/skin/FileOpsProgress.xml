@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (C) 2018-2019 by dream-alpha -->
-<screen name="FileOpsProgress" position="center,center" size="920,350" title="">
+<screen position="center,center" size="920,350" title="">
 	<ePixmap pixmap="MovieCockpit/img/red.svg" position="10,0"
 		size="300,70" alphatest="blend" />
 	<ePixmap pixmap="MovieCockpit/img/green.svg" position="310,0"

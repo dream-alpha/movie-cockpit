@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2018-2019 by dream-alpha -->
+<screen position="center,center" size="1000,500" title="Info">
+	<widget name="no_support" position="1, 1" size="1000,500"
+		font="Regular;32" halign="center" valign="center" transparent="1" />
+</screen>

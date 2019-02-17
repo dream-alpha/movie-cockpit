@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Enhanced Movie Center\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-05 12:38+0100\n"
-"PO-Revision-Date: 2019-02-05 12:38+0100\n"
+"POT-Creation-Date: 2019-02-13 17:03+0100\n"
+"PO-Revision-Date: 2019-02-13 17:03+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: de_DE\n"
@@ -118,7 +118,7 @@ msgstr ""
 msgid "Percent (%)"
 msgstr ""
 
-#: ConfigInit.py:147 MovieSelection.py:247
+#: ConfigInit.py:147 MovieSelection.py:258
 msgid "Home"
 msgstr ""
 
@@ -138,11 +138,11 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: ConfigInit.py:152 MovieSelection.py:411 MovieSelectionMenu.py:87
+#: ConfigInit.py:152 MovieSelection.py:420 MovieSelectionMenu.py:87
 msgid "Bookmarks"
 msgstr ""
 
-#: ConfigInit.py:153 MovieSelection.py:467
+#: ConfigInit.py:153 MovieSelection.py:478
 msgid "Sort Mode"
 msgstr ""
 
@@ -158,7 +158,7 @@ msgstr ""
 msgid "TMDB info"
 msgstr ""
 
-#: ConfigInit.py:157 MovieListGUI.py:214 MovieSelection.py:458
+#: ConfigInit.py:157 MovieListGUI.py:215 MovieSelection.py:469
 msgid "trashcan"
 msgstr ""
 
@@ -870,7 +870,7 @@ msgstr ""
 msgid "Really close without saving settings?"
 msgstr ""
 
-#: ConfigScreen.py:278 MovieSelectionMenu.py:89 plugin.py:101
+#: ConfigScreen.py:278 MovieSelectionMenu.py:89 plugin.py:104
 msgid "Setup"
 msgstr ""
 
@@ -878,27 +878,27 @@ msgstr ""
 msgid "Loading default settings will overwrite all settings, really load them?"
 msgstr ""
 
-#: ConfigScreen.py:340
-msgid "Some changes require a GUI restart"
+#: ConfigScreen.py:342
+msgid "Some changes require a GUI restart, do you want to restart now?"
 msgstr ""
 
-#: ConfigScreen.py:353
+#: ConfigScreen.py:360
 msgid "Cannot create trashcan"
 msgstr ""
 
-#: ConfigScreen.py:353
+#: ConfigScreen.py:360
 msgid "Check mounts and permissions"
 msgstr ""
 
-#: ConfigScreen.py:366
+#: ConfigScreen.py:373
 msgid "Select Location"
 msgstr ""
 
-#: ConfigScreen.py:367 MovieSelection.py:674
+#: ConfigScreen.py:374 MovieSelection.py:679
 msgid "Select directory"
 msgstr ""
 
-#: ConfigScreen.py:382
+#: ConfigScreen.py:389
 msgid "Path does not exist"
 msgstr ""
 
@@ -1029,15 +1029,15 @@ msgstr ""
 msgid "Vote"
 msgstr ""
 
-#: MovieInfoTMDB.py:95 MovieSelection.py:221
+#: MovieInfoTMDB.py:95 MovieSelection.py:232
 msgid "Exit"
 msgstr ""
 
-#: MovieInfoTMDB.py:96 MovieSelection.py:234
+#: MovieInfoTMDB.py:96 MovieSelection.py:245
 msgid "Cursor page up"
 msgstr ""
 
-#: MovieInfoTMDB.py:97 MovieSelection.py:235
+#: MovieInfoTMDB.py:97 MovieSelection.py:246
 msgid "Cursor page down"
 msgstr ""
 
@@ -1101,99 +1101,103 @@ msgstr ""
 msgid "Cover/TMDB Info deleted successfully"
 msgstr ""
 
-#: MovieListGUI.py:212
+#: MovieListGUI.py:213
 msgid "up"
 msgstr ""
 
-#: MovieListGUI.py:216
+#: MovieListGUI.py:217
 msgid "Directory"
 msgstr ""
 
-#: MovieSelection.py:220
+#: MovieSelection.py:115
+msgid "Skin resolution other than Full HD is not supported yet."
+msgstr ""
+
+#: MovieSelection.py:231
 msgid "Play"
 msgstr ""
 
-#: MovieSelection.py:222 MovieSelection.py:223
+#: MovieSelection.py:233 MovieSelection.py:234
 msgid "Selection menu"
 msgstr ""
 
-#: MovieSelection.py:236
+#: MovieSelection.py:247
 msgid "Cursor up"
 msgstr ""
 
-#: MovieSelection.py:237
+#: MovieSelection.py:248
 msgid "Cursor down"
 msgstr ""
 
-#: MovieSelection.py:238
+#: MovieSelection.py:249
 msgid "Bouquet up"
 msgstr ""
 
-#: MovieSelection.py:239
+#: MovieSelection.py:250
 msgid "Bouquet down"
 msgstr ""
 
-#: MovieSelection.py:240
+#: MovieSelection.py:251
 msgid "Selection on/off"
 msgstr ""
 
-#: MovieSelection.py:241
+#: MovieSelection.py:252
 msgid "Selection off"
 msgstr ""
 
-#: MovieSelection.py:242
+#: MovieSelection.py:253
 msgid "Toggle skin"
 msgstr ""
 
-#: MovieSelection.py:243
+#: MovieSelection.py:254
 msgid "Timer list"
 msgstr ""
 
-#: MovieSelection.py:244
+#: MovieSelection.py:255
 msgid "Reset progress"
 msgstr ""
 
-#: MovieSelection.py:245
+#: MovieSelection.py:256
 msgid "Date/Mountpoint"
 msgstr ""
 
-#: MovieSelection.py:246 MovieSelection.py:707
+#: MovieSelection.py:257 MovieSelection.py:712
 msgid "Stop recording(s)"
 msgstr ""
 
-#: MovieSelection.py:383
+#: MovieSelection.py:393
 msgid "No EPG Info available"
 msgstr ""
 
-#: MovieSelection.py:460
+#: MovieSelection.py:471
 msgid "Recordings"
 msgstr ""
 
-#: MovieSelection.py:757
+#: MovieSelection.py:762
 msgid "Permanently delete the selected video file(s) or dir(s)"
 msgstr ""
 
-#: MovieSelection.py:778
+#: MovieSelection.py:783
 msgid "Move file(s)"
 msgstr ""
 
-#: MovieSelection.py:786
+#: MovieSelection.py:791
 msgid "Copy file(s)"
 msgstr ""
 
-#: MovieSelection.py:802
+#: MovieSelection.py:807
 msgid "Can't move recordings"
 msgstr ""
 
-#: MovieSelection.py:802
+#: MovieSelection.py:807
 msgid "Can't copy recordings"
 msgstr ""
 
-#: MovieSelection.py:821
+#: MovieSelection.py:826
 msgid "Trashcan is not enabled"
 msgstr ""
 
-#: MovieSelection.py:829
+#: MovieSelection.py:834
 msgid "Permanently delete all files in trashcan?"
 msgstr ""
 
@@ -1245,10 +1249,10 @@ msgstr ""
 msgid "TV Shows"
 msgstr ""
 
-#: plugin.py:102
+#: plugin.py:105
 msgid "Open Setup"
 msgstr ""
 
-#: plugin.py:113
+#: plugin.py:116
 msgid "Manage recordings"
 msgstr ""

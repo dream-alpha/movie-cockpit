@@ -28,22 +28,22 @@ from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_EXT,
 from MovieCoverDownload import MovieCoverDownload
 from DelayedFunction import DelayedFunction
 
-class MovieCoversDownload(MovieCoverDownload, FileProgress, Bookmarks, object):
+class MovieCoversProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
 
 	def __init__(self, session):
-		#print("MVC: MovieCoversDownload: __init__")
+		#print("MVC: MovieCoversProgress: __init__")
 		FileProgress.__init__(self, session)
 		self.covers_tried = 0
 		self.covers_found = 0
-		self.skinName = ["MovieCoversDownload"]
-		self.skin = readFile(getSkinPath("FileCacheReload.xml"))
+		self.skinName = ["MovieCoversProgress"]
+		self.skin = readFile(getSkinPath("FileCacheLoadProgress.xml"))
 		self.setTitle(_("Download movie covers") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)
 
 	def onDialogShow(self):
-		#print("MVC: MovieCoversDownload: onDialogShow")
-		DelayedFunction(10, self.execMovieCoversDownload)
+		#print("MVC: MovieCoversProgress: onDialogShow")
+		DelayedFunction(10, self.execMovieCoversProgress)
 
 	def doFileOp(self, entry):
 		filename = entry[FILE_IDX_FILENAME]
@@ -60,11 +60,11 @@ class MovieCoversDownload(MovieCoverDownload, FileProgress, Bookmarks, object):
 
 	def completionStatus(self):
 		covers_percent = 0 if self.covers_tried == 0 else float(float(self.covers_found) / float(self.covers_tried)) * 100
-		#print("MVC: MovieCoversDownload: completionStatus: %s of %s new covers: %s%%" % (self.covers_found, self.covers_tried, covers_percent))
+		#print("MVC: MovieCoversProgress: completionStatus: %s of %s new covers: %s%%" % (self.covers_found, self.covers_tried, covers_percent))
 		return ((_("Download done") + " : %s " + _("of") + " %s " + _("new covers") + " (%s%%)") % (self.covers_found, self.covers_tried, covers_percent))
 
-	def execMovieCoversDownload(self):
-		print("MVC-I: MovieCoversDownload: execMovieCoversDownload")
+	def execMovieCoversProgress(self):
+		print("MVC-I: MovieCoversProgress: execMovieCoversProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
 		self.execution_list = FileCache.getInstance().getFileList(self.getBookmarks())

@@ -37,6 +37,7 @@ class RecordingControl(CutList, object):
 		self.check4ActiveRecordings()
 
 	def recordingEvent(self, timer):
+		from FileCacheLoad import FileCacheLoad
 		TIMER_STATES = ["StateWaiting", "StatePrepared", "StateRunning", "StateEnded"]
 		from FileCache import FileCache
 		if timer and not timer.justplay:
@@ -49,7 +50,7 @@ class RecordingControl(CutList, object):
 
 			elif timer.state == TimerEntry.StateRunning:
 				#print("MVC: RecordingControl: recordingEvent: REC START for: " + timer.Filename)
-				DelayedFunction(250, FileCache.getInstance().loadDatabaseFile, timer.Filename)
+				DelayedFunction(250, FileCacheLoad.getInstance().loadDatabaseFile, timer.Filename)
 				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
 				if config.MVC.cover_auto_download.value:
 					DelayedFunction(1000, self.autoCoverDownload, timer.Filename)
@@ -75,6 +76,7 @@ class RecordingControl(CutList, object):
 			MovieCoverDownload().getCover(name, path, filename, ext)
 
 	def check4ActiveRecordings(self):
+		from FileCacheLoad import FileCacheLoad
 		from FileCache import FileCache
 		#print("MVC: RecordingControl: check4ActiveRecordings")
 		for timer in NavigationInstance.instance.RecordTimer.timer_list:
@@ -82,7 +84,7 @@ class RecordingControl(CutList, object):
 			if timer.Filename and timer.isRunning() and not timer.justplay:
 				if not FileCache.getInstance().exists(timer.Filename):
 					#print("MVC: RecordingControl: check4ActiveRecordings: loadDatabaseFile: " + timer.Filename)
-					FileCache.getInstance().loadDatabaseFile(timer.Filename)
+					FileCacheLoad.getInstance().loadDatabaseFile(timer.Filename)
 
 	def reloadList(self, path):
 		#print("MVC: RecordingControl: reloadList")

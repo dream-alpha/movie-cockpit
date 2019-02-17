@@ -19,4 +19,4 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-VERSION = "1.8.13"
+VERSION = "1.9.4"

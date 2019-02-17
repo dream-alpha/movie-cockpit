@@ -2,7 +2,7 @@
 <!--
 Copyright (C) 2018-2019 by dream-alpha
 -->
-<screen name="MVCTMDBInfo" position="center,170" size="1220,820" title="">
+<screen position="center,170" size="1220,820" title="">
 
 	<ePixmap
 		pixmap="MovieCockpit/img/red.svg"

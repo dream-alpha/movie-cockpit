@@ -47,7 +47,7 @@ from FileOps import FileOps, FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 from FileUtils import readFile
 from FileCache import FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME, FILE_TYPE_IS_DIR
 from FileOpsProgress import FileOpsProgress
-from FileCacheReload import FileCacheReload
+from FileCacheLoadProgress import FileCacheLoadProgress
 from MediaTypes import extVideo
 from ConfigInit import choices_skin_layout, sort_values, sort_modes, function_key_names, KEY_RED_SHORT, KEY_RED_LONG,\
 	KEY_GREEN_SHORT, KEY_GREEN_LONG, KEY_YELLOW_SHORT, KEY_YELLOW_LONG, KEY_BLUE_SHORT, KEY_BLUE_LONG, KEY_INFO_SHORT, KEY_INFO_LONG
@@ -112,6 +112,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		self["list"] = MovieList(self.current_sorting)
 		self.cursor_direction = 0
 		self.lastservice = None
+		self["no_support"] = Label(_("Skin resolution other than Full HD is not supported yet."))
 		self["space_info"] = Label("")
 		self["sort_mode"] = Label("")
 		self["key_red"] = Button()
@@ -162,7 +163,11 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 
 	def getSkin(self):
 		#print("MVC: MovieSelection: getSkin: skin_layout: %s" % config.MVC.skin_layout.value)
-		skin = getSkinPath(config.MVC.skin_layout.value)
+		width = getDesktop(0).size().width()
+		if width == 1920:
+			skin = getSkinPath(config.MVC.skin_layout.value)
+		else:
+			skin = getSkinPath("NoSupport.xml")
 
 		if config.MVC.skin_layout.value == "MovieSelectionPIG.xml":
 			config.MVC.mini_tv.value = True
@@ -653,7 +658,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 
 	def reloadCache(self):
 		self.return_path = self["list"].getCurrentPath()
-		self.session.openWithCallback(self.reloadCacheCallback, FileCacheReload)
+		self.session.openWithCallback(self.reloadCacheCallback, FileCacheLoadProgress)
 
 	def reloadCacheCallback(self):
 		#print("MVC: MovieSelection: reloadCacheCallback")
@@ -700,7 +705,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			self.deleteMoviesQuery()
 
 	def stopRecordingsQuery(self):
-		filenames = self.movieList(self.recordings_to_stop)
+		filenames = self.createMovieList(self.recordings_to_stop)
 		self.session.openWithCallback(
 			self.stopRecordingsConfirmed,
 			MessageBox,
@@ -712,7 +717,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 
 	### Utils
 
-	def movieList(self, filelist):
+	def createMovieList(self, filelist):
 		filenames = ""
 		movies = len(filelist)
 		for i, path in enumerate(filelist):
@@ -753,7 +758,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 
 	def deleteMoviesQuery(self, _answer=True):
 		if self.file_delete_list:
-			filenames = self.movieList(self.file_delete_list)
+			filenames = self.createMovieList(self.file_delete_list)
 			msg = _("Permanently delete the selected video file(s) or dir(s)") + "?\n" + filenames
 			self.session.openWithCallback(
 				self.deleteMoviesConfirmed,

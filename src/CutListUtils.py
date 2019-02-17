@@ -23,7 +23,6 @@ import os
 import struct
 import shutil
 from bisect import insort
-from FileUtils import readFile, writeFile, deleteFile
 
 cutsParser = struct.Struct('>QI')  # big-endian, 64-bit PTS and 32-bit type
 
@@ -42,22 +41,6 @@ def backupCutsFile(path):
 	if os.path.exists(path):
 		shutil.copy2(path, backup_path)
 
-
-def mergeBackupCutsFile(path, cut_list):
-	#print("MVC: CutListUtils: mergeBackupCutsFile")
-	backup_cut_file = path + ".cuts.save"
-	if os.path.exists(backup_cut_file):
-		#print("MVC: CutListUtils: mergeBackupCutsFile: reading from Backup-File")
-		data = readFile(backup_cut_file)
-		backup_cut_list = unpackCutList(data)
-		#print("MVC: CutListUtils: mergeBackupCutsFile: backup_cut_list: %s" % backup_cut_list)
-		cut_list = mergeCutList(cut_list, backup_cut_list)
-		writeFile(path + ".cuts", packCutList(cut_list))
-		deleteFile(backup_cut_file)
-	else:
-		#print("MVC: CutListUtils: mergeBackupCutsFile: no Backup-File found: " + backup_cut_file)
-		pass
-	return cut_list
 
 def removeFirstMarks(cut_list):
 	# Don't care about the first 10 seconds

@@ -24,7 +24,7 @@ import os
 def readFile(path):
 	try:
 		return file(path).read()
-	except (IOError, TypeError) as e:
+	except Exception as e:
 		print("MVC-E: FileUtils: readFile: path: %s, exception: %s" % (path, e))
 		return ""
 
@@ -32,11 +32,11 @@ def writeFile(path, data):
 	try:
 		file(path, "w").write(data)
 		file(path).close()
-	except (IOError, TypeError) as e:
+	except Exception as e:
 		print("MVC_E: FileUtils: writeFile: path: %s, excpetion: %s" % (path, e))
 
 def deleteFile(path):
 	try:
 		os.remove(path)
-	except (IOError, TypeError) as e:
+	except Exception as e:
 		print("MVC-E: FileUtils: deleteFile: exception: path: %s, exception: %s" % (path, e))
