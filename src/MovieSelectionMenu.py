@@ -27,9 +27,7 @@ from Components.Sources.List import List
 from Screens.Screen import Screen
 from Tools.BoundFunction import boundFunction
 from Components.Sources.StaticText import StaticText
-from FileUtils import readFile
 from Bookmarks import Bookmarks
-from SkinUtils import getSkinPath
 from ConfigScreen import ConfigScreen
 
 FUNC_MOVIE_HOME = 0
@@ -51,10 +49,9 @@ FUNC_NOOP = 99
 
 
 class MovieSelectionMenu(Screen, Bookmarks, object):
-	skin = readFile(getSkinPath("MovieSelectionMenu.xml"))
-
 	def __init__(self, session, current_dir):
 		Screen.__init__(self, session)
+		self.skinName = "MVCSelectionMenu"
 		self["title"] = StaticText()
 		self.reload_movie_selection = False
 

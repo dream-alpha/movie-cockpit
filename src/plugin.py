@@ -77,7 +77,7 @@ def autostart(reason, **kwargs):
 				FileCacheLoad.getInstance().loadDatabase()
 			RecordingControl()
 			Trashcan.getInstance()
-			loadSkin(getSkinPath("MediaCenterLCD.xml"))
+			loadSkin(getSkinPath("MovieCockpit.xml"))
 
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")

@@ -189,9 +189,9 @@ sort_values = [v[0] for v in sort_modes.values()]
 
 
 choices_skin_layout = [
-	("MovieSelection.xml", _("Standard")),
-	("MovieSelectionPIG.xml", _("Mini-TV")),
-	("MovieSelectionCover.xml", _("Cover"))
+	("MVCSelection", _("Standard")),
+	("MVCSelectionPIG", _("Mini-TV")),
+	("MVCSelectionCover", _("Cover"))
 ]
 
 
@@ -304,7 +304,7 @@ class ConfigInit(MountPoints, object):
 		config.MVC.plugin_launch_key         = ConfigSelection(default="showMovies", choices=choices_launch_key)
 		config.MVC.list_bouquet_keys         = ConfigSelection(default="", choices=choices_bqt)
 		config.MVC.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
-		config.MVC.skin_layout               = ConfigSelection(default="MovieSelection.xml", choices=choices_skin_layout)
+		config.MVC.skin_layout               = ConfigSelection(default="MVCSelection", choices=choices_skin_layout)
 		config.MVC.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
 
 		self.checkList(config.MVC.epglang)

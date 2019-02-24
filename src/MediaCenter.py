@@ -44,9 +44,7 @@ from Components.Sources.MVCCurrentService import MVCCurrentService
 from ServiceCenter import ServiceCenter
 from MediaTypes import sidDVB
 from RecordingUtils import isRecording, getRecording
-from SkinUtils import getSkinPath
 from MovieInfoEPG import MovieInfoEPG
-from FileUtils import readFile
 from MovieCover import MovieCover
 
 class MVCMoviePlayerSummary(Screen, object):
@@ -74,8 +72,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 		self.selected_subtitle = None
 		self.execing = None
 
-		self.skinName = "MediaCenter"
-		self.skin = readFile(getSkinPath("MediaCenterOSD.xml"))
+		self.skinName = "MVCMediaCenter"
 
 		self.serviceHandler = ServiceCenter.getInstance()
 

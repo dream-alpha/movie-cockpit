@@ -20,8 +20,6 @@
 #
 
 from __init__ import _
-from SkinUtils import getSkinPath
-from FileUtils import readFile
 from Bookmarks import Bookmarks
 from FileProgress import FileProgress
 from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_NAME
@@ -35,8 +33,7 @@ class MovieCoversProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
 		FileProgress.__init__(self, session)
 		self.covers_tried = 0
 		self.covers_found = 0
-		self.skinName = ["MovieCoversProgress"]
-		self.skin = readFile(getSkinPath("FileCacheLoadProgress.xml"))
+		self.skinName = "MVCFileCacheLoadProgress"
 		self.setTitle(_("Download movie covers") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)

@@ -21,8 +21,6 @@
 
 import os
 from __init__ import _
-from SkinUtils import getSkinPath
-from FileUtils import readFile
 from Bookmarks import Bookmarks
 from DelayedFunction import DelayedFunction
 from FileCacheLoad import FileCacheLoad
@@ -33,8 +31,7 @@ class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 	def __init__(self, session):
 		#print("MVC: FileCacheLoadProgress: __init__")
 		FileProgress.__init__(self, session)
-		self.skinName = ["FileCacheLoadProgress"]
-		self.skin = readFile(getSkinPath("FileCacheLoadProgress.xml"))
+		self.skinName = "MVCFileCacheLoadProgress"
 		self.setTitle(_("File cache reload") + " ...")
 		self.execution_list = []
 		self.onShow.append(self.onDialogShow)

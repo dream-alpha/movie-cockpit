@@ -33,7 +33,7 @@ from Components.config import config
 from Components.Pixmap import Pixmap
 from enigma import eTimer
 from Tools.Directories import fileExists
-from FileUtils import readFile, deleteFile
+from FileUtils import deleteFile
 from SkinUtils import getSkinPath
 from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
@@ -48,12 +48,11 @@ TEMP_INFO_PATH = "/tmp/preview_info.txt"
 
 
 class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
-	skin = readFile(getSkinPath("MovieInfoTMDB.xml"))
-
 	def __init__(self, session, path, name):
 		#print("MVC: MovieInfoTMDB: __init__: path: %s, name: %s" % (path, name))
 		Screen.__init__(self, session)
 		MovieCoverDownload.__init__(self, session)
+		self.skinName = "MVCMovieInfoTMDB"
 		self["cover"] = Pixmap()
 		self.name = name
 		self.search_name = self.getMovieNameWithoutPhrases(name)

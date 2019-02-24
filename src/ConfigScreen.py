@@ -34,18 +34,14 @@ from enigma import eTimer, ePoint
 from Components.ConfigList import ConfigListScreen
 from enigma import eServiceEvent
 from Screens.Standby import TryQuitMainloop
-from FileUtils import readFile
 from Version import VERSION
-from SkinUtils import getSkinPath
 from Trashcan import Trashcan
 
 
 class ConfigScreen(ConfigListScreen, Screen, object):
-	skin = readFile(getSkinPath("ConfigScreen.xml"))
-
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		self.skinName = "ConfigScreenMenu"
+		self.skinName = "MVCConfigScreen"
 
 		self["actions"] = ActionMap(
 			["OkCancelActions", "MVCConfigActions"],

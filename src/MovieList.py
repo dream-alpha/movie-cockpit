@@ -20,25 +20,69 @@
 #
 
 import os
-from enigma import eServiceReference
+from __init__ import _
+from time import time
+from CutListUtils import ptsToSeconds, getCutListLast, unpackCutList
+from MediaTypes import extTS, extVideo
+from SkinUtils import getSkinPath
 from Components.config import config
-from enigma import eListboxPythonMultiContent, gFont
-from MovieListGUI import MovieListGUI
-from FileCache import FileCache,\
-	FILE_TYPE_IS_DIR, FILE_IDX_DATE, FILE_IDX_NAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_TYPE, FILE_IDX_DIR
-from MediaTypes import plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
-from datetime import datetime
+from Components.GUIComponent import GUIComponent
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaBlend
+from Tools.LoadPixmap import LoadPixmap
+from skin import parseColor, parseFont, parseSize
+from enigma import eListboxPythonMultiContent, eListbox, RT_HALIGN_LEFT, RT_HALIGN_CENTER, loadPNG, gFont
+from FileCache import FileCache, FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR, FILE_IDX_PATH, FILE_IDX_DIR
+from ServiceCenter import str2date
+from RecordingUtils import isCutting, getRecording
+from MountPoints import MountPoints
+from FileListUtils import FileListUtils
 
+class MovieList(GUIComponent, FileListUtils, MountPoints, object):
+	GUI_WIDGET = eListbox
+	selection_list = []
 
-class MovieList(MovieListGUI, object):
-
-	def __init__(self, sort_mode):
+	def __init__(self):
 		#print("MVC: MovieList: __init__")
-		self.sort_mode = sort_mode
-		self.list = []
-		self.selection_list = []
+		self.skinAttributes = None
+		GUIComponent.__init__(self)
 
-		MovieListGUI.__init__(self)
+		self.MVCFont = parseFont("Regular;30", ((1, 1), (1, 1)))
+		self.MVCSelectFont = parseFont("Regular;30", ((1, 1), (1, 1)))
+		self.MVCDateFont = parseFont("Regular;28", ((1, 1), (1, 1)))
+
+		self.MVCStartHPos = 10
+		self.MVCSpacer = 10
+		self.MVCMovieWidth = None
+		self.MVCDateWidth = 230
+		self.MVCBarSize = parseSize("90, 14", ((1, 1), (1, 1)))
+		self.MVCIconSize = parseSize("45, 35", ((1, 1), (1, 1)))
+		self.MVCRecIconSize = parseSize("230, 40", ((1, 1), (1, 1)))
+		# MVCSelNumTxtWidth is equal to MVCIconSize.width()
+		self.MVCPiconSize = parseSize("55, 35", ((1, 1), (1, 1)))
+
+		self.BackColor = None
+		self.BackColorHighlight = None
+		self.DefaultColor = parseColor("#bababa").argb()
+		self.DefaultColorHighlight = parseColor(config.MVC.color_highlight.value).argb()
+		self.RecordingColor = parseColor(config.MVC.color_recording.value).argb()
+		self.RecordingColorHighlight = parseColor(config.MVC.color_recording_highlight.value).argb()
+		self.SelectionColor = parseColor(config.MVC.color_selected.value).argb()
+		self.SelectionColorHighlight = parseColor(config.MVC.color_selected_highlight.value).argb()
+
+		skin_path = getSkinPath("img/")
+		self.pic_back = LoadPixmap(cached=True, path=skin_path + "back.svg")
+		self.pic_directory = LoadPixmap(cached=True, path=skin_path + "dir.svg")
+		self.pic_movie_default = LoadPixmap(cached=True, path=skin_path + "movie_default.svg")
+		self.pic_movie_watching = LoadPixmap(cached=True, path=skin_path + "movie_watching.svg")
+		self.pic_movie_finished = LoadPixmap(cached=True, path=skin_path + "movie_finished.svg")
+		self.pic_movie_rec = LoadPixmap(cached=True, path=skin_path + "movie_rec.svg")
+		self.pic_movie_cut = LoadPixmap(cached=True, path=skin_path + "movie_cut.svg")
+		self.pic_e2bookmark = LoadPixmap(cached=True, path=skin_path + "e2bookmark.svg")
+		self.pic_trashcan = LoadPixmap(cached=True, path=skin_path + "trashcan.svg")
+		self.pic_progress_bar = LoadPixmap(cached=True, path=skin_path + "progcl.svg")
+		self.pic_rec_progress_bar = LoadPixmap(cached=True, path=skin_path + "rec_progcl.svg")
+		self.pic_recording = LoadPixmap(cached=True, path=skin_path + "recording.svg")
+		self.pic_cutting = LoadPixmap(cached=True, path=skin_path + "cutting.svg")
 
 		self.l = eListboxPythonMultiContent()
 		self.l.setFont(0, gFont("Regular", 22))
@@ -49,26 +93,6 @@ class MovieList(MovieListGUI, object):
 		self.l.setBuildFunc(self.buildMovieListEntry)
 
 		self.onSelectionChanged = []
-		self.l.setList(self.getList())
-
-	def selectionChanged(self):
-		#print("MVC: MovieList: selectionChanged")
-		for f in self.onSelectionChanged:
-			try:
-				f()
-			except Exception as e:
-				print("MVC-E: MovieList: selectionChanged: exception: %s" % e)
-
-	def getCurrentPath(self):
-		l = self.l.getCurrentSelection()
-		return l and l[FILE_IDX_PATH]
-
-	def getCurrentDir(self):
-		l = self.l.getCurrentSelection()
-		return l and l[FILE_IDX_DIR]
-
-	def getCurrentIndex(self):
-		return self.instance.getCurrentIndex()
 
 	def postWidgetCreate(self, instance):
 		instance.setWrapAround(True)
@@ -79,53 +103,13 @@ class MovieList(MovieListGUI, object):
 		instance.setContent(None)
 		self.selectionChanged_conn = None
 
-	def getList(self):
-		return self.list
-
-	def __len__(self):
-		return len(self.getList())
-
-	def getSelectionList(self, including_current):
-		if not self.selection_list and including_current:
-			# if no selections made, select the current cursor position
-			single = self.l.getCurrentSelection()
-			if single:
-				self.selection_list.append(single[FILE_IDX_PATH])
-		return self.selection_list
-
-	def unselectAll(self):
-		#print("MVC: MovieList: unselectAll")
-		self.selection_list = []
-		self.invalidateList()
-
-	def selectPath(self, path):
-		#print("MVC: MovieList: selectPath: path: %s" % path)
-		self.selection_list.append(path)
-		self.invalidatePath(path)
-
-	def unselectPath(self, path):
-		#print("MVC: MovieList: unselectPath: path: %s" % path)
-		if path in self.selection_list:
-			self.selection_list.remove(path)
-			self.invalidatePath(path)
-
-	def selectAll(self):
-		#print("MVC: MovieList: selectAll")
-		for entry in self.list:
-			self.selectPath(entry[FILE_IDX_PATH])
-
-	def invalidateCurrent(self):
-		self.l.invalidateEntry(self.getCurrentIndex())
-
-	def invalidatePath(self, path):
-		for i, entry in enumerate(self.list):
-			if entry and entry[FILE_IDX_PATH] == path:
-				self.l.invalidateEntry(i)
-				break
-
-	def invalidateList(self):
-		self.selection_list = []
-		self.l.invalidate()
+	def selectionChanged(self):
+		#print("MVC: MovieList: selectionChanged")
+		for f in self.onSelectionChanged:
+			try:
+				f()
+			except Exception as e:
+				print("MVC-E: MovieList: selectionChanged: exception: %s" % e)
 
 	def moveUp(self):
 		self.instance.moveSelection(self.instance.moveUp)
@@ -148,113 +132,289 @@ class MovieList(MovieListGUI, object):
 	def moveToIndex(self, index):
 		self.instance.moveSelectionTo(index)
 
-	def moveToPath(self, path):
-		index = 0
-		for i, entry in enumerate(self.list):
-			if entry and entry[FILE_IDX_PATH] == path:
-				index = i
-				break
-		self.moveToIndex(index)
+	def setList(self, filelist):
+		self.l.setList(filelist)
 
-	def getEntry4Index(self, index):
-		return self.list[index]
+	def getCurrent(self):
+		return self.l.getCurrentSelection()
 
-	def getEntry4Path(self, path):
-		list_entry = None
-		for entry in self.list:
-			if entry and entry[FILE_IDX_PATH] == path:
-				list_entry = entry
-				break
-		return list_entry
+	def getCurrentPath(self):
+		l = self.l.getCurrentSelection()
+		return l and l[FILE_IDX_PATH]
 
-	def getIndex4Path(self, path):
-		index = -1
-		for i, entry in enumerate(self.list):
-			if entry and entry[FILE_IDX_PATH] == path:
-				index = i
-				break
-		return index
+	def getCurrentDir(self):
+		l = self.l.getCurrentSelection()
+		return l and l[FILE_IDX_DIR]
 
-	def getService4Path(self, path):
-		service = None
-		for entry in self.list:
-			if entry and entry[FILE_IDX_PATH] == path:
-				service = self.getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
-				break
-		return service
+	def getCurrentIndex(self):
+		return self.instance.getCurrentIndex()
 
-	def getService(self, path, name="", ext=None):
-		if ext in plyDVB:
-			service = eServiceReference(sidDVB, 0, path)
-		elif ext in plyDVD:
-			service = eServiceReference(sidDVD, 0, path)
-		elif ext in plyM2TS:
-			service = eServiceReference(sidM2TS, 0, path)
+	def invalidate(self):
+		self.l.invalidate()
+
+	def invalidateEntry(self, i):
+		self.l.invalidateEntry(i)
+
+	def applySkin(self, desktop, parent):
+		attribs = []
+		value_attributes = [
+			"MVCSpacer", "MVCMovieWidth", "MVCDateWidth"
+		]
+		size_attributes = [
+			"MVCBarSize", "MVCIconSize", "MVCRecIconSize", "MVCPiconSize"
+		]
+		font_attributes = [
+			"MVCFont", "MVCSelectFont", "MVCDateFont"
+		]
+		color_attributes = [
+			"DefaultColor", "BackColor", "BackColorHighlight", "DefaultColorHighlight", "RecordingColor", "SelectionColor", "SelectionColorHighlight"
+		]
+
+		if self.skinAttributes:
+			for (attrib, value) in self.skinAttributes:
+				if attrib in value_attributes:
+					setattr(self, attrib, int(value))
+				elif attrib in size_attributes:
+					setattr(self, attrib, parseSize(value, ((1, 1), (1, 1))))
+				elif attrib in font_attributes:
+					setattr(self, attrib, parseFont(value, ((1, 1), (1, 1))))
+				elif attrib in color_attributes:
+					setattr(self, attrib, parseColor(value).argb())
+				else:
+					attribs.append((attrib, value))
+		self.skinAttributes = attribs
+
+		self.l.setFont(1, self.MVCFont)
+		self.l.setFont(3, self.MVCSelectFont)
+		self.l.setFont(4, self.MVCDateFont)
+
+		#print("MVC: MovieList: applySkin: attribs: " + str(attribs))
+		return GUIComponent.applySkin(self, desktop, parent)
+
+	def buildMovieListEntry(self, _directory, filetype, path, _filename, ext, name, date_string, length, _description, _extended_description, service_reference, _size, cuts, _tags):
+
+		def yPos(ySize, yHeight):
+			return (ySize - yHeight) / 2
+
+		def getPiconPath(service_reference):
+			piconpath = ""
+			if config.MVC.movie_picons.value:
+				metaref = service_reference
+				pos = metaref.rfind(':')
+				if pos != -1:
+					metaref = metaref[:pos].rstrip(':').replace(':', '_')
+				piconpath = config.MVC.movie_picons_path.value + "/" + metaref + '.png'
+				#print("MVC: MovieList: buildMovieListEntry: piconpath: " + piconpath)
+			return piconpath
+
+		def createProgress(progress, color, color_sel, recording):
+			#print("MVC: MovieList: buildMovieListEntry: createProgressBar: progress: %s, startHPos: %s" % (progress, self.startHPos))
+			x = self.startHPos
+			if config.MVC.movie_progress.value == "PB":
+				y = yPos(self.l.getItemSize().height(), self.MVCBarSize.height())
+				bar_pic = self.pic_rec_progress_bar if recording else self.pic_progress_bar
+				self.res.append((eListboxPythonMultiContent.TYPE_PROGRESS_PIXMAP, x, y, self.MVCBarSize.width(), self.MVCBarSize.height(), progress, bar_pic, 1, color, color_sel, self.BackColor, None))
+				self.startHPos = x + self.MVCBarSize.width() + self.MVCSpacer
+			elif config.MVC.movie_progress.value == "P":
+				y = yPos(self.l.getItemSize().height(), self.MVCFont.pointSize)
+				self.res.append(MultiContentEntryText(pos=(x, y), size=(self.MVCBarSize.width(), self.l.getItemSize().height()), font=self.usedFont, flags=RT_HALIGN_CENTER, text="%d%%" % (progress), color=color, color_sel=color_sel))
+				self.startHPos = x + self.MVCBarSize.width() + self.MVCSpacer
+
+		def createTitle(title, filetype, color, color_sel):
+			#print("MVC: MovieList: buildMovieListEntry: createTitle: %s, startHPos: %s" % (title, self.startHPos))
+			x = self.startHPos
+			y = yPos(self.l.getItemSize().height(), self.MVCFont.pointSize)
+			w = self.MVCMovieWidth
+			if w is None:
+				w = self.width - x - self.MVCDateWidth - self.MVCSpacer
+
+			if filetype == FILE_TYPE_IS_FILE and (config.MVC.movie_progress.value == "PB" or config.MVC.movie_progress.value == "P"):
+				w = w - self.MVCBarSize.width() - self.MVCSpacer
+
+			self.res.append(MultiContentEntryText((x, y), (w, self.l.getItemSize().height()), font=self.usedFont, flags=RT_HALIGN_LEFT, text=title, color=color, color_sel=color_sel))
+			self.startHPos = x + w + self.MVCSpacer
+
+		def createIcon(pixmap):
+			#print("MVC: MovieList: buildMovieListEntry: createIcon: startHPos: %s" % self.startHPos)
+			x = self.startHPos
+			y = yPos(self.l.getItemSize().height(), self.MVCIconSize.height())
+
+			self.res.append(MultiContentEntryPixmapAlphaBlend(pos=(x, y), size=(self.MVCIconSize.width(), self.MVCIconSize.height()), png=pixmap, **{}))
+			self.startHPos = x + self.MVCIconSize.width() + self.MVCSpacer
+
+		def createPicon(service_reference, ext):
+			#print("MVC: MovieList: buildMovieListEntry: createPicon: startHPos: %s" % self.startHPos)
+			x = self.startHPos
+			y = yPos(self.l.getItemSize().height(), self.MVCPiconSize.height())
+
+			if ext in extTS:
+				piconpath = getPiconPath(service_reference)
+				self.res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, self.MVCPiconSize.width(), self.MVCPiconSize.height(), loadPNG(piconpath), None, None))
+			self.startHPos = x + self.MVCPiconSize.width() + self.MVCSpacer
+
+		def createDateText(date_text, color, color_sel):
+			#print("MVC: MovieList: buildMovieListEntry: createDateText: %s, startHPos: %s" % (date_text, self.startHPos))
+			x = self.startHPos
+			y = yPos(self.l.getItemSize().height(), self.MVCDateFont.pointSize)
+
+			halign = config.MVC.movie_date_text_alignment.value
+
+			self.res.append(MultiContentEntryText(pos=(x, y), size=(self.MVCDateWidth, self.l.getItemSize().height()), font=self.usedDateFont, text=date_text, color=color, color_sel=color_sel, flags=halign))
+			self.startHPos = x + self.MVCDateWidth + self.MVCSpacer
+
+		def getDateText(path, filetype, date_string):
+			date_text = ""
+			if filetype == FILE_TYPE_IS_FILE:
+				date_text = str2date(date_string).strftime(config.MVC.movie_date_format.value)
+				if config.MVC.movie_mountpoints.value:
+					date_text = self.getMountPoint(path)
+			else:
+				if os.path.basename(path) == "trashcan":
+					info_value = config.MVC.trashcan_info.value
+				else:
+					info_value = config.MVC.directories_info.value
+				if info_value:
+					if info_value == "D":
+						if os.path.basename(path) == "..":
+							date_text = _("up")
+						elif os.path.basename(path) == "trashcan":
+							date_text = _("trashcan")
+						else:
+							date_text = _("Directory")
+					else:
+						count, size = FileCache.getInstance().getCountSize(path)
+						counttext = "%d" % count
+
+						size /= (1024 * 1024 * 1024)  # GB
+						sizetext = "%.0f GB" % size
+						if size >= 1024:
+							sizetext = "%.1f TB" % size / 1024
+
+						#print("MVC: MovieList: getValues: count: %s, size: %s" % (count, size))
+						if info_value == "C":
+							date_text = "(%s)" % counttext
+						elif info_value == "S":
+							date_text = "(%s)" % sizetext
+						elif info_value == "CS":
+							date_text = "(%s/%s)" % (counttext, sizetext)
+			#print("MVC: MovieList: getValues: count: %s, date_text: %s" % (count, date_text))
+			return date_text
+
+		def getProgress(recording, length, cuts):
+			# All calculations are done in seconds
+			#print("MVC: MovieList: getProgress: path: %s" % path)
+
+			# first get last and length
+			if recording:
+				begin, end, _service_ref = recording
+				last = time() - begin
+				length = end - begin
+			else:
+				# Get last position from cut file
+				cut_list = unpackCutList(cuts)
+				#print("MVC: MovieList: getProgress: cut_list: " + str(cut_list))
+				last = ptsToSeconds(getCutListLast(cut_list))
+				#print("MVC: MovieList: getProgress: last: " + str(last))
+
+			# second calculate progress
+			progress = 0
+			if length > 0 and last > 0:
+				if last > length:
+					last = length
+				progress = int(round(float(last) / float(length), 2) * 100)
+
+			#print("MVC: MovieList: getProgress: progress = %s, length = %s, recording = %s" % (progress, length, recording))
+			return progress
+
+		def getFileIcon(path, filetype, progress, recording, cutting):
+			if filetype == FILE_TYPE_IS_FILE:
+				pixmap = self.pic_movie_default
+				if recording:
+					pixmap = self.pic_movie_rec
+				elif cutting:
+					pixmap = self.pic_movie_cut
+				else:
+					movieWatching = False
+					movieFinished = False
+					if config.MVC.movie_progress.value:
+						movieWatching = config.MVC.movie_progress.value and progress >= int(config.MVC.movie_watching_percent.value) and progress < int(config.MVC.movie_finished_percent.value)
+						movieFinished = config.MVC.movie_progress.value and progress >= int(config.MVC.movie_finished_percent.value)
+					if movieWatching:
+						pixmap = self.pic_movie_watching
+					elif movieFinished:
+						pixmap = self.pic_movie_finished
+			else:
+				pixmap = self.pic_directory
+				if os.path.basename(path) == "trashcan":
+					pixmap = self.pic_trashcan
+				elif os.path.basename(path) == "..":
+					pixmap = self.pic_back
+			return pixmap
+
+		def getColor(path, filetype, recording, cutting):
+			if path in MovieList.selection_list:
+				color = self.SelectionColor
+				color_sel = self.SelectionColorHighlight
+			else:
+				if filetype == FILE_TYPE_IS_FILE:
+					if recording or cutting:
+						color = self.RecordingColor
+						color_sel = self.RecordingColorHighlight
+					else:
+						color = self.DefaultColor
+						color_sel = self.DefaultColorHighlight
+				else:
+					color = self.DefaultColorHighlight
+					color_sel = self.DefaultColorHighlight
+			return color, color_sel
+
+		#print("MVC: MovieList: buildMovieListEnty: itemSize.width(): %s, itemSize.height(): %s" % (self.l.getItemSize().width(), self.l.getItemSize().height()))
+		self.res = [None]
+		self.usedFont = 1
+		self.usedSelectFont = 3
+		self.usedDateFont = 4
+		self.startHPos = self.MVCStartHPos
+		self.width = self.l.getItemSize().width() - 10
+
+		#print("MVC: MovieList: buildMovieListEntry: let's start with startHPos: %s" % self.startHPos)
+		if filetype == FILE_TYPE_IS_FILE and ext in extVideo:
+			#print("MVC: MovieList: buildMovieListEntry: adjusted startHPos: %s" % self.startHPos)
+			recording = getRecording(path, True)
+			cutting = isCutting(path)
+			color, color_sel = getColor(path, FILE_TYPE_IS_FILE, recording, cutting)
+			progress = getProgress(recording, length, cuts)
+
+			if config.MVC.movie_icons.value:
+				pixmap = getFileIcon(path, filetype, progress, recording, cutting)
+				createIcon(pixmap)
+
+			if config.MVC.movie_picons.value:
+				createPicon(service_reference, ext)
+
+			createTitle(name, filetype, color, color_sel)
+
+			createProgress(progress, color, color_sel, recording)
+
+			date_text = getDateText(path, filetype, date_string)
+			createDateText(date_text, color, color_sel)
+		elif filetype == FILE_TYPE_IS_DIR:
+			#print("MVC: MovieList: buildMovieListEntry: ext: " + ext)
+			recording = None
+			cutting = None
+			progress = 0
+
+			color, color_sel = getColor(path, FILE_TYPE_IS_DIR, recording, cutting)
+
+			if config.MVC.movie_icons.value:
+				pixmap = getFileIcon(path, filetype, progress, recording, cutting)
+				createIcon(pixmap)
+
+			createTitle(_(name), filetype, color, color_sel)
+
+			date_text = getDateText(path, filetype, date_string)
+			createDateText(date_text, color, color_sel)
 		else:
-			ENIGMA_SERVICE_ID = 0
-			DEFAULT_VIDEO_PID = 0x44
-			DEFAULT_AUDIO_PID = 0x45
-			service = eServiceReference(ENIGMA_SERVICE_ID, 0, path)
-			service.setData(0, DEFAULT_VIDEO_PID)
-			service.setData(1, DEFAULT_AUDIO_PID)
-		service.setName(name)
-		#print("MVC: MovieList: getService: service valid = %s for %s" % (service.valid(), path))
-		return service
-
-	def createFileList(self, path):
-		filelist = FileCache.getInstance().getFileList([path])
-		if config.MVC.directories_show.value:
-			filelist += FileCache.getInstance().getDirList([path])
-		return filelist
-
-	def createCustomList(self, path):
-		#print("MVC: MovieList: createCustomList: path: %s" % path)
-		custom_list = []
-		if path not in self.getBookmarks():
-			custom_list.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
-		else:  # path is a bookmark
-			if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
-				custom_list.append(FileCache.getInstance().getFile(path + "/trashcan"))
-		#print("MVC: MovieList: createCustomList: custom_list: " + str(custom_list))
-		return custom_list
-
-	def sortList(self, sort_list):
-
-		def date2ms(date_string):
-			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
-
-		filetype_list = [] if config.MVC.directories_ontop.value else [FILE_TYPE_IS_DIR]
-		# This will find all unsortable items
-		tmp_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
-		# Extract list items to be sorted
-		sort_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
-		# Always sort via extension and sorttitle
-		tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
-
-		mode, order = self.sort_mode
-
-		if mode == "D": # Date sort
-			if not order:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
-			else:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
-
-		elif mode == "A": # Alpha sort
-			if not order:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
-			else:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
-
-		return tmp_list + sort_list
-
-	def reloadList(self, path, sort_mode):
-		#print("MVC: MovieList: reloadList: path: %s" % path)
-		self.sort_mode = sort_mode
-		self.unselectAll()
-		filelist = self.createFileList(path)
-		custom_list = self.createCustomList(path)
-		self.list = custom_list + self.sortList(filelist)
-		self.l.setList(self.list)
-
-	def getDirList(self):
-		return FileCache.getInstance().getDirList(self.getBookmarks()[0]).sort()
+			#print("MVC: MovieList: buildMovieListEntry: unknown ext: " + ext)
+			pass
+		#print("MVC: MovieList: buildMovieListEntry: return")
+		return self.res

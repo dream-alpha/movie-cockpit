@@ -22,8 +22,6 @@
 import os
 from __init__ import _
 from enigma import eTimer
-from SkinUtils import getSkinPath
-from FileUtils import readFile
 from FileOps import FileOps
 from FileProgress import FileProgress
 from FileOps import FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
@@ -36,8 +34,7 @@ class FileOpsProgress(FileProgress, FileOps, object):
 	def __init__(self, session, selection_list):
 		#print("MVC: FileOpsProgress: __init__")
 		FileProgress.__init__(self, session)
-		self.skinName = ["FileOpsProgress"]
-		self.skin = readFile(getSkinPath("FileOpsProgress.xml"))
+		self.skinName = "MVCFileOpsProgress"
 		self.setTitle(_("File operation(s)") + " ...")
 		self.execution_list = selection_list
 		self.activityTimer = eTimer()

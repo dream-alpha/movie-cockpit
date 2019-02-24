@@ -21,6 +21,7 @@
 
 import os
 from __init__ import _
+from datetime import datetime
 from Components.config import config
 from Components.ActionMap import HelpableActionMap
 from Components.Button import Button
@@ -38,14 +39,11 @@ from enigma import getDesktop
 from Components.VideoWindow import VideoWindow
 from Components.Sources.MVCServiceEvent import MVCServiceEvent
 from ServiceCenter import ServiceCenter
-from MovieList import MovieList
 from MovieSelectionMenu import MovieSelectionMenu
-from SkinUtils import getSkinPath
 from RecordingUtils import isRecording, stopRecording
 from CutList import CutList
 from FileOps import FileOps, FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
-from FileUtils import readFile
-from FileCache import FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME, FILE_TYPE_IS_DIR
+from FileCache import FileCache, FILE_IDX_DATE, FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME, FILE_TYPE_IS_DIR
 from FileOpsProgress import FileOpsProgress
 from FileCacheLoadProgress import FileCacheLoadProgress
 from MediaTypes import extVideo
@@ -58,6 +56,8 @@ from Trashcan import Trashcan
 from MovieSelectionMenu import FUNC_MOVIE_HOME, FUNC_DIR_UP, FUNC_RELOAD_CACHE, FUNC_DELETE,\
 	FUNC_DELETE_PERMANENTLY, FUNC_EMPTY_TRASHCAN, FUNC_OPEN_TRASHCAN, FUNC_SELECT_ALL, FUNC_COPY, FUNC_MOVE,\
 	FUNC_REMOVE_MARKER, FUNC_DELETE_CUTLIST, FUNC_OPEN_BOOKMARKS, FUNC_RELOAD_MOVIE_SELECTION, FUNC_NOOP
+from MovieList import MovieList
+from FileListUtils import FileListUtils
 
 instance = None
 
@@ -70,7 +70,7 @@ class MovieSelectionSummary(Screen, object):
 		self.skinName = ["MVCSelectionSummary"]
 
 
-class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
+class MovieSelection(Screen, HelpableScreen, FileListUtils, FileOps, CutList, object):
 
 	# Define static member variables
 	def attrgetter(self, default=None):
@@ -103,13 +103,14 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 
-		self.skinName = ["MVCSelection"]
-		self.skin = readFile(self.getSkin())
+		self.filelist = []
+
+		self.skinName = self.getSkinName()
 		self["cover"] = Pixmap()
 		desktop_size = getDesktop(0).size()
 		self["Video"] = VideoWindow(decoder=0, fb_width=desktop_size.width(), fb_height=desktop_size.height())
 		self["Service"] = MVCServiceEvent(ServiceCenter.getInstance())
-		self["list"] = MovieList(self.current_sorting)
+		self["list"] = MovieList()
 		self.cursor_direction = 0
 		self.lastservice = None
 		self["no_support"] = Label(_("Skin resolution other than Full HD is not supported yet."))
@@ -137,7 +138,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		self.updateSortMode()
 		self["space_info"].setText(config.MVC.disk_space_info.value)
 
-		if not self["list"]:
+		if not self.filelist:
 			current_dir = self.getBookmarks()[0]
 			if not config.MVC.list_start_home.value and self.return_path:
 				current_dir = os.path.dirname(self.return_path)
@@ -161,24 +162,24 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		self["Video"].instance.resize(eSize(*(desktop_size.width(), desktop_size.height())))
 		self["Video"].hide()
 
-	def getSkin(self):
-		#print("MVC: MovieSelection: getSkin: skin_layout: %s" % config.MVC.skin_layout.value)
+	def getSkinName(self):
+		#print("MVC: MovieSelection: getSkinName: skin_layout: %s" % config.MVC.skin_layout.value)
 		width = getDesktop(0).size().width()
 		if width == 1920:
-			skin = getSkinPath(config.MVC.skin_layout.value)
+			skinName = config.MVC.skin_layout.value
 		else:
-			skin = getSkinPath("NoSupport.xml")
+			skinName = "MVCNoSupport"
 
-		if config.MVC.skin_layout.value == "MovieSelectionPIG.xml":
+		if skinName == "MVCSelectionPIG":
 			config.MVC.mini_tv.value = True
 			config.MVC.cover.value = False
-		elif config.MVC.skin_layout.value == "MovieSelectionCover.xml":
+		elif skinName == "MVCSelectionCover":
 			config.MVC.cover.value = True
 			config.MVC.mini_tv.value = False
 		else:
 			config.MVC.mini_tv.value = False
 			config.MVC.cover.value = False
-		return skin
+		return skinName
 
 	def createSummary(self):
 		return MovieSelectionSummary
@@ -275,6 +276,91 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			self.short_key = False
 			self.function_key_functions[self.function_key_assignments[key]]()
 
+### list functions
+
+	def getSelectionList(self, including_current=True):
+		if not MovieList.selection_list and including_current:
+			# if no selections made, select the current cursor position
+			current_path = self["list"].getCurrentPath()
+			if current_path:
+				MovieList.selection_list.append(current_path)
+		return MovieList.selection_list
+
+	def unselectAll(self):
+		#print("MVC: MovieSelection: unselectAll")
+		MovieList.selection_list = []
+		self.invalidateList()
+
+	def selectPath(self, path):
+		#print("MVC: MovieSelection: selectPath: path: %s" % path)
+		MovieList.selection_list.append(path)
+		self.invalidatePath(path)
+
+	def unselectPath(self, path):
+		#print("MVC: MovieSelection: unselectPath: path: %s" % path)
+		if path in MovieList.selection_list:
+			MovieList.selection_list.remove(path)
+			self.invalidatePath(path)
+
+	def selectAll(self):
+		#print("MVC: MovieSelection: selectAll")
+		for entry in self.filelist:
+			self.selectPath(entry[FILE_IDX_PATH])
+
+	def invalidatePath(self, path):
+		index = self.getIndex4Path(self.filelist, path)
+		self["list"].invalidateEntry(index)
+
+	def invalidateList(self):
+		MovieList.selection_list = []
+		self["list"].invalidate()
+
+	def createFileList(self, path):
+		filelist = FileCache.getInstance().getFileList([path])
+		if config.MVC.directories_show.value:
+			filelist += FileCache.getInstance().getDirList([path])
+		return filelist
+
+	def createCustomList(self, path):
+		#print("MVC: MovieSelection: createCustomList: path: %s" % path)
+		custom_list = []
+		if path not in self.getBookmarks():
+			custom_list.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
+		else:  # path is a bookmark
+			if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
+				custom_list.append(FileCache.getInstance().getFile(path + "/trashcan"))
+		#print("MVC: MovieSelection: createCustomList: custom_list: " + str(custom_list))
+		return custom_list
+
+	def sortList(self, sort_list, sort):
+
+		def date2ms(date_string):
+			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
+
+		filetype_list = [] if config.MVC.directories_ontop.value else [FILE_TYPE_IS_DIR]
+		# This will find all unsortable items
+		tmp_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
+		# Extract list items to be sorted
+		sort_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
+		# Always sort via extension and sorttitle
+		tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
+
+		mode, order = sort
+
+		if mode == "D": # Date sort
+			if not order:
+				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
+			else:
+				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
+
+		elif mode == "A": # Alpha sort
+			if not order:
+				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
+			else:
+				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
+
+		return tmp_list + sort_list
+
 ### Cursor movements
 
 	def bqtPlus(self):
@@ -294,14 +380,14 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			self.bqtPrevFolder()
 
 	def bqtNextFolder(self):
-		dirlist = self["list"].getDirList()
+		dirlist = self.getDirList()
 		if dirlist:
 			pos = dirlist[FILE_IDX_PATH].index(self["list"].getCurrentDir()) % len(dirlist)
 			pos = pos + 1 if pos < len(dirlist) - 1 else 0
 			self.changeDir(dirlist[pos])
 
 	def bqtPrevFolder(self):
-		dirlist = self["list"].getDirList()
+		dirlist = self.getDirList()
 		if dirlist:
 			pos = dirlist[FILE_IDX_PATH].index(self["list"].getCurrentDir()) % len(dirlist)
 			pos = pos - 1 if pos > 0 else len(dirlist) - 1
@@ -355,7 +441,8 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 
 	def moveToPath(self, path):
 		#print("MVC: MovieSelection: moveToPath: path: %s" % path)
-		self["list"].moveToPath(path)
+		index = self.getIndex4Path(self.filelist, path)
+		self.moveToIndex(index)
 		self.return_path = self["list"].getCurrentPath()
 
 	def moveToMovieHome(self):
@@ -380,8 +467,8 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		path = self["list"].getCurrentPath()
 		#print("MVC: MovieSelection: infoFunc: path: %s" % path)
 		epg_available = False
-		if self["list"].getEntry4Index(self["list"].getCurrentIndex())[FILE_IDX_EXT] in extVideo:
-			service = self["list"].getService4Path(path)
+		if self.getEntry4Index(self.filelist, self["list"].getCurrentIndex())[FILE_IDX_EXT] in extVideo:
+			service = self.getService4Path(self.filelist, path)
 			if service:
 				evt = ServiceCenter.getInstance().info(service).getEvent()
 				if evt:
@@ -395,9 +482,10 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			)
 
 	def movieInfoTMDB(self):
-		if self["list"].getEntry4Index(self["list"].getCurrentIndex())[FILE_IDX_EXT] in extVideo:
-			path = self["list"].getCurrentPath()
-			name = self["list"].getEntry4Path(path)[FILE_IDX_NAME]
+		path = self["list"].getCurrentPath()
+		entry = self.getEntry4Path(self.filelist, path)
+		if entry and entry[FILE_IDX_EXT] in extVideo:
+			name = entry[FILE_IDX_NAME]
 			self.session.openWithCallback(self.movieInfoTMDBCallback, MovieInfoTMDB, path, name)
 
 	def movieInfoTMDBCallback(self):
@@ -444,7 +532,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		#print("MVC: MovieSelection: updateInfoDelayed")
 		path = self["list"].getCurrentPath()
 		if path:
-			current_service = self["list"].getService4Path(path)
+			current_service = self.getService4Path(self.filelist, path)
 			self["Service"].newService(current_service)
 		if self.cover:
 			self.showCover(path)
@@ -523,26 +611,17 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		#print("MVC: MovieSelection: reloadList: path: %s" % path)
 		#print("MVC: MovieSelection: reloadList: self.return_path: %s" % self.return_path)
 		self.resetInfo()
-		self["list"].reloadList(path, self.current_sorting)
-		self["list"].unselectAll()
+		self.unselectAll()
+		filelist = self.createFileList(path)
+		custom_list = self.createCustomList(path)
+		self.filelist = custom_list + self.sortList(filelist, self.current_sorting)
+		self["list"].setList(self.filelist)
 		if self.return_path:
 			self.moveToPath(self.return_path)
 		if update_disk_space_info:
 			self.updateSpaceInfo()
 
 ### -Selection functions
-
-	def getSelectionList(self, including_current=True):
-		selection_list = self["list"].getSelectionList(including_current=including_current)
-		return selection_list
-
-	def selectAll(self):
-		#print("MVC: MovieSelection: selectAll")
-		self["list"].selectAll()
-
-	def unselectAll(self):
-		#print("MVC: MovieSelection: unselectAll")
-		self["list"].unselectAll()
 
 	def selectionChanged(self):
 		#print("MVC: MovieSelection: selectionChanged")
@@ -551,34 +630,34 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 	def toggleSelection(self, index=-1):
 		#print("MVC: MovieSelection: toggleSelection: index: %s" % index)
 		if index >= 0:
-			path = self["list"].getEntry4Index(index)[FILE_IDX_PATH]
+			path = self.getEntry4Index(self.filelist, index)[FILE_IDX_PATH]
 		else:
 			path = self["list"].getCurrentPath()
 
 		selection_list = self.getSelectionList(including_current=False)
 		#print("MVC: MovieSelection: toggleSelection: selection_list: %s" % selection_list)
 		if path in selection_list:
-			self["list"].unselectPath(path)
+			self.unselectPath(path)
 		else:
-			self["list"].selectPath(path)
+			self.selectPath(path)
 
 		# Move cursor
 		if config.MVC.list_selmove.value != "o":
 			if self.cursor_direction == -1 and config.MVC.list_selmove.value == "b":
 				index = self["list"].getCurrentIndex() - 1
 				if index < 0:
-					index = len(self["list"]) - 1
+					index = len(self.filelist) - 1
 				self.moveToIndex(index)
 			else:
 				index = self["list"].getCurrentIndex() + 1
-				if index > len(self["list"]) - 1:
+				if index > len(self.filelist) - 1:
 					index = 0
 				self.moveToIndex(index)
 
 	def entrySelected(self):
 		path = self["list"].getCurrentPath()
 		if path:
-			if self["list"].getEntry4Index(self["list"].getCurrentIndex())[FILE_IDX_TYPE] == FILE_TYPE_IS_DIR:
+			if self.getEntry4Index(self.filelist, self["list"].getCurrentIndex())[FILE_IDX_TYPE] == FILE_TYPE_IS_DIR:
 				self.changeDir(path)
 			else:
 				if config.MVC.mini_tv.value:
@@ -607,11 +686,11 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		self.session.openWithCallback(
 			self.playerCallback,
 			MediaCenter,
-			self["list"].getService4Path(path)
+			self["list"].getService4Path(self.filelist, path)
 		)
 		return
 
-### Selection Menu
+### Context Menu
 
 	def menuCallback(self, function=None):
 		print("MVC-I: MovieSelection: menuCallback: function: %s" % function)
@@ -724,7 +803,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			if i >= 5 and movies > 5:  # only show first 5 entries in filelist
 				filenames += " ..."
 				break
-			filename = self["list"].getEntry4Path(path)[FILE_IDX_NAME]
+			filename = self.getEntry4Path(self.filelist, path)[FILE_IDX_NAME]
 			filename, _ext = os.path.splitext(path)
 			filename = os.path.basename(path)
 			filenames += "\n" + filename
@@ -739,7 +818,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 		selection_list = self.getSelectionList()
 		for path in selection_list:
 			#print("MVC: MovieSelection: deleteFile: %s" % path)
-			file_type = self["list"].getEntry4Path(path)[FILE_IDX_TYPE]
+			file_type = self.getEntry4Path(self.filelist, path)[FILE_IDX_TYPE]
 			directory = os.path.dirname(path)
 			if delete_permanently or not config.MVC.trashcan_enable.value or os.path.basename(directory) == "trashcan":
 				self.file_ops_list.append((FILE_OP_DELETE, file_type, path, None))
@@ -800,7 +879,7 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 			selection_list = self.getSelectionList()
 			for path in selection_list:
 				if not isRecording(path):
-					file_type = self["list"].getEntry4Path(path)[FILE_IDX_TYPE]
+					file_type = self.getEntry4Path(self.filelist, path)[FILE_IDX_TYPE]
 					self.file_ops_list.append((file_op, file_type, path, os.path.normpath(target_path)))
 				else:
 					self.file_ops_list = []
@@ -876,17 +955,17 @@ class MovieSelection(Screen, HelpableScreen, FileOps, CutList, object):
 				exec_progress = True
 			if op == FILE_OP_DELETE or op == FILE_OP_MOVE:
 				path_list.append(path)
-				indexes.append(self["list"].getIndex4Path(path))
+				indexes.append(self.getIndex4Path(self.filelist, path))
 
 		current_path = self["list"].getCurrentPath()
 		self.return_path = current_path
 
 		if path_list and current_path in path_list:
-			return_path = self["list"].getEntry4Index(0)[FILE_IDX_PATH]  # first service in list
+			return_path = self.getEntry4Index(self.filelist, 0)[FILE_IDX_PATH]  # first service in list
 			if indexes:
 				indexes.sort()
-				for i in range(indexes[0], self["list"].__len__() - 1):
-					path = self["list"].getEntry4Index(i)[FILE_IDX_PATH]
+				for i in range(indexes[0], len(self.filelist) - 1):
+					path = self.getEntry4Index(self.filelist, i)[FILE_IDX_PATH]
 					#print("MVC: MovieSelection: execFileOps: checking: %s" % path)
 					if path not in path_list:
 						return_path = path
