@@ -24,7 +24,7 @@ import datetime
 from time import mktime
 from Components.config import config
 from enigma import eServiceCenter, iServiceInformation
-from FileCache import FileCache, FILE_TYPE_IS_FILE
+from FileCache import FileCache, FILE_TYPE_FILE
 from CutListUtils import unpackCutList
 
 instance = None
@@ -156,7 +156,7 @@ class Info(object):
 		return self.getLength()
 
 	def getSize(self):
-		if self.__filetype == FILE_TYPE_IS_FILE:
+		if self.__filetype == FILE_TYPE_FILE:
 			size = self.__size
 		else:
 			_count, size = FileCache.getInstance().getCountSize(self.path)

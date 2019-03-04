@@ -8,9 +8,9 @@ Desktop.ini
 .DS_Store
 
 # Eclipse Files
-.pydevproject
-.project
-.settings
+#.pydevproject
+#.project
+#.settings
 
 # Python Files
 *.pyo

@@ -19,4 +19,4 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-VERSION = "1.10.0"
+VERSION = "2.2.2"

@@ -20,6 +20,8 @@
 #
 
 from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN
+from skin import loadSkin, loadSingleSkinData, dom_skins
+from enigma import getDesktop
 
 
 def getSkinPath(filename):
@@ -28,3 +30,8 @@ def getSkinPath(filename):
 		skin_path = "/usr/share/enigma2/MovieCockpit/" + filename
 	#print("MVC: SkinUtils: getSkinPath: skin_path: " + skin_path)
 	return skin_path
+
+def loadPluginSkin(skin_file):
+	loadSkin(getSkinPath(skin_file), "")
+	path, dom_skin = dom_skins[-1:][0]
+	loadSingleSkinData(getDesktop(0), dom_skin, path)

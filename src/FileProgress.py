@@ -43,6 +43,7 @@ class FileProgress(Screen, Bookmarks, object):
 
 		self["key_red"] = Button(_("Cancel"))
 		self["key_green"] = Button(_("Close"))
+		self["key_yellow"] = Button("")
 		self["key_blue"] = Button(_("Hide"))
 
 		self["key_red"].show()
@@ -51,7 +52,7 @@ class FileProgress(Screen, Bookmarks, object):
 
 		self["actions"] = ActionMap(
 			["OkCancelActions", "ColorActions"],
-			{"ok": self.exit, "cancel": self.cancel, "red": self.cancel, "green": self.exit, "blue": self.toggleHide}
+			{"ok": self.exit, "cancel": self.cancel, "red": self.cancel, "green": self.exit, "yellow": self.noop, "blue": self.toggleHide}
 		)
 
 		self.execution_list = []
@@ -63,6 +64,9 @@ class FileProgress(Screen, Bookmarks, object):
 		self.request_cancel = False
 		self.cancelled = False
 		self.hidden = False
+
+	def noop(self):
+		pass
 
 	def cancel(self):
 		if self.hidden:

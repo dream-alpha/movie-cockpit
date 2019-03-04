@@ -41,8 +41,8 @@ FILE_IDX_CUTS = 12
 FILE_IDX_TAGS = 13
 
 # filetype values
-FILE_TYPE_IS_FILE = 1
-FILE_TYPE_IS_DIR = 2
+FILE_TYPE_FILE = 1
+FILE_TYPE_DIR = 2
 
 
 instance = None
@@ -167,14 +167,14 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 
 	def getFile(self, path):
 		where = "path = \"" + path + "\""
-		print("MVC: FileCache: getFile: where: %s" % where)
+		#print("MVC: FileCache: getFile: where: %s" % where)
 		filelist = self.sqlSelect(where)
-
 		filedata = None
-		if len(filelist) == 1:
-			filedata = filelist[0]
-		else:
-			print("MVC-E: FileCache: getFile: not a single response: " + str(filelist))
+		if filelist:
+			if len(filelist) == 1:
+				filedata = filelist[0]
+			else:
+				print("MVC-E: FileCache: getFile: not a single response: " + str(filelist))
 		return filedata
 
 	def __resolveVirtualDirs(self, dirs):
@@ -206,8 +206,8 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		for directory in all_dirs:
 			where += op + "directory = \"" + directory + "\""
 			op = " OR "
-		where += ") AND " + "filetype = " + str(FILE_TYPE_IS_FILE)
-		print("MVC: FileCache: getFileList: where: %s" % where)
+		where += ") AND " + "filetype = " + str(FILE_TYPE_FILE)
+		#print("MVC: FileCache: getFileList: where: %s" % where)
 		filelist = self.sqlSelect(where)
 		return filelist
 
@@ -221,8 +221,8 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 			op = " AND "
 		where += " AND " + "filename != \"trashcan\""
 		where += " AND " + "filename != \"..\""
-		where += " AND " + "filetype > " + str(FILE_TYPE_IS_FILE)
-		print("MVC: FileCache: getDirList: where: %s" % where)
+		where += " AND " + "filetype > " + str(FILE_TYPE_FILE)
+		#print("MVC: FileCache: getDirList: where: %s" % where)
 		dirlist = self.sqlSelect(where)
 		return dirlist
 
@@ -245,11 +245,11 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 
 		for directory, filetype, path, filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, size, _cuts, _tags in filelist:
 			#print("MVC: FileCache: __getCountSize: %s, %s" % (path, filetype))
-			if path and filetype == FILE_TYPE_IS_FILE and directory == in_path:
+			if path and filetype == FILE_TYPE_FILE and directory == in_path:
 				#print("MVC: FileCache: __getCountSize: path: %s " % path)
 				self.count += 1
 				self.size += size
-			if path and filetype > FILE_TYPE_IS_FILE and directory.startswith(in_path) and filename != "..":
+			if path and filetype > FILE_TYPE_FILE and directory.startswith(in_path) and filename != "..":
 				self.__getCountSize(path)
 
 		#print("MVC: FileCache: __getCountSize: %s, %s, %s" % (in_path, self.count, self.size))

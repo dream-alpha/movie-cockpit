@@ -1,0 +1,83 @@
+# Copyright (C) 2018-2019 by dream-alpha
+#
+# value indexes:
+#  1: name
+#  2: tags
+#  3: service name
+#  4: short description
+#  5: date string
+#  6: duration string
+#  7: color
+#  8: color_sel
+#  9: progress percent (-1 = don't show progress bar)
+# 10: progress string (xx%)
+# 11: progress bar png
+# 12: status icon png
+# 13: picon png
+
+{
+	"templates": {
+		"default": (100, [
+			# line 1 of 3: | name |
+			MultiContentEntryText(pos=(start,2), size=(width-start,35), font=0, flags=RT_HALIGN_LEFT, text=1,
+				color=0xFF000008, color_sel=0xFF000008),								# name
+			# line 2 of 3: | date | duration |
+			MultiContentEntryText(pos=(start,38), size=(date_width,29), font=2, flags=RT_HALIGN_LEFT, text=5,
+				color=0xFF000007, color_sel=0xFF000008),								# date
+			MultiContentEntryText(pos=(width-duration_width,38), size=(duration_width,29), text=6,
+				font=2, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008),					# duration
+			# line 3 of 3: | description | progress % |
+			MultiContentEntryText(pos=(start,67), size=(width-start,30), font=2, flags=RT_HALIGN_LEFT,  text=4,
+				color=0xFF000007, color_sel=0xFF000008),								# description
+			MultiContentEntryText(pos=(width-progress_width,8), size=(progress_width,45), text=10,
+				font=1, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008), 				# progress %
+		]),
+		"compact_description": (80, [
+			# line 1 of 2: | name  | date |
+			MultiContentEntryText(pos=(start,8), size=(width-start-date_width-spacer,33), text=1,				# name
+				font=1, flags=RT_HALIGN_LEFT, color=0xFF000008, color_sel=0xFF000008),
+			MultiContentEntryText(pos=(width-date_width,42), size=(date_width,30), text=5,					# date
+				font=2, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008),
+			# line 2 of 2: | description | progress | 
+			MultiContentEntryText(pos=(start,42), size=(width-start-date_width-spacer,30), text=4,				# description
+				font=2, flags=RT_HALIGN_LEFT, color=0xFF000007, color_sel=0xFF000008),
+			MultiContentEntryText(pos=(width-progress_width,8), size=(progress_width,45), text=10,
+				font=1, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008), 				# progress %
+		]),
+		"compact": (80, [
+			# line 1 of 2: | name | progress bar |
+			MultiContentEntryText(pos=(start,8), size=(width-start,33), font=1, flags=RT_HALIGN_LEFT, text=1,
+				color=0xFF000008, color_sel=0xFF000008),								# name
+			MultiContentEntryProgressPixmap(pos=(width-bar_size[0],15), size=bar_size, png=11,
+				foreColor=0xFF000007, percent=-9, borderWidth=1), 							# progress bar
+	
+			# line 2 of 2: | description | date |
+			MultiContentEntryText(pos=(start,42), size=(width-start-date_width-spacer,30), text=4,
+				font=2, flags=RT_HALIGN_LEFT, color=0xFF000007, color_sel=0xFF000008),					# description
+			MultiContentEntryText(pos=(width-date_width,42), size=(date_width,30), text=5,
+				font=2, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008),					# date
+		]),
+		"compact_single": (45, [
+			# line 1 of 1: | icon | picon | name | progress bar | date |
+			MultiContentEntryPixmapAlphaBlend(pos = (start, 5), size = icon_size, png=12), 					# icon
+			MultiContentEntryPixmapAlphaBlend(pos = (start+icon_size[0]+spacer, 5), size = picon_size, png=13), 		# picon
+			MultiContentEntryText(pos=(start+icon_size[0]+spacer+picon_size[0]+spacer,7),
+				size=(width-start-icon_size[0]-picon_size[0]-date_width-bar_size[0]-3*spacer,45), text=1,
+				font=0, flags=RT_HALIGN_LEFT, color=0xFF000007, color_sel=0xFF000008), 					# name
+			MultiContentEntryProgressPixmap(pos=(width-date_width-bar_size[0]-spacer,15), size=bar_size, png=11,
+				foreColor=0xFF000007, percent=-9, borderWidth=1), # progress bar
+			MultiContentEntryText(pos=(width-date_width,8), size=(date_width,45), text=5,
+				font=1, flags=RT_HALIGN_CENTER, color=0xFF000007, color_sel=0xFF000008), 				# date
+		]),
+		"minimal": (45, [
+			# line 1 of 1: | name | progress bar | date |
+			MultiContentEntryText(pos=(start,7), size=(width-start-date_width-spacer-bar_size[0]-spacer,45), text=1,
+				font=0, flags=RT_HALIGN_LEFT, color=0xFF000007, color_sel=0xFF000008), 					# name
+			MultiContentEntryProgressPixmap(pos=(width-date_width-bar_size[0]-spacer,15), size=bar_size, png=11,
+				foreColor=0xFF000007, percent=-9, borderWidth=1), 							# progress bar
+			MultiContentEntryText(pos=(width-date_width,8), size=(date_width,45), text=5,
+				font=1, flags=RT_HALIGN_CENTER, color=0xFF000007, color_sel=0xFF000008), 				# date
+		]),
+	},
+	"fonts": [gFont("Regular",30), gFont("Regular",28), gFont("Regular",26)]
+}

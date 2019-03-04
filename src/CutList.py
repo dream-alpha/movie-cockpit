@@ -57,7 +57,7 @@ class CutList(object):
 		return self.__getCutFile(path)
 
 	def resetLastCutList(self, path):
-		#print("MVC: resetLastCutList: path: %s, cut_list: %s" % (path, cut_list))
+		#print("MVC: resetLastCutList: path: %s" % path)
 		cut_list = replaceLast(self.__getCutFile(path), 0)
 		#print("MVC: resetLastCutList: cut_list: %s" % cut_list)
 		self.__putCutFile(path, cut_list)

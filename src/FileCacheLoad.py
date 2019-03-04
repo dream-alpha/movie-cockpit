@@ -23,6 +23,7 @@ import os
 import datetime
 from ParserEitFile import ParserEitFile
 from ParserMetaFile import ParserMetaFile
+#from ServiceReference import ServiceReference
 from CutListUtils import unpackCutList, ptsToSeconds, getCutListLength
 from Components.config import config
 from Bookmarks import Bookmarks
@@ -30,7 +31,7 @@ from MediaTypes import extTS, extVideo
 from RecordingUtils import getRecording
 from FileUtils import readFile
 from ServiceCenter import str2date
-from FileCache import FILE_TYPE_IS_FILE, FILE_TYPE_IS_DIR
+from FileCache import FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileCacheSQL import FileCacheSQL
 from DelayedFunction import DelayedFunction
 
@@ -98,12 +99,12 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 
 	### database load file/dir functions
 
-	def loadDatabaseFile(self, path, file_type=FILE_TYPE_IS_FILE):
+	def loadDatabaseFile(self, path, file_type=FILE_TYPE_FILE):
 		#print("MVC: FileCacheLoad: loadDatabaseFile: path: %s, file_type: %s" % (path, file_type))
-		if file_type == FILE_TYPE_IS_FILE:
+		if file_type == FILE_TYPE_FILE:
 			filedata = self.__newFileData(path)
 			self.sqlInsert(filedata)
-		elif file_type == FILE_TYPE_IS_DIR:
+		elif file_type == FILE_TYPE_DIR:
 			filedata = self.__newDirData(path)
 			self.sqlInsert(filedata)
 
@@ -123,7 +124,7 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		size, length = 0, 0
 		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 		name = convertToUtf8(os.path.basename(path))
-		filedata = (os.path.dirname(path), FILE_TYPE_IS_DIR, path, os.path.basename(path), ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+		filedata = (os.path.dirname(path), FILE_TYPE_DIR, path, os.path.basename(path), ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
 		return filedata
 
 	def __newFileData(self, path):
@@ -199,10 +200,15 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 			if meta:
 				service_reference = meta.getServiceReference()
 				tags = meta.getTags()
+
+#				service = ServiceReference(service_reference)
+#				if service is not None:
+#					service_name = service.getServiceName()
+#				#print("MVC: FileCacheLoad: __newFileData: service_name: %s" % service_name)
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-		return(os.path.dirname(path), FILE_TYPE_IS_FILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+		return(os.path.dirname(path), FILE_TYPE_FILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
 
 	### database load list functions
 
@@ -219,15 +225,15 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 			if os.path.isfile(path):
 				_filename, ext = os.path.splitext(path)
 				if ext in extVideo:
-					self.load_list.append((path, FILE_TYPE_IS_FILE))
+					self.load_list.append((path, FILE_TYPE_FILE))
 			elif os.path.isdir(path):
 				#print("MVC: FileCacheLoad: __getDirLoadList: dir: %s" % path)
-				self.load_list.append((path, FILE_TYPE_IS_DIR))
+				self.load_list.append((path, FILE_TYPE_DIR))
 				self.__getDirLoadList(path)
 			elif os.path.islink(path):
 				print("MVC-I: FileCacheLoad: __getDirLoadList: unsupported link: %s" % path)
 
-		self.load_list.append((os.path.join(adir, ".."), FILE_TYPE_IS_DIR))
+		self.load_list.append((os.path.join(adir, ".."), FILE_TYPE_DIR))
 
 		return self.load_list
 

@@ -24,17 +24,16 @@ from __init__ import _
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
-from skin import loadSkin
 from Tools.BoundFunction import boundFunction
 from FileCacheLoad import FileCacheLoad
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from Version import VERSION
-from SkinUtils import getSkinPath
+from SkinUtils import loadPluginSkin
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
 from FileCacheSQL import SQL_DB_NAME
-
+from Debug import initLogFile, createLogFile
 
 def openSettings(session, **__):
 	print("MVC-I: plugin: openSettings")
@@ -57,6 +56,8 @@ def autostart(reason, **kwargs):
 	print("MVC-I: plugin: autostart: reason: %s" % reason)
 	if reason == 0:  # startup
 		if "session" in kwargs:
+			if config.MVC.debug.value:
+				initLogFile()
 			session = kwargs["session"]
 			if not config.MVC.plugin_disable.value:
 				launch_key = config.MVC.plugin_launch_key.value
@@ -77,11 +78,13 @@ def autostart(reason, **kwargs):
 				FileCacheLoad.getInstance().loadDatabase()
 			RecordingControl()
 			Trashcan.getInstance()
-			loadSkin(getSkinPath("MovieCockpit.xml"))
+			loadPluginSkin("MovieCockpit.xml")
 
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
 		FileCacheLoad.getInstance().closeDatabase()
+		if config.MVC.debug.value:
+			createLogFile()
 	else:
 		print("MVC-I: plugin: autostart: reason not handled: %s" % reason)
 

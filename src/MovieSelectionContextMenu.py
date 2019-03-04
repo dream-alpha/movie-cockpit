@@ -28,7 +28,7 @@ from Screens.Screen import Screen
 from Tools.BoundFunction import boundFunction
 from Components.Sources.StaticText import StaticText
 from Bookmarks import Bookmarks
-from ConfigScreen import ConfigScreen
+from MovieList import MovieList
 
 FUNC_MOVIE_HOME = 0
 FUNC_DIR_UP = 1
@@ -45,13 +45,14 @@ FUNC_REMOVE_MARKER = 11
 FUNC_DELETE_CUTLIST = 12
 FUNC_OPEN_BOOKMARKS = 13
 FUNC_RELOAD_MOVIE_SELECTION = 14
+FUNC_SET_LISTTYPE = 15
 FUNC_NOOP = 99
 
 
-class MovieSelectionMenu(Screen, Bookmarks, object):
+class MovieSelectionContextMenu(Screen, Bookmarks, object):
 	def __init__(self, session, current_dir):
 		Screen.__init__(self, session)
-		self.skinName = "MVCSelectionMenu"
+		self.skinName = "MVCSelectionContextMenu"
 		self["title"] = StaticText()
 		self.reload_movie_selection = False
 
@@ -61,36 +62,31 @@ class MovieSelectionMenu(Screen, Bookmarks, object):
 		)
 
 		self.setTitle(_("Select function"))
-		self.menu = []
+		menu = []
 
 		if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
-			self.menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
-			self.menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
+			menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
+			menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
 
-		self.menu.append((_("Select all"), boundFunction(self.close, FUNC_SELECT_ALL)))
+		menu.append((_("Select all"), boundFunction(self.close, FUNC_SELECT_ALL)))
 
-		self.menu.append((_("Delete"), boundFunction(self.close, FUNC_DELETE)))
-		self.menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
-		self.menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
+		menu.append((_("Delete"), boundFunction(self.close, FUNC_DELETE)))
+		menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
+		menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
 
 		if config.MVC.trashcan_enable.value:
-			self.menu.append((_("Delete permanently"), boundFunction(self.close, FUNC_DELETE_PERMANENTLY)))
-			self.menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
-			self.menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))
+			menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
+			menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))
 
-		self.menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
-		self.menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
+		menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
+		menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
 
-		self.menu.append((_("Bookmarks"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
-		self.menu.append((_("Reload cache"), boundFunction(self.close, FUNC_RELOAD_CACHE)))
-		self.menu.append((_("Setup"), boundFunction(session.openWithCallback, self.openConfigScreenCallback, ConfigScreen)))
+		menu.append((_("Bookmarks"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
 
-		self["menu"] = List(self.menu)
+		for list_style in range(len(MovieList.LIST_STYLES)):
+			menu.append((MovieList.LIST_STYLES[list_style][1], boundFunction(self.close, FUNC_SET_LISTTYPE, list_style)))
 
-	def openConfigScreenCallback(self, reload_movie_selection=False):
-		#print("MVC: MovieSelectionMenu: configScrenCallback: reload_movie_selection: %s" % reload_movie_selection)
-		function = FUNC_RELOAD_MOVIE_SELECTION if reload_movie_selection else FUNC_NOOP
-		self.close(function)
+		self["menu"] = List(menu)
 
 	def ok(self):
 		self["menu"].getCurrent()[1]()

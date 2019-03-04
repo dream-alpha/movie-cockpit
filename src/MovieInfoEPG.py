@@ -44,4 +44,4 @@ class MovieInfoEPG(EventViewSimple, object):
 		if (self.isRecording) and (event.getDuration() == 0):
 			self["duration"].setText("")
 		else:
-			self["duration"].setText(_("%d min") % (event.getDuration() / 60))
+			self["duration"].setText(("%d" % (event.getDuration() / 60)) + " " + _("min"))

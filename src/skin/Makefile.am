@@ -1,2 +1,2 @@
 installdir = /usr/share/enigma2/MovieCockpit
-install_DATA = *.xml
+install_DATA = *.xml *.template
