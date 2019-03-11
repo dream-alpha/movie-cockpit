@@ -32,7 +32,11 @@ def localeInit():
 
 
 def _(txt):
-	return gettext.dgettext("MovieCockpit", txt) if txt else ""
+	t = gettext.dgettext("MovieCockpit", txt)
+	if t == txt:
+		print("MVC-I: __init__: fallback to default translation for: %s" % txt)
+		t = gettext.gettext(txt)
+	return t
 
 
 localeInit()

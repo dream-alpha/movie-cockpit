@@ -1,12 +1,12 @@
 ﻿<keymap>
 	<map context="MVCConfigActions">
-		<key id="KEY_RED" mapto="redshort" flags="m" />
-		<key id="KEY_GREEN" mapto="greenshort" flags="m" />
-		<key id="KEY_YELLOW" mapto="yellowshort" flags="m" />
-		<key id="KEY_BLUE" mapto="blueshort" flags="b" />
-		<key id="KEY_BLUE" mapto="bluelong" flags="l" />
-		<key id="KEY_CHANNELUP" mapto="nextBouquet" flags="mr" />
-		<key id="KEY_CHANNELDOWN" mapto="prevBouquet" flags="mr" />
+		<key id="KEY_RED" mapto="MVCRED" flags="m" />
+		<key id="KEY_GREEN" mapto="MVCGREEN" flags="m" />
+		<key id="KEY_YELLOW" mapto="MVCYELLOW" flags="m" />
+		<key id="KEY_BLUE" mapto="MVCBLUE" flags="b" />
+		<key id="KEY_BLUE" mapto="MVCBLUEL" flags="l" />
+		<key id="KEY_CHANNELUP" mapto="MVCBQTPLUS" flags="mr" />
+		<key id="KEY_CHANNELDOWN" mapto="MVCBQTMINUS" flags="mr" />
 	</map>
 	<map context="MVCPlayerActions">
 		<key id="KEY_POWER" mapto="MVCEXIT" flags="m" />
@@ -39,7 +39,7 @@
 		<key id="KEY_YELLOW" mapto="MVCYELLOW" flags="b" />
 		<key id="KEY_YELLOW" mapto="MVCYELLOWL" flags="l" />
 		<key id="KEY_BLUE" mapto="MVCBLUE" flags="b" />
-		<key id="KEY_BLUE" mapto="MVCBlueL" flags="l" />
+		<key id="KEY_BLUE" mapto="MVCBLUEL" flags="l" />
 
 		<key id="KEY_VIDEO" mapto="MVCVIDEOB" flags="b" />
 		<key id="KEY_PVR" mapto="MVCVIDEOB" flags="b" />
@@ -53,14 +53,14 @@
 		<key id="KEY_RADIO" mapto="MVCRADIO" flags="m" />
 		<key id="KEY_SUBTITLE" mapto="MVCRADIO" flags="m" />
 		<key id="KEY_TEXT" mapto="MVCTEXT" flags="m" />
-		<key id="KEY_LEFT" mapto="MVCLeft" flags="mr" />
-		<key id="KEY_RIGHT" mapto="MVCRight" flags="mr" />
-		<key id="KEY_UP" mapto="MVCUp" flags="mr" />
-		<key id="KEY_DOWN" mapto="MVCDown" flags="mr" />
-		<key id="KEY_NEXT" mapto="MVCArrowNext" flags="b" />
-		<key id="KEY_PREVIOUS" mapto="MVCArrowPrevious" flags="b" />
-		<key id="KEY_CHANNELUP" mapto="MVCBqtPlus" flags="m" />
-		<key id="KEY_CHANNELDOWN" mapto="MVCBqtMnus" flags="m" />
+		<key id="KEY_LEFT" mapto="MVCLEFT" flags="mr" />
+		<key id="KEY_RIGHT" mapto="MVCRIGT" flags="mr" />
+		<key id="KEY_UP" mapto="MVCUP" flags="mr" />
+		<key id="KEY_DOWN" mapto="MVCDOWN" flags="mr" />
+		<key id="KEY_NEXT" mapto="MVCARROWNEXT" flags="b" />
+		<key id="KEY_PREVIOUS" mapto="MVCARROWPREVIOUS" flags="b" />
+		<key id="KEY_CHANNELUP" mapto="MVCBQTPLUS" flags="m" />
+		<key id="KEY_CHANNELDOWN" mapto="MVCBQTMINUS" flags="m" />
 		<key id="KEY_0" mapto="0" flags="m" />
 		<key id="KEY_4" mapto="4" flags="m" />
 		<key id="KEY_7" mapto="7" flags="m" />
@@ -72,12 +72,18 @@
 		<key id="KEY_OK" mapto="MVCOK" flags="m" />
 		<key id="KEY_INFO" mapto="MVCINFO" flags="b" />
 		<key id="KEY_EPG" mapto="MVCINFO" flags="b" />
-		<key id="KEY_MENU" mapto="MVCMenu" flags="m" />
-		<key id="KEY_GREEN" mapto="MVCGreen" flags="m" />
-		<key id="KEY_YELLOW" mapto="MVCYellow" flags="m" />
-		<key id="KEY_BLUE" mapto="MVCBlue" flags="m" />
-		<key id="KEY_RED" mapto="MVCRed" flags="b" />
-		<key id="KEY_UP" mapto="MVCUp" flags="m" />
-		<key id="KEY_DOWN" mapto="MVCDown" flags="m" />
+		<key id="KEY_MENU" mapto="MVCMENU" flags="m" />
+		<key id="KEY_GREEN" mapto="MVCGREEN" flags="m" />
+		<key id="KEY_YELLOW" mapto="MVCYELLOW" flags="m" />
+		<key id="KEY_BLUE" mapto="MVCBLUE" flags="m" />
+		<key id="KEY_RED" mapto="MVCRED" flags="b" />
+		<key id="KEY_UP" mapto="MVCUP" flags="m" />
+		<key id="KEY_DOWN" mapto="MVCDOWN" flags="m" />
+	</map>
+	<map context="ContextMenuActions">
+		<key id="KEY_EXIT" mapto="MVCEXIT" flags="m" />
+		<key id="KEY_OK" mapto="MVCOK" flags="m" />
+		<key id="KEY_RED" mapto="MVCRED" flags="b" />
+		<key id="KEY_MENU" mapto="MVCMENU" flags="m" />
 	</map>
 </keymap>

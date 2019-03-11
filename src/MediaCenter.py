@@ -26,6 +26,7 @@ from time import time
 from Components.config import config
 from Components.ActionMap import HelpableActionMap
 from Components.Pixmap import Pixmap
+from Components.Label import Label
 from enigma import iSubtitleType_ENUMS
 from Screens.Screen import Screen
 from Screens.AudioSelection import SUB_FORMATS, GST_SUB_FORMATS
@@ -42,7 +43,7 @@ from CutListUtils import secondsToPts, backupCutsFile
 from InfoBarSupport import InfoBarSupport, InfoBarTimeshift
 from Components.Sources.MVCCurrentService import MVCCurrentService
 from ServiceCenter import ServiceCenter
-from MediaTypes import sidDVB
+from ServiceUtils import sidDVB
 from RecordingUtils import isRecording, getRecording
 from MovieInfoEPG import MovieInfoEPG
 from MovieCover import MovieCover
@@ -95,6 +96,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 		self["NumberActions"].prio = 2
 
 		self["mvc_logo"] = Pixmap()
+		self["end"] = Label(_("End"))
 		self.skip = -1
 		self.service = service
 		self.allowPiP = True

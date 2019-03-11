@@ -22,14 +22,14 @@
 from __init__ import _
 from Bookmarks import Bookmarks
 from FileProgress import FileProgress
-from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_EXT, FILE_IDX_NAME
+from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
 from MovieCoverDownload import MovieCoverDownload
 from DelayedFunction import DelayedFunction
 
-class MovieCoversProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
+class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
 
 	def __init__(self, session):
-		#print("MVC: MovieCoversProgress: __init__")
+		#print("MVC: MovieCoverDownloadProgress: __init__")
 		FileProgress.__init__(self, session)
 		self.covers_tried = 0
 		self.covers_found = 0
@@ -39,29 +39,28 @@ class MovieCoversProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
 		self.onShow.append(self.onDialogShow)
 
 	def onDialogShow(self):
-		#print("MVC: MovieCoversProgress: onDialogShow")
-		DelayedFunction(10, self.execMovieCoversProgress)
+		#print("MVC: MovieCoverDownloadProgress: onDialogShow")
+		DelayedFunction(10, self.execMovieCoverDownloadProgress)
 
 	def doFileOp(self, entry):
 		filename = entry[FILE_IDX_FILENAME]
 		path = entry[FILE_IDX_PATH]
-		ext = entry[FILE_IDX_EXT]
 		name = entry[FILE_IDX_NAME]
 		self.file_name = filename
 		self.status = _("Please wait") + " ..."
 		self.updateProgress()
-		cover_tried, cover_found = self.getCover(name, path, filename, ext)
+		cover_tried, cover_found = self.getCover(path, name)
 		self.covers_tried += cover_tried
 		self.covers_found += cover_found
 		DelayedFunction(10, self.nextFileOp)
 
 	def completionStatus(self):
 		covers_percent = 0 if self.covers_tried == 0 else float(float(self.covers_found) / float(self.covers_tried)) * 100
-		#print("MVC: MovieCoversProgress: completionStatus: %s of %s new covers: %s%%" % (self.covers_found, self.covers_tried, covers_percent))
-		return ((_("Download done") + " : %s " + _("of") + " %s " + _("new covers") + " (%s%%)") % (self.covers_found, self.covers_tried, covers_percent))
+		#print("MVC: MovieCoverDownloadProgress: completionStatus: %s of %s new covers: %s%%" % (self.covers_found, self.covers_tried, covers_percent))
+		return ((_("Done") + " : %s " + _("of") + " %s " + _("new covers") + " (%s%%)") % (self.covers_found, self.covers_tried, covers_percent))
 
-	def execMovieCoversProgress(self):
-		print("MVC-I: MovieCoversProgress: execMovieCoversProgress")
+	def execMovieCoverDownloadProgress(self):
+		print("MVC-I: MovieCoverDownloadProgress: execMovieCoverDownloadProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
 		self.execution_list = FileCache.getInstance().getFileList(self.getBookmarks())

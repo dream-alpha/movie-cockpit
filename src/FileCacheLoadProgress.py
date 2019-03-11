@@ -41,11 +41,11 @@ class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 		DelayedFunction(10, self.execFileCacheLoadProgress)
 
 	def doFileOp(self, entry):
-		path, file_type = entry
+		path, filetype = entry
 		self.file_name = os.path.basename(path)
 		self.status = _("Please wait") + " ..."
 		self.updateProgress()
-		FileCacheLoad.getInstance().loadDatabaseFile(path, file_type)
+		FileCacheLoad.getInstance().loadDatabaseFile(path, filetype)
 		DelayedFunction(10, self.nextFileOp)
 
 	def execFileCacheLoadProgress(self):

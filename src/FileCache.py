@@ -200,30 +200,34 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 
 	def getFileList(self, dirs):
 		#print("MVC: FileCache: getFileList: dirs: %s" % dirs)
+		filelist = []
 		all_dirs = self.__resolveVirtualDirs(dirs)
-		where = "("
-		op = ""
-		for directory in all_dirs:
-			where += op + "directory = \"" + directory + "\""
-			op = " OR "
-		where += ") AND " + "filetype = " + str(FILE_TYPE_FILE)
-		#print("MVC: FileCache: getFileList: where: %s" % where)
-		filelist = self.sqlSelect(where)
+		if all_dirs:
+			where = "("
+			op = ""
+			for directory in all_dirs:
+				where += op + "directory = \"" + directory + "\""
+				op = " OR "
+			where += ") AND " + "filetype = " + str(FILE_TYPE_FILE)
+			#print("MVC: FileCache: getFileList: where: %s" % where)
+			filelist = self.sqlSelect(where)
 		return filelist
 
 	def getDirList(self, dirs):
 		#print("MVC: FileCache: getDirlist: %s" % dirs)
+		dirlist = []
 		all_dirs = self.__resolveVirtualDirs(dirs)
-		where = ""
-		op = ""
-		for directory in all_dirs:
-			where += op + "path != \"" + directory + "\""
-			op = " AND "
-		where += " AND " + "filename != \"trashcan\""
-		where += " AND " + "filename != \"..\""
-		where += " AND " + "filetype > " + str(FILE_TYPE_FILE)
-		#print("MVC: FileCache: getDirList: where: %s" % where)
-		dirlist = self.sqlSelect(where)
+		if all_dirs:
+			where = ""
+			op = ""
+			for directory in all_dirs:
+				where += op + "path != \"" + directory + "\""
+				op = " AND "
+			where += " AND " + "filename != \"trashcan\""
+			where += " AND " + "filename != \"..\""
+			where += " AND " + "filetype > " + str(FILE_TYPE_FILE)
+			#print("MVC: FileCache: getDirList: where: %s" % where)
+			dirlist = self.sqlSelect(where)
 		return dirlist
 
 	### utils

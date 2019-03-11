@@ -22,7 +22,6 @@
 import os
 import re
 from Components.config import config
-from MediaTypes import plyAll
 from MovieTMDB import MovieTMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, INFO_COVER_URL
 from MovieCover import MovieCover
 from FileUtils import deleteFile
@@ -90,20 +89,20 @@ class MovieCoverDownload(MovieTMDB, MovieCover, object):
 		#print("MVC: MovieCoverDownload: getCover4SplitTitles: cover_tried: %s, cover_found: %s" % (cover_tried, cover_found))
 		return cover_tried, cover_found
 
-	def getCover(self, title, path, filename, ext, _answer=True):
-		#print("MVC: MovieCoverDownload: getCover: path: %s, filename: %s" % (path, filename))
+	def getCover(self, path, title):
+		#print("MVC: MovieCoverDownload: getCover: path: %s, filename: %s" % path)
+		filename, _ext = os.path.splitext(path)
 		cover_found = 0
 		cover_tried = 1
-		if ext in plyAll:
-			title = self.__removeCutNumbers(title)
-			title = title.replace("_", ":")
-			cover_tried, cover_found = self.getCover4SplitTitles(path, filename, [title])
-			if cover_found == 0:
-				for sep in [":", " - "]:
-					titles = title.split(sep)
-					if len(titles) > 1:
-						cover_tried, cover_found = self.getCover4SplitTitles(path, filename, titles)
-						if cover_found > 0:
-							break
+		title = self.__removeCutNumbers(title)
+		title = title.replace("_", ":")
+		cover_tried, cover_found = self.getCover4SplitTitles(path, filename, [title])
+		if cover_found == 0:
+			for sep in [":", " - "]:
+				titles = title.split(sep)
+				if len(titles) > 1:
+					cover_tried, cover_found = self.getCover4SplitTitles(path, filename, titles)
+					if cover_found > 0:
+						break
 		#print("MVC: MovieCoverDownload: getCover: cover_tried: %s, cover_found: %s" % (cover_tried, cover_found))
 		return cover_tried, cover_found

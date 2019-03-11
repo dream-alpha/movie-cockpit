@@ -22,10 +22,9 @@
 import os
 from datetime import datetime
 from Components.config import config
-from enigma import eServiceReference
-from MediaTypes import plyDVB, plyM2TS, plyDVD, sidDVB, sidDVD, sidM2TS
-from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH, FILE_IDX_EXT
+from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH, FILE_IDX_EXT
 from Bookmarks import Bookmarks
+from ServiceUtils import getService
 
 class FileListUtils(Bookmarks, object):
 
@@ -48,30 +47,45 @@ class FileListUtils(Bookmarks, object):
 				break
 		return index
 
+	def loadedDirs(self, filelist):
+		loaded_dirs = []
+		for afile in filelist:
+			adir = afile[FILE_IDX_DIR]
+			if adir not in loaded_dirs:
+				loaded_dirs.append(adir)
+		return loaded_dirs
+
 	def getService4Path(self, filelist, path):
 		service = None
 		for entry in filelist:
 			if entry and entry[FILE_IDX_PATH] == path:
-				service = self.__getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
+				service = getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
 				break
 		return service
 
 	def createFileList(self, path):
-		filelist = FileCache.getInstance().getFileList([path])
-		if config.MVC.directories_show.value:
-			filelist += FileCache.getInstance().getDirList([path])
+		filelist = []
+		if path:
+			filelist = FileCache.getInstance().getFileList([path])
+		return filelist
+
+	def createDirList(self, path):
+		filelist = []
+		if path:
+			filelist = FileCache.getInstance().getDirList([path])
 		return filelist
 
 	def createCustomList(self, path):
 		#print("MVC: MovieSelection: createCustomList: path: %s" % path)
-		custom_list = []
-		if path not in self.getBookmarks():
-			custom_list.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
-		else:  # path is a bookmark
-			if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
-				custom_list.append(FileCache.getInstance().getFile(path + "/trashcan"))
-		#print("MVC: MovieSelection: createCustomList: custom_list: " + str(custom_list))
-		return custom_list
+		filelist = []
+		if path:
+			if path not in self.getBookmarks():
+				filelist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
+			else:  # path is a bookmark
+				if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
+					filelist.append(FileCache.getInstance().getFile(path + "/trashcan"))
+		#print("MVC: MovieSelection: createCustomList: filelist: " + str(filelist))
+		return filelist
 
 	def sortList(self, sort_list, sort):
 
@@ -101,20 +115,3 @@ class FileListUtils(Bookmarks, object):
 				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
 
 		return tmp_list + sort_list
-
-	def __getService(self, path, name="", ext=None):
-		if ext in plyDVB:
-			service = eServiceReference(sidDVB, 0, path)
-		elif ext in plyDVD:
-			service = eServiceReference(sidDVD, 0, path)
-		elif ext in plyM2TS:
-			service = eServiceReference(sidM2TS, 0, path)
-		else:
-			ENIGMA_SERVICE_ID = 0
-			DEFAULT_VIDEO_PID = 0x44
-			DEFAULT_AUDIO_PID = 0x45
-			service = eServiceReference(ENIGMA_SERVICE_ID, 0, path)
-			service.setData(0, DEFAULT_VIDEO_PID)
-			service.setData(1, DEFAULT_AUDIO_PID)
-		service.setName(name)
-		return service

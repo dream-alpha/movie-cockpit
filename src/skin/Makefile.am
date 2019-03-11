@@ -1,2 +1,2 @@
 installdir = /usr/share/enigma2/MovieCockpit
-install_DATA = *.xml *.template
+install_DATA = *.xml *.py

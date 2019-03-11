@@ -39,7 +39,7 @@ from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
 from MovieCover import MovieCover
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL
-from MovieCoversProgress import MovieCoversProgress
+from MovieCoverDownloadProgress import MovieCoverDownloadProgress
 
 PAGE_DETAILS = 0   # details
 PAGE_SELECTION = 1 # selection list
@@ -58,9 +58,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 		self.search_name = self.getMovieNameWithoutPhrases(name)
 		self.movielist = None
 		self.path = path
-		self.page = PAGE_DETAILS
 		self.selection = None
-		self.cover_path = self.getCoverPath(path)
 		self.coverTimer = eTimer()
 		self.coverTimer_conn = self.coverTimer.timeout.connect(self.showCoverDelayed)
 
@@ -83,22 +81,19 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 		self["starsbg"].hide()
 		self.ratingstars = -1
 
-		self.info_path = self.getInfoPath(self.path)
-		self.info = self.loadInfo(self.info_path)
-
 		self.onLayoutFinish.append(self.layoutFinished)
 		self["actions"] = HelpableActionMap(
 			self,
 			"MovieInfoTMDB",
 			{
-				"MVCEXIT": (self.exit, _("Exit")),
-				"MVCUp": (self.pageUp, _("Cursor page up")),
-				"MVCDown": (self.pageDown, _("Cursor page down")),
-				"MVCOK": (self.ok, _("Select cover")),
-				"MVCGreen": (self.save, _("Save temporary cover")),
-				"MVCYellow": (self.getThisCover, ("Get cover")),
-				"MVCBlue": (self.getAllCovers, ("Get all covers")),
-				"MVCRed": (self.deleteThisCover, ("Delete cover"))
+				"MVCEXIT":	(self.exit,		_("Exit")),
+				"MVCUP":	(self.pageUp,		_("Cursor page up")),
+				"MVCDOWN":	(self.pageDown,		_("Cursor page down")),
+				"MVCOK":	(self.ok,		_("Select cover")),
+				"MVCGREEN":	(self.save,		_("Save cover")),
+				"MVCYELLOW":	(self.getThisCover,	_("Get cover")),
+				"MVCBLUE":	(self.getAllCovers,	_("Get covers")),
+				"MVCRED":	(self.deleteThisCover,	_("Delete cover"))
 			},
 			-1
 		)
@@ -112,6 +107,10 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 
 	def layoutFinished(self):
 		self.setTitle(_("Movie Information TMDb"))
+		self.cover_path = self.getCoverPath(self.path)
+		self.info_path = self.getInfoPath(self.path)
+		self.info = self.loadInfo(self.info_path)
+		self.page = PAGE_DETAILS
 		self.switchPage()
 
 	def selectionChanged(self):
@@ -306,9 +305,8 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 
 	def getAllCovers(self):
 		#print("MVC: MovieInfoTMDB: getAllCovers")
-		self.session.openWithCallback(self.getAllCoversCallback, MovieCoversProgress)
+		self.session.openWithCallback(self.getAllCoversCallback, MovieCoverDownloadProgress)
 
 	def getAllCoversCallback(self):
 		self.movielist = None
-		self.getInfoAndCoverForCurrentSelection(TEMP_INFO_PATH, TEMP_COVER_PATH)
-		self.switchPage()
+		self.layoutFinished()

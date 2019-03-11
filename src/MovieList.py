@@ -29,32 +29,20 @@ from Components.config import config
 from Components.GUIComponent import GUIComponent
 from Components.TemplatedMultiContentComponent import TemplatedMultiContentComponent
 from Tools.LoadPixmap import LoadPixmap
-from skin import parseColor, parseFont, parseSize
+from skin import parseColor  # , parseFont, parseSize
 from enigma import eListbox, loadPNG
 from FileCache import FileCache, FILE_TYPE_FILE, FILE_IDX_PATH, FILE_IDX_DIR
 from ServiceCenter import str2date
 from RecordingUtils import isCutting, getRecording
 from MountPoints import MountPoints
 from FileUtils import readFile
+from MovieListParseTemplate import parseTemplate
 
 class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 
-	LISTTYPE_STANDARD = 0
-	LISTTYPE_COMPACT_DESCRIPTION = 1
-	LISTTYPE_COMPACT = 2
-	LISTTYPE_COMPACT_SINGLE = 3
-	LISTTYPE_MINIMAL = 4
-
-	LIST_STYLES = {
-		LISTTYPE_STANDARD : ("default", _("List style: default")),
-		LISTTYPE_COMPACT_DESCRIPTION : ("compact_description", _("List style: compact with description")),
-		LISTTYPE_COMPACT : ("compact", _("List style: compact")),
-		LISTTYPE_COMPACT_SINGLE : ("compact_single", _("List style: compact single line")),
-		LISTTYPE_MINIMAL : ("minimal", _("List style: minimal"))
-	}
-
 	COMPONENT_ID = ""
-	default_template = readFile(getSkinPath("MovieCockpit.template"))
+	default_template = readFile(getSkinPath("MovieListTemplate.py"))
+	list_styles = {}
 
 	GUI_WIDGET = eListbox
 	selection_list = []
@@ -63,17 +51,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		#print("MVC: MovieList: __init__")
 		self.skinAttributes = None
 		TemplatedMultiContentComponent.__init__(self)
-		self.setListType(config.MVC.list_style.value)
 		self.l.setBuildFunc(self.buildMovieListEntry)
-
-		self.start = 10
-		self.spacer = 15
-		self.date_width = 230
-		self.duration_width = 150
-		self.progress_width = 150
-		self.bar_size = parseSize("90, 14", ((1, 1), (1, 1)))
-		self.icon_size = parseSize("45, 35", ((1, 1), (1, 1)))
-		self.picon_size = parseSize("55, 35", ((1, 1), (1, 1)))
 
 		self.color = parseColor(config.MVC.color.value).argb()
 		self.color_sel = parseColor(config.MVC.color_sel.value).argb()
@@ -111,7 +89,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 
 	def setListType(self, list_style):
 		self.list_style = list_style
-		self.setTemplate(self.LIST_STYLES[list_style][0])
+		self.setTemplate(MovieList.list_styles[list_style][0])
 		self.invalidateList()
 
 	def selectionChanged(self):
@@ -181,63 +159,48 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		self.l.invalidateEntry(i)
 
 	def applySkin(self, desktop, parent):
-		attribs = []
-		value_attributes = [
-			"spacer", "date_width", "duration_width", "progress_width"
-		]
-		size_attributes = [
-			"bar_size", "icon_size", "picon_size"
-		]
-		font_attributes = [
-		]
-		color_attributes = [
-			"color", "color_sel", "recording_color", "recording_color_sel", "selection_color", "selection_color_sel"
-		]
+# 		attribs = []
+# 		value_attributes = [
+# 		]
+# 		size_attributes = [
+# 		]
+# 		font_attributes = [
+# 		]
+# 		color_attributes = [
+# 		]
+#
+# 		if self.skinAttributes:
+# 			for (attrib, value) in self.skinAttributes:
+# 				if attrib in value_attributes:
+# 					setattr(self, attrib, int(value))
+# 				elif attrib in size_attributes:
+# 					setattr(self, attrib, parseSize(value, ((1, 1), (1, 1))))
+# 				elif attrib in font_attributes:
+# 					setattr(self, attrib, parseFont(value, ((1, 1), (1, 1))))
+# 				elif attrib in color_attributes:
+# 					setattr(self, attrib, parseColor(value).argb())
+# 				else:
+# 					attribs.append((attrib, value))
+# 		self.skinAttributes = attribs
 
-		if self.skinAttributes:
-			for (attrib, value) in self.skinAttributes:
-				if attrib in value_attributes:
-					setattr(self, attrib, int(value))
-				elif attrib in size_attributes:
-					setattr(self, attrib, parseSize(value, ((1, 1), (1, 1))))
-				elif attrib in font_attributes:
-					setattr(self, attrib, parseFont(value, ((1, 1), (1, 1))))
-				elif attrib in color_attributes:
-					setattr(self, attrib, parseColor(value).argb())
-				else:
-					attribs.append((attrib, value))
-		self.skinAttributes = attribs
+		MovieList.list_styles, template_attributes = parseTemplate(MovieList.default_template)
+		self.setListType(config.MVC.list_style.value)
 
-		# convert skin to template attributes
-		icon_size = (self.icon_size.width(), self.icon_size.height())
-		picon_size = (self.picon_size.width(), self.picon_size.height())
-		bar_size = (self.bar_size.width(), self.bar_size.height())
-
-		#print("MVC: MovieList: applySkin: attribs: " + str(attribs))
+		#print("MVC: MovieList: applySkin: self.skinAttributes: " + str(self.skinAttributes))
 		GUIComponent.applySkin(self, desktop, parent)
-		self.applyTemplate(additional_locals={
-			"width" : self.l.getItemSize().width() - 15,
-			"start" : self.start,
-			"spacer": self.spacer,
-			"icon_size": icon_size,
-			"picon_size": picon_size,
-			"progress_width": self.progress_width,
-			"bar_size": bar_size,
-			"date_width": self.date_width,
-			"duration_width": self.duration_width,
-		})
+
+		template_attributes["width"] = self.l.getItemSize().width() - 15
+		self.applyTemplate(additional_locals=template_attributes)
 
 	def buildMovieListEntry(self, _directory, filetype, path, _filename, _ext, name, date_string, length, description, _extended_description, service_reference, _size, cuts, tags):
 
 		def getPicon(service_reference):
-			metaref = service_reference
-			pos = metaref.rfind(':')
+			pos = service_reference.rfind(':')
 			if pos != -1:
-				metaref = metaref[:pos].rstrip(':').replace(':', '_')
-			picon_path = config.MVC.movie_picons_path.value + "/" + metaref + '.png'
+				service_reference = service_reference[:pos].rstrip(':').replace(':', '_')
+			picon_path = os.path.join(config.MVC.movie_picons_path.value, service_reference + '.png')
 			#print("MVC: MovieList: buildMovieListEntry: picon_path: " + picon_path)
-			picon = loadPNG(picon_path)
-			return picon
+			return loadPNG(picon_path)
 
 		def getDateText(path, filetype, date_string):
 			count = 0
@@ -259,7 +222,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 							if os.path.basename(path) == "trashcan":
 								date_text = _("trashcan")
 							else:
-								date_text = _("Directory")
+								date_text = _("directory")
 						else:
 							count, size = FileCache.getInstance().getCountSize(path)
 							counttext = "%d" % count
@@ -342,7 +305,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 					color_sel = self.color_sel
 			return color, color_sel
 
-		#print("MVC: MovieList: buildMovieListEntry: list_style: %s" % MovieList.LIST_STYLES[self.list_style][0])
+		#print("MVC: MovieList: buildMovieListEntry: list_style: %s" % MovieList.list_styles[self.list_style][0])
 
 		service = ServiceReference(service_reference)
 		service_name = service.getServiceName() if service is not None else ""

@@ -24,7 +24,7 @@ from enigma import eServiceReference
 from Components.config import config
 from RecordTimer import AFTEREVENT
 import NavigationInstance
-from MediaTypes import sidDVB
+from ServiceUtils import sidDVB
 
 
 def isRecording(path):

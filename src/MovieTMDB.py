@@ -30,7 +30,7 @@ from Bookmarks import Bookmarks
 
 SELECTION_ID = 1   # tmdb movie id
 SELECTION_TYPE = 2 # movie or tvshow
-SELECTION_URL = 4 # partial cover url
+SELECTION_URL = 4  # partial cover url
 INFO_COVER_URL = 6 # full cover url
 
 class MovieTMDB(Bookmarks, object):

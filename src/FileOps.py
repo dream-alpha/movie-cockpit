@@ -33,77 +33,80 @@ FILE_OP_COPY = 3
 
 class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 
-	def execFileOp(self, op, path, target_path, file_type, execFileOpCallback=None):
+	def execFileOp(self, op, path, target_path, filetype):
 		cmd = []
 		association = []
-		print("MVC-I: FileOps: execFileOp: op: %s, path: %s, target_path: %s, file_type: %s" % (op, path, target_path, file_type))
+		print("MVC-I: FileOps: execFileOp: op: %s, path: %s, target_path: %s, filetype: %s" % (op, path, target_path, filetype))
 		if op == FILE_OP_DELETE:
-			c = self.__execFileDelete(path, file_type)
+			c = self.__execFileDelete(path, filetype)
 			cmd.append(c)
-			association.append((self.__deleteCallback, path, target_path, file_type))
+			association.append((self.__deleteCallback, path, target_path, filetype))
 		elif op == FILE_OP_MOVE:
 			free = 0
 			used = 0
-			if file_type != FILE_TYPE_FILE:
+			if filetype != FILE_TYPE_FILE:
 				_count, used = FileCache.getInstance().getCountSize(path)
 				free = self.getMountPointSpaceFree(target_path)
 				#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
 			if free >= used:
-				c = self.__execFileMove(path, target_path, file_type)
+				c = self.__execFileMove(path, target_path, filetype)
 				cmd.append(c)
-				association.append((self.__moveCallback, path, target_path, file_type))
+				association.append((self.__moveCallback, path, target_path, filetype))
 			else:
 				print("MVC-I: FileOps: execFileOp: move_dir: not enough space left: size: %s, free: %s" % (used, free))
 		elif op == FILE_OP_COPY:
 			if os.path.dirname(path) != target_path:
-				c = self.__execFileCopy(path, target_path, file_type)
+				c = self.__execFileCopy(path, target_path, filetype)
 				cmd.append(c)
-				association.append((self.__copyCallback, path, target_path, file_type))
+				association.append((self.__copyCallback, path, target_path, filetype))
 		if cmd:
 			#print("MVC: FileOps: execFileOp: cmd: %s" % cmd)
-			if execFileOpCallback:
-				association.append((execFileOpCallback, op, path, target_path, file_type))
+			association.append((self.execFileOpCallback, op, path, target_path, filetype))
 			# Sync = True: Run script for one file do association and continue with next file
 			tasker.shellExecute(cmd, association, True)
 
-	def __deleteCallback(self, path, target_path, file_type):
-		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == FILE_TYPE_FILE:
+	def execFileOpCallback(self, op, path, _target_path, _filetype):
+		print("MVC-I: FileOps: execFileOpCallback: op: %s, path: %s" % (op, path))
+		return
+
+	def __deleteCallback(self, path, target_path, filetype):
+		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
+		if filetype == FILE_TYPE_FILE:
 			FileCache.getInstance().delete(path)
-		if file_type == FILE_TYPE_DIR:
+		if filetype == FILE_TYPE_DIR:
 			FileCacheLoad.getInstance().deleteDir(path)
 
-	def __moveCallback(self, path, target_path, file_type):
-		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == FILE_TYPE_FILE:
+	def __moveCallback(self, path, target_path, filetype):
+		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
+		if filetype == FILE_TYPE_FILE:
 			FileCache.getInstance().move(path, target_path)
-		if file_type == FILE_TYPE_DIR:
+		if filetype == FILE_TYPE_DIR:
 			FileCacheLoad.getInstance().moveDir(path, target_path)
 
-	def __copyCallback(self, path, target_path, file_type):
-		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
-		if file_type == FILE_TYPE_FILE:
+	def __copyCallback(self, path, target_path, filetype):
+		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
+		if filetype == FILE_TYPE_FILE:
 			FileCache.getInstance().copy(path, target_path)
-		if file_type == FILE_TYPE_DIR:
+		if filetype == FILE_TYPE_DIR:
 			FileCacheLoad.getInstance().copyDir(path, target_path)
 
-	def __execFileDelete(self, path, file_type):
-		print("MVC-I: FileOps: __execFileDelete: path: %s, file_type: %s" % (path, file_type))
+	def __execFileDelete(self, path, filetype):
+		print("MVC-I: FileOps: __execFileDelete: path: %s, filetype: %s" % (path, filetype))
 		c = []
-		if file_type == FILE_TYPE_FILE:
+		if filetype == FILE_TYPE_FILE:
 			c.append('rm -f "' + self.getCoverPath(path) + '"')
 			c.append('rm -f "' + self.getInfoPath(path) + '"')
 			path, _ext = os.path.splitext(path)
 			c.append('rm -f "' + path + '."*')
-		elif file_type == FILE_TYPE_DIR:
+		elif filetype == FILE_TYPE_DIR:
 			c.append('rm -rf "' + path + '"')
 		#print("MVC: FileOps: __execFileDelete: c: %s" % c)
 		return c
 
-	def __execFileMove(self, path, target_path, file_type):
-		print("MVC-I: FileOps: __execFileMove: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+	def __execFileMove(self, path, target_path, filetype):
+		print("MVC-I: FileOps: __execFileMove: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		c = self.__changeFileOwner(path, target_path)
-		if file_type == FILE_TYPE_FILE:
+		if filetype == FILE_TYPE_FILE:
 			#print("MVC: FileOps: __execFileMove: %s, %s" % (self.getCoverPath(path), os.path.splitext(self.getCoverPath(target_path))[0]))
 			c.append('mv "' + self.getCoverPath(path) + '" "' + os.path.splitext(self.getCoverPath(target_path))[0] + '/"')
 			c.append('mv "' + self.getInfoPath(path) + '" "' + os.path.splitext(self.getInfoPath(target_path))[0] + '/"')
@@ -111,20 +114,20 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '."*')
 			c.append('mv "' + path + '."* "' + target_path + '/"')
-		elif file_type == FILE_TYPE_DIR:
+		elif filetype == FILE_TYPE_DIR:
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
 		#print("MVC: FileOps: __execFileMove: c: %s" % c)
 		return c
 
-	def __execFileCopy(self, path, target_path, file_type):
-		print("MVC-I: FileOps: __execFileCopy: path: %s, target_path: %s, file_type: %s" % (path, target_path, file_type))
+	def __execFileCopy(self, path, target_path, filetype):
+		print("MVC-I: FileOps: __execFileCopy: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		c = self.__changeFileOwner(path, target_path)
-		if file_type == FILE_TYPE_FILE:
+		if filetype == FILE_TYPE_FILE:
 			path, _ext = os.path.splitext(path)
 			c.append('cp "' + path + '."* "' + target_path + '/"')
-		elif file_type == FILE_TYPE_DIR:
+		elif filetype == FILE_TYPE_DIR:
 			c.append('cp -ar "' + path + '" "' + target_path + '"')
 		#print("MVC: FileOps: __execFileCopy: c: %s" % c)
 		return c

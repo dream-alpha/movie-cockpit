@@ -72,8 +72,8 @@ class RecordingControl(CutList, object):
 		from FileCache import FileCache
 		filedata = FileCache.getInstance().getFile(path)
 		if filedata is not None:
-			_directory, _filetype, path, filename, ext, name, _date, _length, _description, _extended_description, _service_reference, _size, _cuts, _tags = filedata
-			MovieCoverDownload().getCover(name, path, filename, ext)
+			_directory, _filetype, path, _filename, _ext, name, _date, _length, _description, _extended_description, _service_reference, _size, _cuts, _tags = filedata
+			MovieCoverDownload().getCover(path, name)
 
 	def check4ActiveRecordings(self):
 		from FileCacheLoad import FileCacheLoad
@@ -93,6 +93,6 @@ class RecordingControl(CutList, object):
 			movie_selection = MovieSelection.getInstance()
 			if movie_selection:
 				#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
-				movie_selection.reloadListRecording(path, update_disk_space_info=True)
+				movie_selection.reloadList(path, update_disk_space_info=True)
 		except Exception as e:
 			print("MVC-E: RecordingControl: reloadList: movie_selection.reloadList exception: %s" % e)

@@ -27,7 +27,7 @@ from ParserMetaFile import ParserMetaFile
 from CutListUtils import unpackCutList, ptsToSeconds, getCutListLength
 from Components.config import config
 from Bookmarks import Bookmarks
-from MediaTypes import extTS, extVideo
+from ServiceUtils import extTS, extVideo
 from RecordingUtils import getRecording
 from FileUtils import readFile
 from ServiceCenter import str2date
@@ -61,27 +61,32 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		#print("MVC: FileCacheLoad: clearDatabase")
 		self.sqlClearTable()
 
-	def doFileOp(self, entry):
-		path, file_type = entry
-		self.loadDatabaseFile(path, file_type)
-		DelayedFunction(10, self.nextFileOp)
+	def doFileOp(self, entry, callback):
+		path, filetype = entry
+		self.loadDatabaseFile(path, filetype)
+		DelayedFunction(10, self.nextFileOp, callback)
 
-	def nextFileOp(self):
+	def nextFileOp(self, callback):
 		#print("MVC: FileCacheLoad: nextFileOp")
 		if self.load_list:
 			entry = self.load_list.pop(0)
-			self.doFileOp(entry)
+			self.doFileOp(entry, callback)
 		else:
 			#print("MVC: FileCacheLoad: nextFileOp: done.")
-			pass
+			if callback:
+				callback()
 
-	def loadDatabase(self, dirs=None):
+	def loadDatabase(self, dirs=None, sync=False, callback=None):
 		#print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
 		if dirs is None:
 			dirs = self.getBookmarks()
 		self.clearDatabase()
 		self.load_list = self.getDirsLoadList(dirs)
-		DelayedFunction(10, self.nextFileOp)
+		if sync:
+			for path, filetype in self.load_list:
+				self.loadDatabaseFile(path, filetype)
+		else:
+			DelayedFunction(10, self.nextFileOp, callback)
 
 	### database directory functions
 
@@ -99,12 +104,12 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 
 	### database load file/dir functions
 
-	def loadDatabaseFile(self, path, file_type=FILE_TYPE_FILE):
-		#print("MVC: FileCacheLoad: loadDatabaseFile: path: %s, file_type: %s" % (path, file_type))
-		if file_type == FILE_TYPE_FILE:
+	def loadDatabaseFile(self, path, filetype=FILE_TYPE_FILE):
+		#print("MVC: FileCacheLoad: loadDatabaseFile: path: %s, filetype: %s" % (path, filetype))
+		if filetype == FILE_TYPE_FILE:
 			filedata = self.__newFileData(path)
 			self.sqlInsert(filedata)
-		elif file_type == FILE_TYPE_DIR:
+		elif filetype == FILE_TYPE_DIR:
 			filedata = self.__newDirData(path)
 			self.sqlInsert(filedata)
 
@@ -181,30 +186,30 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 				length = timer_end - timer_begin
 				#print("MVC: FileCacheLoad: __newFileData: timer_begin: %s, length: %s" % (date, length / 60))
 
+			# parse eit file
 			eit = ParserEitFile(path)
-			if eit:
-				eit_name = eit.getName()
-				if eit_name:
-					name = eit_name
-					cutno, _filename = parseCutNo(filename)
-					if cutno:
-						name = "%s (%s)" % (name, cutno)
+			eit_name = eit.getName()
+			if eit_name:
+				name = eit_name
+				cutno, _filename = parseCutNo(filename)
+				if cutno:
+					name = "%s (%s)" % (name, cutno)
 
-				if length == 0:
-					length = eit.getLengthInSeconds()
+			if length == 0:
+				length = eit.getLengthInSeconds()
 
-				description = eit.getShortDescription()
-				extended_description = eit.getExtendedDescription()
+			description = eit.getShortDescription()
+			extended_description = eit.getExtendedDescription()
 
+			#parse meta file
 			meta = ParserMetaFile(path)
-			if meta:
-				service_reference = meta.getServiceReference()
-				tags = meta.getTags()
+			service_reference = meta.getServiceReference()
+			tags = meta.getTags()
 
-#				service = ServiceReference(service_reference)
-#				if service is not None:
-#					service_name = service.getServiceName()
-#				#print("MVC: FileCacheLoad: __newFileData: service_name: %s" % service_name)
+#			service = ServiceReference(service_reference)
+#			if service is not None:
+#				service_name = service.getServiceName()
+#			#print("MVC: FileCacheLoad: __newFileData: service_name: %s" % service_name)
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 

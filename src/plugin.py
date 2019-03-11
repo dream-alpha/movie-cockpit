@@ -34,6 +34,7 @@ from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
 from FileCacheSQL import SQL_DB_NAME
 from Debug import initLogFile, createLogFile
+from FileUtils import deleteFile
 
 def openSettings(session, **__):
 	print("MVC-I: plugin: openSettings")
@@ -53,11 +54,12 @@ def reloadMovieSelection(session=None, reload_movie_selection=False):
 
 
 def autostart(reason, **kwargs):
-	print("MVC-I: plugin: autostart: reason: %s" % reason)
 	if reason == 0:  # startup
 		if "session" in kwargs:
 			if config.MVC.debug.value:
 				initLogFile()
+			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
+			print("MVC-I: plugin: autostart: reason: %s" % reason)
 			session = kwargs["session"]
 			if not config.MVC.plugin_disable.value:
 				launch_key = config.MVC.plugin_launch_key.value
@@ -71,15 +73,18 @@ def autostart(reason, **kwargs):
 					InfoBar.openQuickbutton = boundFunction(openMovieSelection, session)
 				elif launch_key == "startTimeshift":
 					InfoBar.startTimeshift = boundFunction(openMovieSelection, session)
-
-			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			ConfigScreen.setEPGLanguage()
-			if not os.path.exists(SQL_DB_NAME):
-				FileCacheLoad.getInstance().loadDatabase()
 			RecordingControl()
+			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/tmp/.moviecockpit"):
+				print("MVC-I: plugin: loading database...")
+				deleteFile("/tmp/.moviecockpit")
+				config.MVC.debug.value = False
+				config.MVC.debug.save()
+				FileCacheLoad.getInstance().loadDatabase(sync=True)
+			else:
+				print("MVC-I: plugin: database is already loaded.")
 			Trashcan.getInstance()
 			loadPluginSkin("MovieCockpit.xml")
-
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
 		FileCacheLoad.getInstance().closeDatabase()
@@ -105,7 +110,7 @@ def Plugins(**__):
 	if config.MVC.plugin_extmenu_settings.value:
 		descriptors.append(
 			PluginDescriptor(name="MovieCockpit" + " - " + _("Setup"),
-			description=_("Open Setup"),
+			description=_("Open setup"),
 			icon="MovieCockpit.svg",
 			where=[
 				PluginDescriptor.WHERE_PLUGINMENU,

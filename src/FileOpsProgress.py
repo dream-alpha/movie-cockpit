@@ -67,7 +67,7 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		self["status"].setText(self.status)
 
 	def doFileOp(self, entry):
-		op, file_type, path, target_path = entry
+		op, filetype, path, target_path = entry
 		if path and not path.endswith("..") and os.path.exists(path):
 			self.movie_progress = 0
 			self.file_op = op
@@ -77,11 +77,11 @@ class FileOpsProgress(FileProgress, FileOps, object):
 			self.status = _("Please wait") + " ..."
 			self.updateProgress()
 			self.activityTimer.start(ACTIVITY_TIMER_DELAY, True)
-			self.execFileOp(op, path, target_path, file_type, self.execFileOpCallback)
+			self.execFileOp(op, path, target_path, filetype)
 		else:
 			self.nextFileOp()
 
-	def execFileOpCallback(self, op, path, _target_path, _file_type):
+	def execFileOpCallback(self, op, path, _target_path, _filetype):
 		print("MVC-I: FileOpsProgress: execFileOpCallback: op: %s, path: %s" % (op, path))
 		self.activityTimer.stop()
 		self.file_progress = 100

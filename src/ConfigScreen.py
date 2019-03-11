@@ -48,11 +48,11 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			["OkCancelActions", "MVCConfigActions"],
 			{
 				"cancel": self.keyCancel,
-				"redshort": self.keyCancel,
-				"greenshort": self.keySaveNew,
-				"blueshort": self.loadDefaultSettings,
-				"nextBouquet": self.bouquetPlus,
-				"prevBouquet": self.bouquetMinus,
+				"MVCRED": self.keyCancel,
+				"MVCGREEN": self.keySaveNew,
+				"MVCBLUE": self.loadDefaultSettings,
+				"MVCBQTPLUS": self.bouquetPlus,
+				"MVCBQTMINUS": self.bouquetMinus,
 			},
 			-2  # higher priority
 		)

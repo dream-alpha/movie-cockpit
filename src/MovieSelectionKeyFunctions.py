@@ -62,9 +62,6 @@ class KeyFunctions(object):
 		self.level = 0
 		self.setColorButtons()
 
-# 	def getButtonLabel(self, key):
-# 		return self.color_buttons_matrix[self.level][key][KEY_LABEL]
-
 ### key exection functions
 
 	def execColorButton(self, key):

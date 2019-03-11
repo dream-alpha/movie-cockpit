@@ -106,7 +106,7 @@ class FileProgress(Screen, Bookmarks, object):
 		f.close()
 
 	def updateProgress(self):
-		#print("MVC: MovieCoversProgress: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
+		#print("MVC: MovieCoverDownloadProgress: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
 		current_files = self.current_files if self.current_files <= self.total_files else self.total_files
 		msg = _("Downloading") + ": " + str(current_files) + " " + _("of") + " " + str(self.total_files) + " ..."
 		self["operation"].setText(msg)
@@ -119,7 +119,7 @@ class FileProgress(Screen, Bookmarks, object):
 		return _("Done")
 
 	def doFileOp(self, _entry):
-		# is overridden in child classes
+		# is overridden in parent class
 		return
 
 	def nextFileOp(self):

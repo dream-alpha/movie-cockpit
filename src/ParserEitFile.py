@@ -28,7 +28,6 @@ from Components.config import config
 from Tools.ISO639 import LanguageCodes
 from FileUtils import readFile
 
-
 # http://de.wikipedia.org/wiki/Event_Information_Table
 class ParserEitFile(object):
 
@@ -53,7 +52,7 @@ class ParserEitFile(object):
 
 		if path:
 			eit_file = self.__eitPath(path)
-			data = self.__readFile(eit_file)
+			data = readFile(eit_file)
 			if data and len(data) >= 12:
 				self.__parse(data)
 
@@ -65,13 +64,6 @@ class ParserEitFile(object):
 				path = path[:-4]
 		path += ".eit"
 		return path
-
-	def __readFile(self, path):
-		#print("MVC: ParserEitFile: __readFile: path: %s" % path)
-		data = None
-		if os.path.isfile(path):
-			data = readFile(path)
-		return data
 
 #	def __toDate(self, d, t):
 #		if d and t:
@@ -106,7 +98,7 @@ class ParserEitFile(object):
 		return self.eit.get('description', "")
 
 	def getLengthInSeconds(self):
-		return self.eit.get('duration', "")
+		return self.eit.get('duration', 0)
 
 #	def getDate(self):
 #		return self.__toDate(self.getStartDate(), self.getStartTime())

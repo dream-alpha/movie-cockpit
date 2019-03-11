@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MovieCockpit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-02 17:15+0100\n"
-"PO-Revision-Date: 2019-03-02 17:18+0100\n"
+"POT-Creation-Date: 2019-03-07 09:45+0100\n"
+"PO-Revision-Date: 2019-03-07 09:45+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: en\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.1.1\n"
 "X-Loco-Source-Locale: en-US\n"
 "X-Loco-Project-Id: 47158\n"
 "X-Loco-Api-Version: 1.0.19 20180501-1\n"
@@ -234,7 +234,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: ConfigScreen.py:70 FileProgress.py:44
+#: ConfigScreen.py:70 FileProgress.py:44 MovieSelectionContextMenu.py:68
 msgid "Cancel"
 msgstr ""
 
@@ -723,7 +723,7 @@ msgstr "Select the path to be used for the debug log file."
 msgid "Really close without saving settings?"
 msgstr ""
 
-#: ConfigScreen.py:266 plugin.py:107
+#: ConfigScreen.py:266 MovieSelectionContextMenu.py:99 plugin.py:107
 msgid "Setup"
 msgstr ""
 
@@ -747,7 +747,7 @@ msgstr ""
 msgid "Select Location"
 msgstr ""
 
-#: ConfigScreen.py:383 MovieSelection.py:703
+#: ConfigScreen.py:383 MovieSelection.py:697
 msgid "Select directory"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "new covers"
 msgstr ""
 
-#: MovieInfoEPG.py:47 MovieList.py:352
+#: MovieInfoEPG.py:47 MovieList.py:320
 msgid "min"
 msgstr ""
 
@@ -881,7 +881,7 @@ msgstr ""
 msgid "Vote"
 msgstr ""
 
-#: MovieInfoTMDB.py:94 MovieSelection.py:175
+#: MovieInfoTMDB.py:94 MovieSelection.py:175 MovieSelectionContextMenu.py:66
 msgid "Exit"
 msgstr ""
 
@@ -897,24 +897,20 @@ msgstr ""
 msgid "Select cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:98
-msgid "Save temporary cover"
-msgstr ""
-
-#: MovieInfoTMDB.py:106
-msgid "Delete cover"
-msgstr ""
-
-#: MovieInfoTMDB.py:107
+#: MovieInfoTMDB.py:98 MovieInfoTMDB.py:107
 msgid "Save cover"
 msgstr ""
 
-#: MovieInfoTMDB.py:108
+#: MovieInfoTMDB.py:99 MovieInfoTMDB.py:109
+msgid "Get cover"
+msgstr ""
+
+#: MovieInfoTMDB.py:100 MovieInfoTMDB.py:108
 msgid "Get covers"
 msgstr ""
 
-#: MovieInfoTMDB.py:109
-msgid "Get cover"
+#: MovieInfoTMDB.py:101 MovieInfoTMDB.py:106
+msgid "Delete cover"
 msgstr ""
 
 #: MovieInfoTMDB.py:114
@@ -953,35 +949,15 @@ msgstr ""
 msgid "Cover/TMDB Info deleted successfully"
 msgstr ""
 
-#: MovieList.py:49
-msgid "List style: default"
-msgstr ""
-
-#: MovieList.py:50
-msgid "List style: compact with description"
-msgstr ""
-
-#: MovieList.py:51
-msgid "List style: compact"
-msgstr ""
-
-#: MovieList.py:52
-msgid "List style: compact single line"
-msgstr ""
-
-#: MovieList.py:53
-msgid "List style: minimal"
-msgstr ""
-
-#: MovieList.py:253
+#: MovieList.py:221
 msgid "up"
 msgstr ""
 
-#: MovieList.py:257 MovieSelection.py:431
+#: MovieList.py:225 MovieSelection.py:433
 msgid "trashcan"
 msgstr ""
 
-#: MovieList.py:259
+#: MovieList.py:227
 msgid "Directory"
 msgstr ""
 
@@ -989,15 +965,15 @@ msgstr ""
 msgid "Skin resolution other than Full HD is not supported yet."
 msgstr ""
 
-#: MovieSelection.py:133 MovieSelection.py:139 MovieSelectionContextMenu.py:73
+#: MovieSelection.py:133 MovieSelection.py:139 MovieSelectionContextMenu.py:83
 msgid "Delete"
 msgstr ""
 
-#: MovieSelection.py:134 MovieSelection.py:442
+#: MovieSelection.py:134 MovieSelection.py:444
 msgid "Sort Mode"
 msgstr ""
 
-#: MovieSelection.py:135 MovieSelectionContextMenu.py:74
+#: MovieSelection.py:135 MovieSelectionContextMenu.py:84
 msgid "Move"
 msgstr ""
 
@@ -1009,7 +985,7 @@ msgstr ""
 msgid "Sort Order"
 msgstr ""
 
-#: MovieSelection.py:141 MovieSelectionContextMenu.py:75
+#: MovieSelection.py:141 MovieSelectionContextMenu.py:85
 msgid "Copy"
 msgstr ""
 
@@ -1025,7 +1001,7 @@ msgstr ""
 msgid "Skin type"
 msgstr ""
 
-#: MovieSelection.py:148 MovieSelection.py:382 MovieSelectionContextMenu.py:84
+#: MovieSelection.py:148 MovieSelection.py:384 MovieSelectionContextMenu.py:94
 msgid "Bookmarks"
 msgstr ""
 
@@ -1041,7 +1017,7 @@ msgstr ""
 msgid "Timer list"
 msgstr ""
 
-#: MovieSelection.py:154
+#: MovieSelection.py:154 MovieSelectionContextMenu.py:69 plugin.py:108
 msgid "Open setup"
 msgstr ""
 
@@ -1109,7 +1085,7 @@ msgstr ""
 msgid "Selection off"
 msgstr ""
 
-#: MovieSelection.py:187 MovieSelection.py:736
+#: MovieSelection.py:187 MovieSelection.py:730
 msgid "Stop recording(s)"
 msgstr ""
 
@@ -1121,75 +1097,75 @@ msgstr ""
 msgid "Color buttons previous"
 msgstr ""
 
-#: MovieSelection.py:354
+#: MovieSelection.py:356
 msgid "No EPG Info available"
 msgstr ""
 
-#: MovieSelection.py:433
+#: MovieSelection.py:435
 msgid "Recordings"
 msgstr ""
 
-#: MovieSelection.py:676
+#: MovieSelection.py:672
 msgid "Do you really want to reload the SQL cache?"
 msgstr ""
 
-#: MovieSelection.py:786
+#: MovieSelection.py:778
 msgid "Permanently delete the selected video file(s) or dir(s)"
 msgstr ""
 
-#: MovieSelection.py:807
+#: MovieSelection.py:799
 msgid "Move file(s)"
 msgstr ""
 
-#: MovieSelection.py:815
+#: MovieSelection.py:807
 msgid "Copy file(s)"
 msgstr ""
 
-#: MovieSelection.py:831
+#: MovieSelection.py:823
 msgid "Can't move recordings"
 msgstr ""
 
-#: MovieSelection.py:831
+#: MovieSelection.py:823
 msgid "Can't copy recordings"
 msgstr ""
 
-#: MovieSelection.py:850
+#: MovieSelection.py:842
 msgid "Trashcan is not enabled"
 msgstr ""
 
-#: MovieSelection.py:858
+#: MovieSelection.py:850
 msgid "Permanently delete all files in trashcan?"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:64
+#: MovieSelectionContextMenu.py:67 MovieSelectionContextMenu.py:74
 msgid "Select function"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:68
+#: MovieSelectionContextMenu.py:78
 msgid "Movie home"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:69
+#: MovieSelectionContextMenu.py:79
 msgid "Directory up"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:71
+#: MovieSelectionContextMenu.py:81
 msgid "Select all"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:78
+#: MovieSelectionContextMenu.py:88
 msgid "Empty trashcan"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:79
+#: MovieSelectionContextMenu.py:89
 msgid "Open trashcan"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:81
+#: MovieSelectionContextMenu.py:91
 msgid "Remove cutlist marker"
 msgstr ""
 
-#: MovieSelectionContextMenu.py:82
+#: MovieSelectionContextMenu.py:92
 msgid "Delete cutlist file"
 msgstr ""
 
@@ -1201,8 +1177,24 @@ msgstr ""
 msgid "TV Shows"
 msgstr ""
 
-#: plugin.py:108
-msgid "Open Setup"
+#: SkinTemplate.py:20
+msgid "List style: default"
+msgstr ""
+
+#: SkinTemplate.py:21
+msgid "List style: compact with description"
+msgstr ""
+
+#: SkinTemplate.py:22
+msgid "List style: compact"
+msgstr ""
+
+#: SkinTemplate.py:23
+msgid "List style: compact single line"
+msgstr ""
+
+#: SkinTemplate.py:24
+msgid "List style: minimal"
 msgstr ""
 
 #: plugin.py:119
