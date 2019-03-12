@@ -31,7 +31,36 @@ FILE_OP_DELETE = 1
 FILE_OP_MOVE = 2
 FILE_OP_COPY = 3
 
+
 class FileOps(MovieTMDB, MovieCover, MountPoints, object):
+
+	def __init__(self):
+		self.execution_list = []
+
+	def reloadList(self, _path, _update_disk_space_info=False):
+		print("MVC-E: FileOps: reloadList")
+		return
+
+	def execFileOpsWithoutProgress(self, selection_list):
+		print("MVC-I: FileOps: execFileOpsWithoutProgress: selection_list: " + str(selection_list))
+		self.execution_list = selection_list
+		if self.execution_list:
+			self.execNextFileOp()
+
+	def execNextFileOp(self):
+		op, path, target_path, filetype = self.execution_list.pop(0)
+		print("MVC-I: FileOps: execNextFileOp: op: %s, path: %s, target_path: %s, filetype: %s" % (op, path, target_path, filetype))
+		if path and not path.endswith(".."):
+			self.execFileOp(op, path, target_path, filetype)
+		else:
+			if self.execution_list:
+				self.execNextFileOp()
+
+	def execFileOpCallback(self, op, path, _target_path, _filetype):
+		print("MVC-I: FileOps: execFileOpCallback: op: %s, path: %s" % (op, path))
+		self.reloadList(os.path.dirname(path), True)
+		if self.execution_list:
+			self.execNextFileOp()
 
 	def execFileOp(self, op, path, target_path, filetype):
 		cmd = []
@@ -64,10 +93,6 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			association.append((self.execFileOpCallback, op, path, target_path, filetype))
 			# Sync = True: Run script for one file do association and continue with next file
 			tasker.shellExecute(cmd, association, True)
-
-	def execFileOpCallback(self, op, path, _target_path, _filetype):
-		print("MVC-I: FileOps: execFileOpCallback: op: %s, path: %s" % (op, path))
-		return
 
 	def __deleteCallback(self, path, target_path, filetype):
 		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))

@@ -1,6 +1,6 @@
 Description: MovieCockpit
 Maintainer: dream-alpha
 Package: enigma2-plugin-extensions-moviecockpit
-Version: 2.3.9
+Version: 2.4.1
 Architecture: all
 Depends: wget

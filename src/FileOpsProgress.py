@@ -34,6 +34,8 @@ class FileOpsProgress(FileProgress, FileOps, object):
 	def __init__(self, session, selection_list):
 		#print("MVC: FileOpsProgress: __init__")
 		FileProgress.__init__(self, session)
+		FileOps.__init__(self)
+
 		self.skinName = "MVCFileOpsProgress"
 		self.setTitle(_("File operation(s)") + " ...")
 		self.execution_list = selection_list
@@ -49,7 +51,10 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		target_size = 0
 		if self.target_path and os.path.exists(self.target_path):
 			target_size = os.path.getsize(self.target_path)
-		self.file_progress = int(float(target_size) / float(self.source_size) * 100)
+		if self.source_size == 0:
+			self.file_progress = 100
+		else:
+			self.file_progress = int(float(target_size) / float(self.source_size) * 100)
 		#print("MVC: FileOpsProgress: doActivityTimer: self.target_path: %s, self.source_size: %s, target_size: %s, file_progress: %s" % (self.target_path, self.source_size, target_size, self.file_progress))
 		self.updateProgress()
 		self.activityTimer.start(ACTIVITY_TIMER_DELAY, True)
@@ -69,6 +74,7 @@ class FileOpsProgress(FileProgress, FileOps, object):
 	def doFileOp(self, entry):
 		op, filetype, path, target_path = entry
 		if path and not path.endswith("..") and os.path.exists(path):
+			print("MVC: FileOpsProgress: doFileOp: path: %s" % path)
 			self.movie_progress = 0
 			self.file_op = op
 			self.file_name = os.path.basename(path)

@@ -187,8 +187,8 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 				#print("MVC: FileCacheLoad: __newFileData: timer_begin: %s, length: %s" % (date, length / 60))
 
 			# parse eit file
-			eit = ParserEitFile(path)
-			eit_name = eit.getName()
+			eit = ParserEitFile(path).getEit()
+			eit_name = eit["name"]
 			if eit_name:
 				name = eit_name
 				cutno, _filename = parseCutNo(filename)
@@ -196,20 +196,15 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 					name = "%s (%s)" % (name, cutno)
 
 			if length == 0:
-				length = eit.getLengthInSeconds()
+				length = eit["duration"]
 
-			description = eit.getShortDescription()
-			extended_description = eit.getExtendedDescription()
+			description = eit["short_description"]
+			extended_description = eit["description"]
 
 			#parse meta file
-			meta = ParserMetaFile(path)
-			service_reference = meta.getServiceReference()
-			tags = meta.getTags()
-
-#			service = ServiceReference(service_reference)
-#			if service is not None:
-#				service_name = service.getServiceName()
-#			#print("MVC: FileCacheLoad: __newFileData: service_name: %s" % service_name)
+			meta = ParserMetaFile(path).getMeta()
+			service_reference = meta["service_reference"]
+			tags = meta["tags"]
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 

@@ -32,7 +32,7 @@ from FileUtils import readFile
 class ParserEitFile(object):
 
 	def __init__(self, path=None):
-		self.eit = {}
+		self.eit = {"name": "", "short_description": "", "description": "", "duration": 0}
 		self.name_event_descriptor = []
 		self.name_event_descriptor_multi = []
 		self.name_event_codepage = None
@@ -51,19 +51,19 @@ class ParserEitFile(object):
 		self.prev2_ISO_639_language_code = "x"
 
 		if path:
-			eit_file = self.__eitPath(path)
-			data = readFile(eit_file)
-			if data and len(data) >= 12:
-				self.__parse(data)
-
-	def __eitPath(self, path):
-		path, __ = os.path.splitext(path)
-		if not os.path.exists(path + ".eit"):
-			# Strip existing cut number
-			if path[-4:-3] == "_" and path[-3:].isdigit():
-				path = path[:-4]
-		path += ".eit"
-		return path
+			path, _ext = os.path.splitext(path)
+			eit_path = path + ".eit"
+			if not os.path.exists(eit_path):
+				# Strip existing cut number
+				if path[-4:-3] == "_" and path[-3:].isdigit():
+					path = path[:-4]
+					eit_path = path + ".eit"
+					if not os.path.exists(eit_path):
+						eit_path = ""
+			if eit_path:
+				data = readFile(eit_path)
+				if data and len(data) >= 12:
+					self.__parse(data)
 
 #	def __toDate(self, d, t):
 #		if d and t:
@@ -76,6 +76,9 @@ class ParserEitFile(object):
 
 	### Get functions
 
+	def getEit(self):
+		return self.eit
+
 #	def getWhen(self):
 #		return self.eit.get('when', "")
 #
@@ -86,7 +89,7 @@ class ParserEitFile(object):
 #		return self.eit.get('starttime', "")
 #
 #	def getDuration(self):
-#		return self.eit.get('duration', "")
+#		return self.eit.get('duration', 0)
 #
 	def getName(self):
 		return self.eit.get('name', "")

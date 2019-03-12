@@ -66,7 +66,7 @@ class FileProgress(Screen, Bookmarks, object):
 		self.hidden = False
 
 	def noop(self):
-		pass
+		return
 
 	def cancel(self):
 		if self.hidden:

@@ -35,6 +35,7 @@ instance = None
 class Trashcan(FileOps, Bookmarks, object):
 
 	def __init__(self):
+		FileOps.__init__(self)
 		if config.MVC.trashcan_enable.value:
 			self.__schedulePurge()
 		config.MVC.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
@@ -81,17 +82,17 @@ class Trashcan(FileOps, Bookmarks, object):
 	def purgeTrashcan(self):
 		import time
 		print("MVC-I: Trashcan: purgeTrashcan")
-		files = 0
+		file_ops_list = []
 		now = time.localtime()
 		filelist = FileCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			filetype = afile[FILE_IDX_TYPE]
-			# Only check media files
 			_filename, _ext = os.path.splitext(path)
 			if os.path.exists(path):
 				if now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.trashcan_retention.value)):
-					#print("MVC: Trashcan: purgeTrashcan: path: " + path)
-					self.execFileOp(FILE_OP_DELETE, path, None, filetype)
-					files += 1
-		print("MVC-I: Trashcan: purgeTrashcan: deleted %s files" % files)
+					print("MVC: Trashcan: purgeTrashcan: path: " + path)
+					file_ops_list.append((FILE_OP_DELETE, path, None, filetype))
+		if file_ops_list:
+			self.execFileOpsWithoutProgress(file_ops_list)
+		print("MVC-I: Trashcan: purgeTrashcan: deleted %s files" % len(file_ops_list))

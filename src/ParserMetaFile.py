@@ -35,30 +35,28 @@ META_IDX_FILESIZE = 6
 class ParserMetaFile(object):
 
 	def __init__(self, path=None):
-		self.meta_file = None
-		self.meta = None
+		self.meta = {"name": "", "service_reference": "", "tags": ""}
+		self.meta_list = []
 		if path:
-			self.meta_file = self.__metaPath(path)
-			self.meta = self.__readFile(self.meta_file)
+			meta_path = path + ".meta"
+			if not os.path.exists(meta_path):
+				path, ext = os.path.splitext(path)
+				# Strip existing cut number
+				if path[-4:-3] == "_" and path[-3:].isdigit():
+					path = path[:-4] + ext
+					meta_path = path + ".meta"
+					if not os.path.exists(meta_path):
+						meta_path = ""
+			if meta_path:
+				self.meta_list = readFile(meta_path).splitlines()
+				if self.meta_list:
+					self.meta_list = [l.strip() for l in self.meta_list]
+					self.meta["name"] = self.meta_list[META_IDX_NAME]
+					self.meta["service_reference"] = self.meta_list[META_IDX_SERVICE]
+					self.meta["tags"] = self.meta_list[META_IDX_TAGS]
 
-	def __metaPath(self, path):
-		if not os.path.exists(path + ".meta"):
-			path, ext = os.path.splitext(path)
-			# Strip existing cut number
-			if path[-4:-3] == "_" and path[-3:].isdigit():
-				path = path[:-4] + ext
-		path += ".meta"
-		return path
-
-	def __readFile(self, path):
-		lines = None
-		if os.path.isfile(path):
-			lines = readFile(path).splitlines()
-			# Parse the lines
-			if lines:
-				# Strip lines and extract information
-				lines = [l.strip() for l in lines]
-		return lines
+	def getMeta(self):
+		return self.meta
 
 #	def __mk_int(self, s):
 #		if s:
