@@ -7,9 +7,9 @@
 </a>
 
 # MovieCockpit
-## MovieCockpit is an enhanced movie list for DreamOS receivers
+## MovieCockpit is an Enhanced Movie List for DreamOS Receivers
 - MovieCockpit (MVC) is based off of EnhancedMovieCenter (EMC) but has reduced functionality, basically focusing on recordings.
-- MVC implements a permanent sqlite movie cache which allows MVC to display the movie list with all it's information without disk access. So, no spinners or delays due to disks leaving standby mode.
+- MVC implements a permanent sqlite movie cache which allows MVC to display the movie list with all its information without disk access. So, no spinners or delays due to disk spinup.
 - MVC imports all movies located in the E2 movie directories.
 - MVC and EMC can run in parallel on the same box (just configure different start keys).
 - MVC only supports DreamOS

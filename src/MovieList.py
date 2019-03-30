@@ -60,7 +60,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		self.selection_color = parseColor(config.MVC.selection_color.value).argb()
 		self.selection_color_sel = parseColor(config.MVC.selection_color_sel.value).argb()
 
-		skin_path = getSkinPath("img/")
+		skin_path = getSkinPath("images/")
 		self.pic_back = LoadPixmap(cached=True, path=skin_path + "back.svg")
 		self.pic_directory = LoadPixmap(cached=True, path=skin_path + "dir.svg")
 		self.pic_movie_default = LoadPixmap(cached=True, path=skin_path + "movie_default.svg")
@@ -84,10 +84,10 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		instance.setContent(None)
 		self.selectionChanged_conn = None
 
-	def getListType(self):
+	def getListStyle(self):
 		return self.list_style
 
-	def setListType(self, list_style):
+	def setListStyle(self, list_style):
 		self.list_style = list_style
 		self.setTemplate(MovieList.list_styles[list_style][0])
 		self.invalidateList()
@@ -152,7 +152,6 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		self.l.invalidate()
 
 	def invalidateList(self):
-		MovieList.selection_list = []
 		self.invalidate()
 
 	def invalidateEntry(self, i):
@@ -184,7 +183,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 # 		self.skinAttributes = attribs
 
 		MovieList.list_styles, template_attributes = parseTemplate(MovieList.default_template)
-		self.setListType(config.MVC.list_style.value)
+		self.setListStyle(config.MVC.list_style.value)
 
 		#print("MVC: MovieList: applySkin: self.skinAttributes: " + str(self.skinAttributes))
 		GUIComponent.applySkin(self, desktop, parent)
@@ -316,8 +315,8 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 		progress_string = str(progress) + "%" if progress >= 0 else ""
 		progress_bar = self.pic_rec_progress_bar if recording else self.pic_progress_bar
 		duration_string = str(length / 60) + " " + _("min") if filetype == FILE_TYPE_FILE else ""
-		if name == "trashcan":
-			name = _(name)
+		picon = getPicon(service_reference) if filetype == FILE_TYPE_FILE else None
+		name = _(name) if name == "trashcan" else name
 
 		res = [
 			None,
@@ -333,7 +332,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 			progress_string,						# 10: progress string (xx%)
 			progress_bar,							# 11: progress bar png
 			getFileIcon(path, filetype, progress, recording, cutting),	# 12: status icon png
-			getPicon(service_reference),					# 13: picon png
+			picon,								# 13: picon png
 		]
 
 		#print("MVC: MovieList: buildMovieListEntry: self.res: " + str(res))

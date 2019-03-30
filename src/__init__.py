@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -21,13 +21,13 @@
 
 from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
-from os import environ as os_environ
+from os import environ
 import gettext
 
 
 def localeInit():
 	lang = language.getLanguage()[:2]
-	os_environ["LANGUAGE"] = lang
+	environ["LANGUAGE"] = lang
 	gettext.bindtextdomain("MovieCockpit", resolveFilename(SCOPE_PLUGINS, "Extensions/MovieCockpit/locale"))
 
 

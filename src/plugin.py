@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -29,12 +29,35 @@ from FileCacheLoad import FileCacheLoad
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from Version import VERSION
-from SkinUtils import loadPluginSkin
+from SkinUtils import getSkinPath
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
 from FileCacheSQL import SQL_DB_NAME
 from Debug import initLogFile, createLogFile
 from FileUtils import deleteFile
+from skin import loadSkin, loadSingleSkinData, dom_skins
+from StylesOps import applyStyle
+from enigma import getDesktop
+from Tools.Directories import resolveFilename, SCOPE_SKIN, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
+
+
+def loadPluginSkin(skin_file):
+	default_skin = resolveFilename(SCOPE_SKIN, "Default-FHD/MovieCockpit")
+	current_skin = resolveFilename(SCOPE_CURRENT_SKIN, "MovieCockpit")
+	plugin_skin = resolveFilename(SCOPE_PLUGINS, "Extensions/MovieCockpit")
+	print("MVC-I: plugin: loadPluginSkin: current_skin: %s" % current_skin)
+	print("MVC-I: plugin: loadPluginSkin: default_skin: %s" % default_skin)
+	print("MVC-I: plugin: loadPluginSkin: plugin_skin: %s" % plugin_skin)
+	if not (os.path.islink(default_skin) or os.path.isdir(default_skin)):
+		print("MVC-I: plugin: loadPluginSkin: ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
+		os.system("ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
+	# apply style first
+	applyStyle()
+	# then load styled skin
+	loadSkin(getSkinPath(skin_file), "")
+	path, dom_skin = dom_skins[-1:][0]
+	loadSingleSkinData(getDesktop(0), dom_skin, path)
+
 
 def openSettings(session, **__):
 	print("MVC-I: plugin: openSettings")
@@ -75,16 +98,16 @@ def autostart(reason, **kwargs):
 					InfoBar.startTimeshift = boundFunction(openMovieSelection, session)
 			ConfigScreen.setEPGLanguage()
 			RecordingControl()
-			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/tmp/.moviecockpit"):
+			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
 				print("MVC-I: plugin: loading database...")
-				deleteFile("/tmp/.moviecockpit")
+				deleteFile("/etc/enigma2/.moviecockpit")
 				config.MVC.debug.value = False
 				config.MVC.debug.save()
 				FileCacheLoad.getInstance().loadDatabase(sync=True)
 			else:
 				print("MVC-I: plugin: database is already loaded.")
 			Trashcan.getInstance()
-			loadPluginSkin("MovieCockpit.xml")
+			loadPluginSkin("skin.xml")
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
 		FileCacheLoad.getInstance().closeDatabase()

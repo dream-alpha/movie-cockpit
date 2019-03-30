@@ -35,15 +35,17 @@ FILE_OP_COPY = 3
 class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 
 	def __init__(self):
+		MovieCover.__init__(self)
 		self.execution_list = []
 
-	def reloadList(self, _path, _update_disk_space_info=False):
-		print("MVC-E: FileOps: reloadList")
+	def reloadList(self, path, _update_disk_space_info=False):
+		print("MVC-I: FileOps: reloadList: path: %s" % path)
+		print("MVC-E: should not be called at all, as overwritten by child")
 		return
 
-	def execFileOpsWithoutProgress(self, selection_list):
-		print("MVC-I: FileOps: execFileOpsWithoutProgress: selection_list: " + str(selection_list))
-		self.execution_list = selection_list
+	def execFileOpsNoProgress(self, execution_list):
+		print("MVC-I: FileOps: execFileOpsNoProgress: execution_list: " + str(execution_list))
+		self.execution_list = execution_list
 		if self.execution_list:
 			self.execNextFileOp()
 
@@ -56,8 +58,8 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if self.execution_list:
 				self.execNextFileOp()
 
-	def execFileOpCallback(self, op, path, _target_path, _filetype):
-		print("MVC-I: FileOps: execFileOpCallback: op: %s, path: %s" % (op, path))
+	def execFileOpCallback(self, op, path, target_path, filetype):
+		print("MVC-I: FileOps: execFileOpCallback: op: %s, path: %s, target_path: %s, filetype: %s" % (op, path, target_path, filetype))
 		self.reloadList(os.path.dirname(path), True)
 		if self.execution_list:
 			self.execNextFileOp()

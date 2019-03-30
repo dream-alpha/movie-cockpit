@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -188,7 +188,7 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 
 			# parse eit file
 			eit = ParserEitFile(path).getEit()
-			eit_name = eit["name"]
+			eit_name = eit.get("name", "")
 			if eit_name:
 				name = eit_name
 				cutno, _filename = parseCutNo(filename)
@@ -196,15 +196,15 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 					name = "%s (%s)" % (name, cutno)
 
 			if length == 0:
-				length = eit["duration"]
+				length = eit.get("duration", 0)
 
-			description = eit["short_description"]
-			extended_description = eit["description"]
+			description = eit.get("short_description", "")
+			extended_description = eit.get("description", "")
 
 			#parse meta file
 			meta = ParserMetaFile(path).getMeta()
-			service_reference = meta["service_reference"]
-			tags = meta["tags"]
+			service_reference = meta.get("service_reference", "")
+			tags = meta.get("tags", "")
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 

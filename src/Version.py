@@ -19,4 +19,5 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-VERSION = "2.4.1"
+# MovieCockpit
+VERSION = "3.3.9"

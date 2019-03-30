@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -32,6 +32,7 @@ from Bookmarks import Bookmarks
 from MovieList import MovieList
 from Screens.HelpMenu import HelpableScreen
 from ConfigScreen import ConfigScreen
+from StylesScreen import StylesScreen
 from Plugins.Plugin import PluginDescriptor
 
 FUNC_MOVIE_HOME = 0
@@ -103,6 +104,8 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 			for list_style in range(len(MovieList.list_styles)):
 				menu.append((_(MovieList.list_styles[list_style][1]), boundFunction(self.close, FUNC_SET_LISTTYPE, list_style)))
 
+			menu.append((_("Reload Cache"), boundFunction(self.close, FUNC_RELOAD_CACHE)))
+			menu.append((_("Styles"), self.openStylesScreen))
 			menu.append((_("Setup"), self.openConfigScreen))
 		elif menu_mode == MENU_PLUGINS:
 			self.setTitle(_("Select plugin"))
@@ -115,6 +118,8 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 	def execPlugin(self, plugin):
 		plugin(session=self.session, service=self.service)
 
+	def openStylesScreen(self):
+		self.session.open(StylesScreen)
 
 	def openConfigScreen(self):
 		self.session.openWithCallback(self.openConfigScreenCallback, ConfigScreen)

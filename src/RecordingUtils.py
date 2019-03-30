@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -58,7 +58,7 @@ def stopRecording(path):
 def isCutting(path):
 	#print("MVC: RecordingUtils: isCutting: path: %s" % path)
 	filename, _ext = os.path.splitext(path)
-	return (filename.endswith("_") and not os.path.exists(filename + ".eit"))
+	return filename.endswith("_") and not os.path.exists(filename + ".eit")
 
 
 def getRecording(path, include_margin_before=True):

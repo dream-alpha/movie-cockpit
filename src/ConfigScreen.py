@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
@@ -37,6 +37,7 @@ from Screens.Standby import TryQuitMainloop
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Version import VERSION
 from Trashcan import Trashcan
+from StylesScreen import StylesScreen
 
 
 class ConfigScreen(ConfigListScreen, Screen, object):
@@ -50,7 +51,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 				"cancel": self.keyCancel,
 				"MVCRED": self.keyCancel,
 				"MVCGREEN": self.keySaveNew,
-				"MVCBLUE": self.loadDefaultSettings,
+				"MVCYELLOW": self.loadDefaultSettings,
+				"MVCBLUE": self.openStyles,
 				"MVCBQTPLUS": self.bouquetPlus,
 				"MVCBQTMINUS": self.bouquetMinus,
 			},
@@ -69,8 +71,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 
 		self["key_red"] = Button(_("Cancel"))
 		self["key_green"] = Button(_("Save"))
-		self["key_yellow"] = Button("")
-		self["key_blue"] = Button(_("Defaults"))
+		self["key_yellow"] = Button(_("Defaults"))
+		self["key_blue"] = Button(_("Styles"))
 		self["help"] = StaticText()
 
 		self.list = []
@@ -146,7 +148,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Show directories information")                  , config.MVC.directories_info          , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
 			(_("Cursor predictive move after selection")        , config.MVC.list_selmove              , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
 			(self.section                                       , _("SKIN-SETTINGS")                   , None                  , None                  , 0     , []          , ""),
-			(_("Skin layout")                                   , config.MVC.skin_layout               , None                  , None                  , 0     , []          , _("Help Skin layout")),
 			(_("Show mountpoints")                              , config.MVC.movie_mountpoints         , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
 			(_("Date format")                                   , config.MVC.movie_date_format         , None                  , None                  , 0     , []          , _("Help Date format")),
 			(_("Path to movie picons")                          , config.MVC.movie_picons_path         , self.validatePath     , self.openLocationBox  , 0     , []          , _("Help Path to movie picons")),
@@ -398,3 +399,6 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			self.session.open(MessageBox, _("Path does not exist") + ": " + str(element.value), MessageBox.TYPE_ERROR)
 			return False
 		return True
+
+	def openStyles(self):
+		self.session.open(StylesScreen)

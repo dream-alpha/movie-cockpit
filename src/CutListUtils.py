@@ -84,7 +84,7 @@ def unpackCutList(data):
 	pos = 0
 	while pos + 12 <= len(data):
 		(pts, what) = struct.unpack('>QI', data[pos:pos + 12])
-		cut_list = insortCutList(cut_list, long(pts), what)
+		cut_list = insortCutList(cut_list, int(pts), what)
 		# Next cut_list entry
 		pos += 12
 	return cut_list
@@ -93,7 +93,7 @@ def unpackCutList(data):
 def mergeCutList(destination_cut_list, source_cut_list):
 	# merge cut_list2 into cut_list1
 	for pts, what in source_cut_list:
-		destination_cut_list = insortCutList(destination_cut_list, long(pts), what)
+		destination_cut_list = insortCutList(destination_cut_list, int(pts), what)
 	return destination_cut_list
 
 

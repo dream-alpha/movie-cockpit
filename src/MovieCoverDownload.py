@@ -30,6 +30,9 @@ substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", 
 
 
 class MovieCoverDownload(MovieTMDB, MovieCover, object):
+	def __init__(self):
+		MovieCover.__init__(self)
+
 	def __removeCutNumbers(self, path):
 		if path[-4:-3] == "_" and path[-3:].isdigit():
 			path = path[:-4]

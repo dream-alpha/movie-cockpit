@@ -31,6 +31,7 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 	def __init__(self, session):
 		#print("MVC: MovieCoverDownloadProgress: __init__")
 		FileProgress.__init__(self, session)
+		MovieCoverDownload.__init__(self)
 		self.covers_tried = 0
 		self.covers_found = 0
 		self.skinName = "MVCFileCacheLoadProgress"
@@ -56,8 +57,8 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 
 	def completionStatus(self):
 		covers_percent = 0 if self.covers_tried == 0 else float(float(self.covers_found) / float(self.covers_tried)) * 100
-		#print("MVC: MovieCoverDownloadProgress: completionStatus: %s of %s new covers: %s%%" % (self.covers_found, self.covers_tried, covers_percent))
-		return ((_("Done") + " : %s " + _("of") + " %s " + _("new covers") + " (%s%%)") % (self.covers_found, self.covers_tried, covers_percent))
+		#print("MVC: MovieCoverDownloadProgress: completionStatus: %s of %s new covers: %.2f%%" % (self.covers_found, self.covers_tried, covers_percent))
+		return (_("Done") + " : %s " + _("of") + " %s " + _("new covers") + " (%.2f%%)") % (self.covers_found, self.covers_tried, covers_percent)
 
 	def execMovieCoverDownloadProgress(self):
 		print("MVC-I: MovieCoverDownloadProgress: execMovieCoverDownloadProgress")

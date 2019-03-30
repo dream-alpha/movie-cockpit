@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -35,8 +35,8 @@ META_IDX_FILESIZE = 6
 class ParserMetaFile(object):
 
 	def __init__(self, path=None):
-		self.meta = {"name": "", "service_reference": "", "tags": ""}
-		self.meta_list = []
+		self.meta = {}
+		meta_list = []
 		if path:
 			meta_path = path + ".meta"
 			if not os.path.exists(meta_path):
@@ -48,15 +48,24 @@ class ParserMetaFile(object):
 					if not os.path.exists(meta_path):
 						meta_path = ""
 			if meta_path:
-				self.meta_list = readFile(meta_path).splitlines()
-				if self.meta_list:
-					self.meta_list = [l.strip() for l in self.meta_list]
-					self.meta["name"] = self.meta_list[META_IDX_NAME]
-					self.meta["service_reference"] = self.meta_list[META_IDX_SERVICE]
-					self.meta["tags"] = self.meta_list[META_IDX_TAGS]
+				meta_list = readFile(meta_path).splitlines()
+				if meta_list:
+					meta_list = [l.strip() for l in meta_list]
+					self.meta["name"] = meta_list[META_IDX_NAME]
+					self.meta["service_reference"] = meta_list[META_IDX_SERVICE]
+					self.meta["tags"] = meta_list[META_IDX_TAGS]
 
 	def getMeta(self):
 		return self.meta
+
+	def getServiceReference(self):
+		return self.meta["service_reference"]
+
+	def getName(self):
+		return self.meta["name"]
+
+	def getTags(self):
+		return self.meta["tags"]
 
 #	def __mk_int(self, s):
 #		if s:
@@ -70,17 +79,8 @@ class ParserMetaFile(object):
 #	def __secondsToDate(self, s):
 #		return s and datetime.fromtimestamp(s) or None
 
-#	def getFile(self):
-#		return self.meta
-
 #	def getMTime(self):
 #		return self.meta_mtime
-
-	def getServiceReference(self):
-		return self.meta and self.meta[META_IDX_SERVICE]
-
-	def getName(self):
-		return self.meta and self.meta[META_IDX_NAME]
 
 #	def getDescription(self):
 #		try:
@@ -95,10 +95,6 @@ class ParserMetaFile(object):
 #	def getRecordingTime(self):
 #		# Time in seconds since 1970
 #		return self.meta and self.__mk_int(self.meta[META_IDX_RECTIME])
-
-	def getTags(self):
-		return self.meta and self.meta[META_IDX_TAGS]
-
 
 #	def getLength(self):
 #		return self.meta and self.__ptsToSeconds(self.__mk_int(self.meta[META_IDX_LENGTH]))

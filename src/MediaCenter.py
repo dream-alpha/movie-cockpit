@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
@@ -61,13 +61,15 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
 
-	def __init__(self, session, service):
+	def __init__(self, session, service, cover):
 
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		InfoBarTimeshift.__init__(self)
 		InfoBarSupport.__init__(self)
+		MovieCover.__init__(self)
 
+		self.cover = cover
 		self["cover"] = Pixmap()
 
 		self.selected_subtitle = None
@@ -139,7 +141,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 			DelayedFunction(50, self.setSubtitleState, True)
 
 			self["mvc_logo"].show()
-			if config.MVC.cover.value:
+			if self.cover:
 				if self.showCover(self.service.getPath()):
 					self["mvc_logo"].hide()
 		else:
@@ -210,7 +212,7 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 				return
 			index = 0
 			trackList = []
-			for i in xrange(nTracks):
+			for i in range(nTracks):
 				audioInfo = tracks.getTrackInfo(i)
 				lang = audioInfo.getLanguage()
 				#print("MVC: MediaCenter: setAudioTrack: lang %s" % lang)

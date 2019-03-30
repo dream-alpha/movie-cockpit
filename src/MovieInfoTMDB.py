@@ -37,7 +37,6 @@ from FileUtils import deleteFile
 from SkinUtils import getSkinPath
 from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
-from MovieCover import MovieCover
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL
 from MovieCoverDownloadProgress import MovieCoverDownloadProgress
 
@@ -47,11 +46,11 @@ TEMP_COVER_PATH = "/tmp/preview_cover.jpg"
 TEMP_INFO_PATH = "/tmp/preview_info.txt"
 
 
-class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
+class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks, object):
 	def __init__(self, session, path, name):
 		#print("MVC: MovieInfoTMDB: __init__: path: %s, name: %s" % (path, name))
 		Screen.__init__(self, session)
-		MovieCoverDownload.__init__(self, session)
+		MovieCoverDownload.__init__(self)
 		self.skinName = "MVCMovieInfoTMDB"
 		self["cover"] = Pixmap()
 		self.name = name
@@ -135,6 +134,8 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 		self.page = PAGE_DETAILS
 		self.cover_path = TEMP_COVER_PATH
 		self.info_path = TEMP_INFO_PATH
+		deleteFile(TEMP_COVER_PATH)
+		deleteFile(TEMP_INFO_PATH)
 		self.info = None
 
 		self.movielist = self.getMovieList(self.search_name)
@@ -286,7 +287,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, MovieCover, Bookmarks, object):
 
 	def showCoverDelayed(self):
 		#print("MVC: MovieInfoTMDB: ShowCover: self.cover_path: %s" % self.cover_path)
-		self.showCover(self.cover_path, getSkinPath("img/tmdb.svg"))
+		self.showCover(self.cover_path, getSkinPath("images/tmdb.svg"))
 
 	def exit(self):
 		#print("MVC: MovieInfoTMDB: exit")

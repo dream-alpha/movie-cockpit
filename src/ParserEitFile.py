@@ -32,7 +32,7 @@ from FileUtils import readFile
 class ParserEitFile(object):
 
 	def __init__(self, path=None):
-		self.eit = {"name": "", "short_description": "", "description": "", "duration": 0}
+		self.eit = {}
 		self.name_event_descriptor = []
 		self.name_event_descriptor_multi = []
 		self.name_event_codepage = None

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# encoding: utf-8
 ################################################################################
 #    RunningText.py - Running Text Renderer for Enigma2
 #    Version: 1.6 (14.12.2018)
@@ -190,7 +192,7 @@ class MVCRunningText(Renderer):
 			self.mPageDelay = max(self.mStepTimeout, self.mPageDelay)
 
 		self.scroll_label.setFont(self.txfont)
-		if not (self.txtflags & RT_WRAP):
+		if not self.txtflags & RT_WRAP:
 			self.scroll_label.setNoWrap(1)
 		self.scroll_label.setVAlign(valign)
 		self.scroll_label.setHAlign(self.halign)
@@ -254,7 +256,7 @@ class MVCRunningText(Renderer):
 		self.X = self.Y = 0
 		self.setWidgetSizePosition()
 		#print("MVC: MVCRunningText: calcMoving: X: %s, Y: %s, H: %s, W: %s" % (self.X, self.Y, self.H, self.W))
-		if not (self.txtflags & RT_WRAP):
+		if not self.txtflags & RT_WRAP:
 			self.txtext = self.txtext.replace("\xe0\x8a", " ").replace(chr(0x8A), " ").replace("\n", " ").replace("\r", " ")
 
 		self.scroll_label.setText(self.txtext)
@@ -262,14 +264,14 @@ class MVCRunningText(Renderer):
 		if self.txtext == "" or self.type == NONE or self.scroll_label is None:
 			return False
 
-		if self.direction in (LEFT, RIGHT) or not (self.txtflags & RT_WRAP):
+		if self.direction in (LEFT, RIGHT) or not self.txtflags & RT_WRAP:
 			self.scroll_label.resize(eSize(self.txfont.pointSize * len(self.txtext), self.H))  # stupid workaround, have no better idea right now...
 
 		text_size = self.scroll_label.calculateSize()
 		text_width = text_size.width()
 		text_height = text_size.height()
 
-		if self.direction in (LEFT, RIGHT) or not (self.txtflags & RT_WRAP):
+		if self.direction in (LEFT, RIGHT) or not self.txtflags & RT_WRAP:
 			text_width += 10
 
 		self.mStop = None

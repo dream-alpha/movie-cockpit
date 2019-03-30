@@ -12,9 +12,9 @@ except ImportError:
 	no_comments = True
 
 class parseXML(ContentHandler, LexicalHandler, object):
-	def __init__(self, attrlist):
+	def __init__(self, _attrlist):
+		ContentHandler.__init__(self)
 		self.isPointsElement, self.isReboundsElement = 0, 0
-		self.attrlist = attrlist
 		self.last_comment = None
 
 	def comment(self, comment):
@@ -41,7 +41,7 @@ if not no_comments:
 for arg in sys.argv[1:]:
 	if os.path.isdir(arg):
 		for afile in os.listdir(arg):
-			if (afile.endswith(".xml")):
+			if afile.endswith(".xml"):
 				parser.parse(os.path.join(arg, afile))
 	else:
 		parser.parse(arg)

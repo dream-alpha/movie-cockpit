@@ -47,6 +47,10 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		#print("MVC: FileOpsProgress: onDialogShow")
 		self.execFileOpsProgress()
 
+	def reloadList(self, path, _update_disk_space_info=False):
+		print("MVC-I: FileOpsProgress: reloadList: path: %s" % path)
+		return
+
 	def doActivityTimer(self):
 		target_size = 0
 		if self.target_path and os.path.exists(self.target_path):
@@ -72,9 +76,9 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		self["status"].setText(self.status)
 
 	def doFileOp(self, entry):
-		op, filetype, path, target_path = entry
+		op, path, target_path, filetype = entry
 		if path and not path.endswith("..") and os.path.exists(path):
-			print("MVC: FileOpsProgress: doFileOp: path: %s" % path)
+			#print("MVC: FileOpsProgress: doFileOp: path: %s" % path)
 			self.movie_progress = 0
 			self.file_op = op
 			self.file_name = os.path.basename(path)

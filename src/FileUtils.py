@@ -23,17 +23,21 @@ import os
 
 def readFile(path):
 	try:
-		return file(path).read()
+		f = open(path, "r")
+		data = f.read()
+		f.close()
+		return data
 	except Exception as e:
 		print("MVC-E: FileUtils: readFile: path: %s, exception: %s" % (path, e))
 		return ""
 
 def writeFile(path, data):
 	try:
-		file(path, "w").write(data)
-		file(path).close()
+		f = open(path, "w")
+		f.write(data)
+		f.close()
 	except Exception as e:
-		print("MVC_E: FileUtils: writeFile: path: %s, excpetion: %s" % (path, e))
+		print("MVC-E: FileUtils: writeFile: path: %s, exception: %s" % (path, e))
 
 def deleteFile(path):
 	try:

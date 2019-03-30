@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -25,9 +25,8 @@ from Components.config import config
 
 class Bookmarks(object):
 
-	def __saveBookmarks(self, bookmarks):
-		config.movielist.videodirs.value = bookmarks
-		config.movielist.videodirs.save()
+	def getHomeDir(self):
+		return self.getBookmarks()[0]
 
 	def isBookmark(self, path):
 		return path in self.getBookmarks()
@@ -43,19 +42,3 @@ class Bookmarks(object):
 			if path.startswith(bookmark):
 				return bookmark
 		return None
-#
-# 	def addBookmark(self, path):
-# 		if path and config.movielist and config.movielist.videodirs:
-# 			bookmark = os.path.normpath(path)
-# 			bookmarks = self.getBookmarks()
-# 			if bookmark not in bookmarks:
-# 				bookmarks.append(bookmark)
-# 				self.__saveBookmarks(bookmarks)
-#
-# 	def removeBookmark(self, path):
-# 		if path and config.movielist and config.movielist.videodirs:
-# 			bookmark = os.path.normpath(path)
-# 			bookmarks = self.getBookmarks()
-# 			if bookmark in bookmarks:
-# 				bookmarks.remove(bookmark)
-# 				self.__saveBookmarks(bookmarks)

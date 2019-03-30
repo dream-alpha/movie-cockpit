@@ -25,6 +25,7 @@ from Components.config import config
 from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH, FILE_IDX_EXT
 from Bookmarks import Bookmarks
 from ServiceUtils import getService
+from ConfigInit import sort_modes
 
 class FileListUtils(Bookmarks, object):
 
@@ -87,31 +88,31 @@ class FileListUtils(Bookmarks, object):
 		#print("MVC: MovieSelection: createCustomList: filelist: " + str(filelist))
 		return filelist
 
-	def sortList(self, sort_list, sort):
+	def sortList(self, filelist, sort_mode):
 
 		def date2ms(date_string):
 			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
 
 		filetype_list = [] if config.MVC.directories_ontop.value else [FILE_TYPE_DIR]
 		# This will find all unsortable items
-		tmp_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
+		tmp_list = [i for i in filelist if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
 		# Extract list items to be sorted
-		sort_list = [i for i in sort_list if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
+		filelist = [i for i in filelist if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
 		# Always sort via extension and sorttitle
 		tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
 
-		mode, order = sort
+		mode, order = sort_modes[sort_mode][0]
 
-		if mode == "D": # Date sort
+		if mode == "date":
 			if not order:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
+				filelist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
 			else:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
+				filelist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
 
-		elif mode == "A": # Alpha sort
+		elif mode == "alpha":
 			if not order:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
+				filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
 			else:
-				sort_list.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
+				filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
 
-		return tmp_list + sort_list
+		return tmp_list + filelist

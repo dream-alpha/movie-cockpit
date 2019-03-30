@@ -20,7 +20,8 @@
 #
 
 from __init__ import _
-from Components.config import config, ConfigText, ConfigNumber, ConfigSelection, ConfigSelectionNumber, ConfigYesNo, ConfigSubsection, ConfigNothing, NoSave
+from Components.config import config, ConfigText, ConfigNumber, ConfigSelection, ConfigSelectionNumber, ConfigYesNo, ConfigSubsection,\
+	ConfigNothing, NoSave, ConfigSubDict
 from Components.Language import language
 from Tools.ISO639 import ISO639Language
 from MountPoints import MountPoints
@@ -123,22 +124,14 @@ choices_bqt = [
 
 
 sort_modes = {
-	("D-"): (("D", False),	_("Date sort down")),
-	("AZ"): (("A", False),	_("Alpha sort up")),
-	("D+"): (("D", True), 	_("Date sort up")),
-	("ZA"): (("A", True),	_("Alpha sort down"))
+	0: (("date", False),	_("Date sort down")),
+	1: (("date", True), 	_("Date sort up")),
+	2: (("alpha", False),	_("Alpha sort up")),
+	3: (("alpha", True),	_("Alpha sort down"))
 }
 
 
 choices_sort = [(k, v[1]) for k, v in sort_modes.items()]
-sort_values = [v[0] for v in sort_modes.values()]
-
-
-choices_skin_layout = [
-	("MVCSelection", _("Standard")),
-	("MVCSelectionPIG", _("Mini-TV")),
-	("MVCSelectionCover", _("Cover"))
-]
 
 
 choices_color_recording = [
@@ -194,7 +187,6 @@ class ConfigInit(MountPoints, object):
 		config.MVC.plugin_disable            = ConfigYesNo(default=False)
 		config.MVC.list_start_home           = ConfigYesNo(default=True)
 		config.MVC.movie_description_delay   = ConfigNumber(default=200)
-		config.MVC.cover                     = ConfigYesNo(default=False)
 		config.MVC.cover_flash               = ConfigYesNo(default=False)
 		config.MVC.cover_bookmark            = ConfigText(default="/data/movie", fixed_size=False, visible_width=22)
 		config.MVC.cover_fallback            = ConfigYesNo(default=False)
@@ -202,7 +194,6 @@ class ConfigInit(MountPoints, object):
 		config.MVC.cover_auto_download       = ConfigYesNo(default=False)
 		config.MVC.cover_language            = ConfigSelection(default='de', choices=[('en', _('English')), ('de', _('German')), ('it', _('Italian')), ('es', _('Spanish')), ('fr', _('French')), ('pt', _('Portuguese'))])
 		config.MVC.cover_size                = ConfigSelection(default="w500", choices=["w92", "w185", "w500", "original"])
-		config.MVC.mini_tv                   = ConfigYesNo(default=False)
 		config.MVC.movie_mountpoints         = ConfigYesNo(default=False)
 		config.MVC.movie_picons_path         = ConfigText(default="/usr/share/enigma2/picon", fixed_size=False, visible_width=35)
 		config.MVC.movie_watching_percent    = ConfigSelectionNumber(0, 30, 1, default=10)
@@ -225,17 +216,20 @@ class ConfigInit(MountPoints, object):
 		config.MVC.recording_color_sel       = ConfigSelection(default="#ff3838", choices=choices_color_recording)
 		config.MVC.selection_color           = ConfigSelection(default="#cccc00", choices=choices_color_mark)
 		config.MVC.selection_color_sel       = ConfigSelection(default="#ffff00", choices=choices_color_mark)
-		config.MVC.list_sort                 = ConfigSelection(default=("D-"), choices=choices_sort)
+		config.MVC.list_sort                 = ConfigSelection(default=0, choices=choices_sort)
 		config.MVC.list_selmove              = ConfigSelection(default="d", choices=choices_move)
 		config.MVC.list_style                = ConfigNumber(default=1)
 		config.MVC.timer_autoclean           = ConfigYesNo(default=False)
 		config.MVC.plugin_launch_key         = ConfigSelection(default="showMovies", choices=choices_launch_key)
 		config.MVC.list_bouquet_keys         = ConfigSelection(default="", choices=choices_bqt)
 		config.MVC.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
-		config.MVC.skin_layout               = ConfigSelection(default="MVCSelection", choices=choices_skin_layout)
 		config.MVC.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
 		config.MVC.debug                     = ConfigYesNo(default=False)
 		config.MVC.debug_log_path            = ConfigText(default="/media/hdd", fixed_size=False, visible_width=35)
+
+		config.MVCStyles                     = ConfigSubsection()
+		config.MVCStyles.style               = ConfigSubDict()
+		config.MVCStyles.preset              = ConfigSubDict()
 
 		self.checkList(config.MVC.epglang)
 		self.checkList(config.MVC.sublang1)

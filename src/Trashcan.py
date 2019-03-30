@@ -84,15 +84,14 @@ class Trashcan(FileOps, Bookmarks, object):
 		print("MVC-I: Trashcan: purgeTrashcan")
 		file_ops_list = []
 		now = time.localtime()
-		filelist = FileCache.getInstance().getFileList([self.getBookmarks()[0] + "/trashcan"])
+		filelist = FileCache.getInstance().getFileList([self.getHomeDir() + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			filetype = afile[FILE_IDX_TYPE]
-			_filename, _ext = os.path.splitext(path)
 			if os.path.exists(path):
 				if now > time.localtime(os.stat(path).st_mtime + 24 * 60 * 60 * int(config.MVC.trashcan_retention.value)):
-					print("MVC: Trashcan: purgeTrashcan: path: " + path)
+					#print("MVC: Trashcan: purgeTrashcan: path: " + path)
 					file_ops_list.append((FILE_OP_DELETE, path, None, filetype))
 		if file_ops_list:
-			self.execFileOpsWithoutProgress(file_ops_list)
+			self.execFileOpsNoProgress(file_ops_list)
 		print("MVC-I: Trashcan: purgeTrashcan: deleted %s files" % len(file_ops_list))

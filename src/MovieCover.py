@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
@@ -20,14 +20,15 @@
 #
 
 import os
-from enigma import ePicLoad, gPixmapPtr
 from Components.config import config
-from Components.AVSwitch import AVSwitch
 from SkinUtils import getSkinPath
 from Bookmarks import Bookmarks
+from PixmapDisplay import PixmapDisplay
 
 
-class MovieCover(Bookmarks, object):
+class MovieCover(Bookmarks, PixmapDisplay, object):
+	def __init__(self):
+		PixmapDisplay.__init__(self)
 
 	def getCoverPath(self, path):
 		#print("MVC: MovieCover getCoverPath: path: " + path)
@@ -50,31 +51,13 @@ class MovieCover(Bookmarks, object):
 					if no_cover_path and os.path.exists(no_cover_path):
 						cover_path = no_cover_path
 					else:
-						cover_path = getSkinPath("img/no_cover.svg")
+						cover_path = getSkinPath("images/no_cover.svg")
 
 			print("MVC-I: MovieCover: showCover: cover_path %s" % cover_path)
 			if cover_path:
 				self["cover"].show()
-				self.displayCover(cover_path)
+				self.displayPixmap("cover", cover_path)
 				return True
 			else:
 				self["cover"].hide()
 		return False
-
-	def displayCover(self, path):
-		#print("MVC: MovieCover displayCover: path: %s" % path)
-		if path is not None:
-			#print("MVC: MovieCover displayCover: showing cover now")
-			scale = AVSwitch().getFramebufferScale()
-			size = self["cover"].instance.size()
-			#print("MVC: MovieCover size: %s, %s, scale: %s, %s" % (size.width(), size.height(), scale[0], scale[1]))
-			self["cover"].instance.setPixmap(gPixmapPtr())
-			self.picload = ePicLoad()
-			self.picload_conn = self.picload.PictureData.connect(self.displayCoverCallback)
-			self.picload.setPara((size.width(), size.height(), scale[0], scale[1], False, 1, "#ff000000"))
-			self.picload.startDecode(path, True)
-
-	def displayCoverCallback(self, picinfo=None):
-		#print("MVC: MovieCover displayCoverCallback")
-		if self.picload and picinfo:
-			self["cover"].instance.setPixmap(self.picload.getData())

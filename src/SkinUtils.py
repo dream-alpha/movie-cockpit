@@ -19,19 +19,13 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN
-from skin import loadSkin, loadSingleSkinData, dom_skins
-from enigma import getDesktop
+from Tools.Directories import fileExists, resolveFilename, SCOPE_SKIN, SCOPE_CURRENT_SKIN
 
 
 def getSkinPath(filename):
-	skin_path = resolveFilename(SCOPE_CURRENT_SKIN, "/MovieCockpit/" + filename)
+	#print("MVC: SkinUtils: getSkinPath: filename: %s" % filename)
+	skin_path = resolveFilename(SCOPE_CURRENT_SKIN, "MovieCockpit/skin/" + filename)
 	if not fileExists(skin_path):
-		skin_path = "/usr/share/enigma2/MovieCockpit/" + filename
+		skin_path = resolveFilename(SCOPE_SKIN, "Default-FHD/MovieCockpit/skin/" + filename)
 	#print("MVC: SkinUtils: getSkinPath: skin_path: " + skin_path)
 	return skin_path
-
-def loadPluginSkin(skin_file):
-	loadSkin(getSkinPath(skin_file), "")
-	path, dom_skin = dom_skins[-1:][0]
-	loadSingleSkinData(getDesktop(0), dom_skin, path)

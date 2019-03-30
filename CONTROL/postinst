@@ -1,6 +1,6 @@
 #!/bin/sh
 mv /etc/enigma2/moviecockpit.db /etc/enigma2/moviecockpit.db.bak
-touch /tmp/.moviecockpit
+touch /etc/enigma2/.moviecockpit
 
 echo "***********************************"
 echo "*          MovieCockpit           *"
