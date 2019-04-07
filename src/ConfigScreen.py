@@ -333,7 +333,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			self.close(True)
 
 	def restartGUI(self):
-		self.session.openWithCallback(self.restartGUIConfirmed, MessageBox, _("Some changes require a GUI restart, do you want to restart now?"), MessageBox.TYPE_YESNO)
+		self.session.openWithCallback(self.restartGUIConfirmed, MessageBox, _("Some changes require a GUI restart.") + "\n" + _("Restart GUI now?"), MessageBox.TYPE_YESNO)
 
 	def restartGUIConfirmed(self, answer):
 		if answer:

@@ -65,46 +65,10 @@ class ParserEitFile(object):
 				if data and len(data) >= 12:
 					self.__parse(data)
 
-#	def __toDate(self, d, t):
-#		if d and t:
-#			try:
-#				return datetime(int(d[0]), int(d[1]), int(d[2]), int(t[0]), int(t[1]))
-#			except ValueError:
-#				return None
-#		else:
-#			return None
-
 	### Get functions
 
 	def getEit(self):
 		return self.eit
-
-#	def getWhen(self):
-#		return self.eit.get('when', "")
-#
-#	def getStartDate(self):
-#		return self.eit.get('startdate', "")
-#
-#	def getStartTime(self):
-#		return self.eit.get('starttime', "")
-#
-#	def getDuration(self):
-#		return self.eit.get('duration', 0)
-#
-	def getName(self):
-		return self.eit.get('name', "")
-
-	def getShortDescription(self):
-		return self.eit.get('short_description', "")
-
-	def getExtendedDescription(self):
-		return self.eit.get('description', "")
-
-	def getLengthInSeconds(self):
-		return self.eit.get('duration', 0)
-
-#	def getDate(self):
-#		return self.__toDate(self.getStartDate(), self.getStartTime())
 
 	def __parse(self, data):
 		EIT_LINKAGE_DESCRIPTOR = 0x4a

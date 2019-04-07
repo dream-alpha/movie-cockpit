@@ -19,6 +19,7 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+import os
 from __init__ import _
 from Components.config import config
 from Screens.Screen import Screen
@@ -30,7 +31,7 @@ from Bookmarks import Bookmarks
 
 class FileProgress(Screen, Bookmarks, object):
 
-	def __init__(self, session):
+	def __init__(self, session, return_path):
 		#print("MVC: FileProgress: __init__")
 		Screen.__init__(self, session)
 
@@ -55,6 +56,7 @@ class FileProgress(Screen, Bookmarks, object):
 			{"ok": self.exit, "cancel": self.cancel, "red": self.cancel, "green": self.exit, "yellow": self.noop, "blue": self.toggleHide}
 		)
 
+		self.return_path = return_path
 		self.execution_list = []
 		self.total_files = 0
 		self.current_files = 0
@@ -105,6 +107,10 @@ class FileProgress(Screen, Bookmarks, object):
 		f.write("%i" % dimm)
 		f.close()
 
+	def reloadList(self, path):
+		print("MVC-E: FileProgress: reloadList: path: %s" % path)
+		return
+
 	def updateProgress(self):
 		#print("MVC: MovieCoverDownloadProgress: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))
 		current_files = self.current_files if self.current_files <= self.total_files else self.total_files
@@ -153,3 +159,5 @@ class FileProgress(Screen, Bookmarks, object):
 				else:
 					self.status = self.completionStatus()
 				self.updateProgress()
+				if self.return_path is not None:
+					self.reloadList(os.path.dirname(self.return_path))

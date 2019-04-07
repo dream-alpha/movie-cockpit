@@ -20,4 +20,4 @@
 #
 
 # MovieCockpit
-VERSION = "3.3.9"
+VERSION = "3.5.4"

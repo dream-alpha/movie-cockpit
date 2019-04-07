@@ -93,6 +93,7 @@ class RecordingControl(CutList, object):
 			movie_selection = MovieSelection.getInstance()
 			if movie_selection:
 				#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
-				movie_selection.reloadList(path, update_disk_space_info=True)
+				movie_selection.reloadList(path)
+				movie_selection.updateSpaceInfo()
 		except Exception as e:
 			print("MVC-E: RecordingControl: reloadList: movie_selection.reloadList exception: %s" % e)

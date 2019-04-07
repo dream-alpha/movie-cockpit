@@ -19,8 +19,12 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+from __init__ import _
 from Components.Button import Button
 from Components.Label import Label
+from Components.config import config
+from Components.ActionMap import HelpableActionMap
+from Tools.BoundFunction import boundFunction
 
 KEY_RED = 0
 KEY_GREEN = 1
@@ -32,13 +36,13 @@ KEY_FUNCTION = 1
 
 
 class KeyFunctions(object):
-	def __init__(self, color_buttons_matrix):
+	def __init__(self):
 		self["key_red"] = Button()
 		self["key_green"] = Button()
 		self["key_yellow"] = Button()
 		self["key_blue"] = Button()
 		self["level"] = Label()
-		self.color_buttons_matrix = color_buttons_matrix
+		self.initColorKeyFunctions(self)
 		self.setColorButtons()
 
 ### color button management functions
@@ -62,7 +66,73 @@ class KeyFunctions(object):
 		self.level = 0
 		self.setColorButtons()
 
-### key exection functions
+### key init
+
+	def initActions(self, csel):
+		actions = HelpableActionMap(
+			self,
+			"PluginMovieSelectionActions",
+			{
+				"MVCRED":		(boundFunction(self.execColorButton, KEY_RED),  	_("Color key red")),
+				"MVCGREEN":		(boundFunction(self.execColorButton, KEY_GREEN), 	_("Color key green")),
+				"MVCYELLOW":		(boundFunction(self.execColorButton, KEY_YELLOW), 	_("Color key yellow")),
+				"MVCBLUE":		(boundFunction(self.execColorButton, KEY_BLUE), 	_("Color key blue")),
+				"MVCOK":		(csel.entrySelected, 		 			_("Play")),
+				"MVCEXIT":		(csel.exit, 	 					_("Exit")),
+				"MVCMENU":		(csel.openContextMenu,				 	_("Context menu")),
+				"MVCMENUL":		(csel.openPluginsMenu,				 	_("Plugins menu")),
+				"MVCINFO":		(csel.movieInfoEPG, 					_("EPG info")),
+				"MVCINFOL":		(csel.movieInfoTMDB,					_("TMDB info")),
+				"MVCLEFT":		(csel.pageUp, 						_("Cursor page up")),
+				"MVCRIGHT":		(csel.pageDown, 					_("Cursor page down")),
+				"MVCUP":		(csel.moveUp, 						_("Cursor up")),
+				"MVCDOWN":		(csel.moveDown, 					_("Cursor down")),
+				"MVCBQTPLUS":		(csel.bqtPlus, 						_("Bouquet up")),
+				"MVCBQTMINUS":		(csel.bqtMinus, 					_("Bouquet down")),
+				"MVCVIDEOB":		(csel.videoFuncShort, 					_("Selection on/off")),
+				"MVCVIDEOL":		(csel.videoFuncLong, 					_("Selection off")),
+				"MVCSTOP":		(csel.stopRecordings, 					_("Stop recording(s)")),
+				"MVCARROWNEXT":		(csel.nextColorButtonsLevel,				_("Color buttons next")),
+				"MVCARROWPREVIOUS":	(csel.previousColorButtonsLevel,			_("Color buttons previous")),
+				"0":			(csel.moveToMovieHome, 					_("Home")),
+			},
+			prio=-3  # give them a little more priority to win over base class buttons
+		)
+		return actions
+
+	def initColorKeyFunctions(self, csel):
+		#print("MVC: MovieSelection: initKeyFunctions")
+		self.color_buttons_matrix = [
+			[							# level 0
+				[_("Delete"), csel.deleteMovies],		# red
+				[_("Sort Mode"), csel.toggleSortMode],		# green
+				[_("Move"), csel.moveMovies],			# yellow
+				[_("Home"), csel.moveToMovieHome]		# blue
+			],
+			[							# level 1
+				[_("Delete"), csel.deleteMovies],		# red
+				[_("Sort Order"), csel.toggleSortOrder],	# green
+				[_("Copy"), csel.copyMovies],			# yellow
+				[_("Home"), csel.moveToMovieHome]		# blue
+			],
+			[							# level 2
+				[_("Reload cache"), csel.reloadCache],		# red
+				[_("List type"), csel.toggleListType],		# green
+				[_("Styles"), csel.openStyles],			# yellow
+				[_("Bookmarks"), csel.openBookmarks]		# blue
+			],
+			[							# level 3
+				[_("Reset progress"), csel.resetProgress],	# red
+				[_("Date/Mount"), csel.toggleDateMount],	# green
+				[_("Timer list"), csel.openTimerList],		# yellow
+				[_("Open setup"), csel.openConfigScreen],	# blue
+			],
+		]
+		if config.MVC.trashcan_enable.value:
+			self.color_buttons_matrix[1][KEY_RED] = [_("Empty Trashcan"), csel.emptyTrashcan]
+			self.color_buttons_matrix[0][KEY_BLUE] = [_("Trashcan"), csel.openTrashcan]
+
+### color key exection function
 
 	def execColorButton(self, key):
 		self.color_buttons_matrix[self.level][key][KEY_FUNCTION]()

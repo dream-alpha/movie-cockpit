@@ -59,15 +59,15 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 		{
 			"ok": self.keySave,
 			"cancel": self.close,
-			"red": self.restoreBackupSkin,
+			"red": self.close,
 			"green": self.keySave,
 			"yellow": self.keyDefault,
-			"blue": self.close,
+			"blue": self.restoreBackupSkin,
 		}, -2)
-		self["key_red"] = Button(_("Reset"))
+		self["key_red"] = Button(_("Exit"))
 		self["key_green"] = Button(_("Apply"))
 		self["key_yellow"] = Button(_("Default"))
-		self["key_blue"] = Button(_("Settings"))
+		self["key_blue"] = Button(_("Reset"))
 		self["preview"] = Pixmap()
 		self.list = []
 		ConfigListScreen.__init__(self, self.list, session)
@@ -118,7 +118,7 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 		dlg = self.session.openWithCallback(
 			self.restartGUICallback,
 			MessageBox,
-			_("GUI restart required to apply a new style, do you want to restart now?"),
+			_("GUI restart is required to apply a new style.") + "\n" + _("Restart GUI now?"),
 			MessageBox.TYPE_YESNO
 		)
 		dlg.setTitle(_("Restart GUI now?"))

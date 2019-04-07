@@ -26,44 +26,26 @@ from Components.ActionMap import HelpableActionMap
 from Components.Sources.List import List
 from Components.PluginComponent import plugins
 from Screens.Screen import Screen
-from Tools.BoundFunction import boundFunction
 from Components.Sources.StaticText import StaticText
 from Bookmarks import Bookmarks
 from MovieList import MovieList
 from Screens.HelpMenu import HelpableScreen
-from ConfigScreen import ConfigScreen
-from StylesScreen import StylesScreen
 from Plugins.Plugin import PluginDescriptor
+from Tools.BoundFunction import boundFunction
 
-FUNC_MOVIE_HOME = 0
-FUNC_DIR_UP = 1
-FUNC_RELOAD_CACHE = 2
-FUNC_DELETE = 3
-FUNC_EMPTY_TRASHCAN = 4
-FUNC_OPEN_TRASHCAN = 5
-FUNC_SELECT_ALL = 6
-FUNC_COPY = 7
-FUNC_MOVE = 8
-FUNC_OPEN_SETUP = 9
-FUNC_REMOVE_MARKER = 10
-FUNC_DELETE_CUTLIST = 11
-FUNC_OPEN_BOOKMARKS = 12
-FUNC_RELOAD_MOVIE_SELECTION = 13
-FUNC_SET_LISTTYPE = 14
-FUNC_NOOP = 99
 
 MENU_FUNCTIONS = 1
 MENU_PLUGINS = 2
 
 
 class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
-	def __init__(self, session, menu_mode, current_dir, service):
+	def __init__(self, session, csel, menu_mode, current_dir, service=None):
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
+		self.menu_mode = menu_mode
 		self.service = service
 		self.skinName = "MVCSelectionContextMenu"
 		self["title"] = StaticText()
-		self.reload_movie_selection = False
 
 		self["actions"] = HelpableActionMap(
 			self,
@@ -72,7 +54,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 				"MVCEXIT":	(self.close,		_("Exit")),
 				"MVCOK":	(self.ok,		_("Select function")),
 				"MVCRED":	(self.close,		_("Cancel")),
-				"MVCMENU":	(self.openConfigScreen,	_("Open setup")),
+				"MVCMENU":	(csel.openConfigScreen,	_("Open setup")),
 			},
 			-1
 		)
@@ -83,30 +65,30 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 			self.setTitle(_("Select function"))
 
 			if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
-				menu.append((_("Movie home"), boundFunction(self.close, FUNC_MOVIE_HOME)))
-				menu.append((_("Directory up"), boundFunction(self.close, FUNC_DIR_UP)))
+				menu.append((_("Movie home"), csel.moveToMovieHome))
+				menu.append((_("Directory up"), boundFunction(csel.changeDir, current_dir + "/..")))
 
-			menu.append((_("Select all"), boundFunction(self.close, FUNC_SELECT_ALL)))
+			menu.append((_("Select all"), csel.selectAll))
 
-			menu.append((_("Delete"), boundFunction(self.close, FUNC_DELETE)))
-			menu.append((_("Move"), boundFunction(self.close, FUNC_MOVE)))
-			menu.append((_("Copy"), boundFunction(self.close, FUNC_COPY)))
+			menu.append((_("Delete"), csel.deleteMovies))
+			menu.append((_("Move"), csel.moveMovies))
+			menu.append((_("Copy"), csel.copyMovies))
 
 			if config.MVC.trashcan_enable.value:
-				menu.append((_("Empty trashcan"), boundFunction(self.close, FUNC_EMPTY_TRASHCAN)))
-				menu.append((_("Open trashcan"), boundFunction(self.close, FUNC_OPEN_TRASHCAN)))
+				menu.append((_("Empty trashcan"), csel.emptyTrashcan))
+				menu.append((_("Open trashcan"), csel.openTrashcan))
 
-			menu.append((_("Remove cutlist marker"), boundFunction(self.close, FUNC_REMOVE_MARKER)))
-			menu.append((_("Delete cutlist file"), boundFunction(self.close, FUNC_DELETE_CUTLIST)))
+			menu.append((_("Remove cutlist marker"), csel.removeCutListMarker))
+			menu.append((_("Delete cutlist file"), csel.deleteCutListFile))
 
-			menu.append((_("Bookmarks"), boundFunction(self.close, FUNC_OPEN_BOOKMARKS)))
+			menu.append((_("Bookmarks"), csel.openBookmarks))
 
 			for list_style in range(len(MovieList.list_styles)):
-				menu.append((_(MovieList.list_styles[list_style][1]), boundFunction(self.close, FUNC_SET_LISTTYPE, list_style)))
+				menu.append((_(MovieList.list_styles[list_style][1]), boundFunction(csel.setListStyle, list_style)))
 
-			menu.append((_("Reload Cache"), boundFunction(self.close, FUNC_RELOAD_CACHE)))
-			menu.append((_("Styles"), self.openStylesScreen))
-			menu.append((_("Setup"), self.openConfigScreen))
+			menu.append((_("Reload Cache"), csel.reloadCache))
+			menu.append((_("Styles"), csel.openStyles))
+			menu.append((_("Setup"), csel.openConfigScreen))
 		elif menu_mode == MENU_PLUGINS:
 			self.setTitle(_("Select plugin"))
 			if service is not None:
@@ -118,16 +100,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 	def execPlugin(self, plugin):
 		plugin(session=self.session, service=self.service)
 
-	def openStylesScreen(self):
-		self.session.open(StylesScreen)
-
-	def openConfigScreen(self):
-		self.session.openWithCallback(self.openConfigScreenCallback, ConfigScreen)
-
-	def openConfigScreenCallback(self, reload_movie_selection=False):
-		#print("MVC: MovieSelectionMenu: configScrenCallback: reload_movie_selection: %s" % reload_movie_selection)
-		function = FUNC_RELOAD_MOVIE_SELECTION if reload_movie_selection else FUNC_NOOP
-		self.close(function)
-
 	def ok(self):
 		self["menu"].getCurrent()[1]()
+		if self.menu_mode == MENU_FUNCTIONS:
+			self.close()

@@ -30,7 +30,7 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 
 	def __init__(self, session):
 		#print("MVC: MovieCoverDownloadProgress: __init__")
-		FileProgress.__init__(self, session)
+		FileProgress.__init__(self, session, None)
 		MovieCoverDownload.__init__(self)
 		self.covers_tried = 0
 		self.covers_found = 0

@@ -28,9 +28,9 @@ from FileProgress import FileProgress
 
 class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 
-	def __init__(self, session):
+	def __init__(self, session, return_path):
 		#print("MVC: FileCacheLoadProgress: __init__")
-		FileProgress.__init__(self, session)
+		FileProgress.__init__(self, session, return_path)
 		self.skinName = "MVCFileCacheLoadProgress"
 		self.setTitle(_("File cache reload") + " ...")
 		self.execution_list = []

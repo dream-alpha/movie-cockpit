@@ -128,7 +128,7 @@ disable=print-statement,
         dict-keys-not-iterating,
         dict-values-not-iterating,
 
-	R0201, R0903, R1702,
+	R0201, R0204, R0903, R1702,
 	C0103, C0111, C0301, C0302, C0325, C0326, C0330, C0411, C0412,
 	W0107, W0123, W0201, W0311, W0312, W0403, W0603, W0703, W1401,
 	E0401, E1136, E1137

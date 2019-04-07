@@ -31,11 +31,11 @@ ACTIVITY_TIMER_DELAY = 1000
 
 class FileOpsProgress(FileProgress, FileOps, object):
 
-	def __init__(self, session, selection_list):
+	def __init__(self, session, csel, selection_list, return_path):
 		#print("MVC: FileOpsProgress: __init__")
-		FileProgress.__init__(self, session)
+		FileProgress.__init__(self, session, return_path)
 		FileOps.__init__(self)
-
+		self.csel = csel
 		self.skinName = "MVCFileOpsProgress"
 		self.setTitle(_("File operation(s)") + " ...")
 		self.execution_list = selection_list
@@ -47,9 +47,9 @@ class FileOpsProgress(FileProgress, FileOps, object):
 		#print("MVC: FileOpsProgress: onDialogShow")
 		self.execFileOpsProgress()
 
-	def reloadList(self, path, _update_disk_space_info=False):
+	def reloadList(self, path):
 		print("MVC-I: FileOpsProgress: reloadList: path: %s" % path)
-		return
+		self.csel.reloadList(path)
 
 	def doActivityTimer(self):
 		target_size = 0

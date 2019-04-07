@@ -30,13 +30,13 @@ from CutListUtils import unpackCutList
 instance = None
 
 
-def str2date(date_string):
+def str2date(date_string, path=""):
 	date = None
 	#print("MVC: FileCache: str2date: %s" % date_string)
 	try:
 		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 	except ValueError:
-		print("MVC-E: FileCache: str2date: exception: %s" % date_string)
+		print("MVC-E: FileCache: str2date: exception: date_string: %s, path: %s" % (date_string, path))
 		date = datetime.datetime.fromtimestamp(0)
 	return date
 

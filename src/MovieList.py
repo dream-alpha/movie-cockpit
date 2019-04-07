@@ -205,7 +205,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 			count = 0
 			date_text = ""
 			if filetype == FILE_TYPE_FILE:
-				date_text = str2date(date_string).strftime(config.MVC.movie_date_format.value)
+				date_text = str2date(date_string, path).strftime(config.MVC.movie_date_format.value)
 				if config.MVC.movie_mountpoints.value:
 					date_text = self.getMountPoint(path)
 			else:
