@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2019 by dream-alpha
@@ -25,7 +25,6 @@ from __init__ import _
 from time import time
 from Components.config import config
 from Components.ActionMap import HelpableActionMap
-from Components.Pixmap import Pixmap
 from Components.Label import Label
 from enigma import iSubtitleType_ENUMS
 from Screens.Screen import Screen
@@ -40,13 +39,12 @@ from Tools.Notifications import AddPopup
 from ServiceReference import ServiceReference
 from DelayedFunction import DelayedFunction
 from CutListUtils import secondsToPts, backupCutsFile
-from InfoBarSupport import InfoBarSupport, InfoBarTimeshift
+from InfoBarSupport import InfoBarSupport
 from Components.Sources.MVCCurrentService import MVCCurrentService
 from ServiceCenter import ServiceCenter
 from ServiceUtils import sidDVB
 from RecordingUtils import isRecording, getRecording
 from MovieInfoEPG import MovieInfoEPG
-from MovieCover import MovieCover
 
 class MVCMoviePlayerSummary(Screen, object):
 
@@ -56,21 +54,16 @@ class MVCMoviePlayerSummary(Screen, object):
 		self["Service"] = MVCCurrentService(session.nav, parent)
 
 
-class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarSupport, object):
+class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
 
-	def __init__(self, session, service, cover):
+	def __init__(self, session, service):
 
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
-		InfoBarTimeshift.__init__(self)
 		InfoBarSupport.__init__(self)
-		MovieCover.__init__(self)
-
-		self.cover = cover
-		self["cover"] = Pixmap()
 
 		self.selected_subtitle = None
 		self.execing = None
@@ -91,13 +84,8 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 		)
 
 		self["MenuActions"].prio = 2
-		if "TeletextActions" in self:
-			self["TeletextActions"].prio = 2
-			self["TeletextActions"].setEnabled(True)
-
 		self["NumberActions"].prio = 2
 
-		self["mvc_logo"] = Pixmap()
 		self["end"] = Label(_("End"))
 		self.skip = -1
 		self.service = service
@@ -109,17 +97,13 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 		if not self.lastservice:
 			self.lastservice = InfoBar.instance.servicelist.servicelist.getCurrent()
 
-		# Dialog Events
-		self.onShown.append(self.__onShow)  # Don't use onFirstExecBegin() it will crash
+		self.onShown.append(self.__onShow)
 		self.onClose.append(self.__onClose)
 
-	def getCurrentEvent(self):
-		return self.service and self.serviceHandler.info(self.service).getEvent()
-
 	def infoMovie(self):
-		evt = self.getCurrentEvent()
-		if evt:
-			self.session.open(MovieInfoEPG, evt, ServiceReference(self.service))
+		event = self.service and self.serviceHandler.info(self.service).getEvent()
+		if event:
+			self.session.open(MovieInfoEPG, event, ServiceReference(self.service))
 
 	def __onShow(self):
 		self.evEOF()  # begin playback
@@ -139,15 +123,10 @@ class MediaCenter(Screen, HelpableScreen, MovieCover, InfoBarTimeshift, InfoBarS
 
 			DelayedFunction(50, self.setAudioTrack)
 			DelayedFunction(50, self.setSubtitleState, True)
-
-			self["mvc_logo"].show()
-			if self.cover:
-				if self.showCover(self.service.getPath()):
-					self["mvc_logo"].hide()
 		else:
 			self.session.open(
 				MessageBox,
-				_("Movie file does not exist.") + "\n" + self.service.getPath(),
+				_("Movie file does not exist") + "\n" + self.service.getPath(),
 				MessageBox.TYPE_ERROR,
 				10
 			)

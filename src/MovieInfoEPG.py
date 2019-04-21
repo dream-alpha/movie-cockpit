@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -27,8 +27,8 @@ from Screens.EventView import EventViewSimple
 
 class MovieInfoEPG(EventViewSimple, object):
 
-	def __init__(self, session, event, service_reference, callback=None, similar_epg_cb=None):
-		EventViewSimple.__init__(self, session, event, service_reference, callback, similar_epg_cb)
+	def __init__(self, session, event, service_reference):
+		EventViewSimple.__init__(self, session, event, service_reference)
 		self.skinName = ["EventViewSimple", "EventView"]
 		text_blue = ""
 		self["key_blue"] = Button(text_blue)

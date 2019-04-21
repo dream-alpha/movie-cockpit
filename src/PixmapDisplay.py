@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -28,14 +28,14 @@ class PixmapDisplay(object):
 		self.picload = ePicLoad()
 		self.picload_conn = None
 
-	def displayPixmap(self, location, path):
-		#print("MVC: PixmapDisplay: displayPixmap: path: %s, location: %s" % (path, location))
-		self.location = location
+	def displayPixmap(self, pixmap, path):
+		#print("MVC: PixmapDisplay: displayPixmap: path: %s" % path)
+		self.pixmap = pixmap
 		if path is not None and self.picload_conn is None:
 			scale = AVSwitch().getFramebufferScale()
-			size = self[location].instance.size()
+			size = self.pixmap.instance.size()
 			#print("MVC: PixmapDisplay: displayPixmap: size: %s, %s, scale: %s, %s" % (size.width(), size.height(), scale[0], scale[1]))
-			self[location].instance.setPixmap(gPixmapPtr())
+			self.pixmap.instance.setPixmap(gPixmapPtr())
 			self.picload_conn = self.picload.PictureData.connect(self.displayPixmapCallback)
 			self.picload.setPara((size.width(), size.height(), scale[0], scale[1], False, 1, "#ff000000"))
 			self.picload.startDecode(path, True)
@@ -43,5 +43,5 @@ class PixmapDisplay(object):
 	def displayPixmapCallback(self, picinfo=None):
 		#print("MVC: PixmapDisplay: displayPixmapCallback")
 		if self.picload and picinfo:
-			self[self.location].instance.setPixmap(self.picload.getData())
+			self.pixmap.instance.setPixmap(self.picload.getData())
 			self.picload_conn = None

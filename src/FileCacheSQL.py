@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -45,7 +45,7 @@ class FileCacheSQL(object):
 
 	def sqlSelect(self, where):
 		sql = "SELECT * FROM recordings WHERE " + where
-		#print("MVC: FileCacheSQL: sqlSelect: sql: %s" % sql)
+		print("MVC: FileCacheSQL: sqlSelect: sql: %s" % sql)
 		self.cursor.execute(sql)
 		filelist = self.cursor.fetchall()
 		self.sql_conn.commit()

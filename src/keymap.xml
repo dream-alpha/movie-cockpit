@@ -46,7 +46,6 @@
 		<key id="KEY_FILE" mapto="MVCVIDEOB" flags="m" />
 		<key id="KEY_VIDEO" mapto="MVCVIDEOL" flags="l" />
 		<key id="KEY_PVR" mapto="MVCVIDEOL" flags="l" />
-		<key id="KEY_AUDIO" mapto="MVCAUDIO" flags="m" />
 		<key id="KEY_STOP" mapto="MVCSTOP" flags="m" />
 		<key id="KEY_TV" mapto="MVCTV" flags="b" />
 		<key id="KEY_TV" mapto="MVCTVL" flags="l" />

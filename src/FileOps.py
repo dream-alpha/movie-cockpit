@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -42,7 +42,6 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 	def reloadList(self, path):
 		print("MVC-I: FileOps: reloadList: path: %s" % path)
 		print("MVC-E: should not be called at all, as overwritten by child")
-		return
 
 	def updateSpaceInfo(self):
 		config.MVC.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
@@ -131,7 +130,9 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 		print("MVC-I: FileOps: __execFileDelete: path: %s, filetype: %s" % (path, filetype))
 		c = []
 		if filetype == FILE_TYPE_FILE:
-			c.append('rm -f "' + self.getCoverPath(path) + '"')
+			cover_path, backdrop_path = self.getCoverPath(path)
+			c.append('rm -f "' + cover_path + '"')
+			c.append('rm -f "' + backdrop_path + '"')
 			c.append('rm -f "' + self.getInfoPath(path) + '"')
 			path, _ext = os.path.splitext(path)
 			c.append('rm -f "' + path + '."*')
@@ -144,9 +145,22 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 		print("MVC-I: FileOps: __execFileMove: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		c = self.__changeFileOwner(path, target_path)
 		if filetype == FILE_TYPE_FILE:
-			#print("MVC: FileOps: __execFileMove: %s, %s" % (self.getCoverPath(path), os.path.splitext(self.getCoverPath(target_path))[0]))
-			c.append('mv "' + self.getCoverPath(path) + '" "' + os.path.splitext(self.getCoverPath(target_path))[0] + '/"')
-			c.append('mv "' + self.getInfoPath(path) + '" "' + os.path.splitext(self.getInfoPath(target_path))[0] + '/"')
+			cover_path, backdrop_path = self.getCoverPath(path)
+			cover_target_path, _backdrop_target_path = self.getCoverPath(target_path)
+			info_path = self.getInfoPath(path)
+			info_target_path = self.getInfoPath(target_path)
+			cover_target_dir = os.path.splitext(cover_target_path)[0] + "/"
+			backdrop_target_dir = os.path.splitext(cover_target_path)[0] + "/"
+			info_target_dir = os.path.splitext(info_target_path)[0] + "/"
+
+			print("MVC: File_Ops: __execFileMove: cover_path: %s, cover_target_dir: %s" % (cover_path, cover_target_dir))
+			print("MVC: File_Ops: __execFileMove: backdrop_path: %s, backdrop_target_dir: %s" % (backdrop_path, backdrop_target_dir))
+			print("MVC: File_Ops: __execFileMove: inof_path: %s, info_target_dir: %s" % (info_path, info_target_dir))
+
+			c.append('mv "' + cover_path + '" "' + cover_target_dir + '"')
+			c.append('mv "' + backdrop_path + '" "' + backdrop_target_dir + '"')
+			c.append('mv "' + info_path + '" "' + info_target_dir + '"')
+
 			path, _ext = os.path.splitext(path)
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '."*')
@@ -155,7 +169,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
-		#print("MVC: FileOps: __execFileMove: c: %s" % c)
+		print("MVC: FileOps: __execFileMove: c: %s" % c)
 		return c
 
 	def __execFileCopy(self, path, target_path, filetype):

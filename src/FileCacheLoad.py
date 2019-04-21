@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -61,23 +61,19 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		#print("MVC: FileCacheLoad: clearDatabase")
 		self.sqlClearTable()
 
-	def doFileOp(self, entry, callback):
-		path, filetype = entry
-		self.loadDatabaseFile(path, filetype)
-		DelayedFunction(10, self.nextFileOp, callback)
-
 	def nextFileOp(self, callback):
 		#print("MVC: FileCacheLoad: nextFileOp")
 		if self.load_list:
-			entry = self.load_list.pop(0)
-			self.doFileOp(entry, callback)
+			path, filetype = self.load_list.pop(0)
+			self.loadDatabaseFile(path, filetype)
+			DelayedFunction(10, self.nextFileOp, callback)
 		else:
 			#print("MVC: FileCacheLoad: nextFileOp: done.")
 			if callback:
 				callback()
 
 	def loadDatabase(self, dirs=None, sync=False, callback=None):
-		#print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
+		print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
 		if dirs is None:
 			dirs = self.getBookmarks()
 		self.clearDatabase()
@@ -91,16 +87,16 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 	### database directory functions
 
 	def makeDir(self, path):
-		self.loadDatabase([path])
+		self.loadDatabase([path], sync=True)
 
 	def moveDir(self, _src_path, _dest_path):
-		self.loadDatabase()
+		self.loadDatabase(sync=True)
 
 	def copyDir(self, _src_path, _dest_path):
-		self.loadDatabase()
+		self.loadDatabase(sync=True)
 
 	def deleteDir(self, _path):
-		self.loadDatabase()
+		self.loadDatabase(sync=True)
 
 	### database load file/dir functions
 

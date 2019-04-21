@@ -118,7 +118,7 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 		dlg = self.session.openWithCallback(
 			self.restartGUICallback,
 			MessageBox,
-			_("GUI restart is required to apply a new style.") + "\n" + _("Restart GUI now?"),
+			_("GUI restart is required to apply a new style") + "\n" + _("Restart GUI now?"),
 			MessageBox.TYPE_YESNO
 		)
 		dlg.setTitle(_("Restart GUI now?"))
@@ -192,9 +192,9 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 		return T(entries, selected)
 
 	def checkDependency(self, depend):
-		if not depend:
-			return True
-		return os.path.exists(os.path.join(resolveFilename(SCOPE_PLUGINS), depend))
+		if depend:
+			return os.path.exists(os.path.join(resolveFilename(SCOPE_PLUGINS), depend))
+		return True
 
 	def createConfigListEntries(self):
 		self.list = []
@@ -243,4 +243,4 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 			filename = os.path.join(self.skin_dir + "/preview", preview)
 		else:
 			filename = self.skin_dir + "/preview/no_preview.svg"
-		self.displayPixmap("preview", filename)
+		self.displayPixmap(self["preview"], filename)

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -32,10 +32,7 @@ def localeInit():
 
 
 def _(txt):
-	t = gettext.dgettext("MovieCockpit", txt)
-	if t == txt:
-		t = gettext.gettext(txt)
-	return t
+	return gettext.dgettext("MovieCockpit", txt)
 
 
 localeInit()

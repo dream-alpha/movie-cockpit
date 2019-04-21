@@ -17,10 +17,10 @@ Copyright (C) 2018-2019 by dream-alpha
 	<layouts name="Design">
 		<style name="Layouts" value="Default" preview="layouts_default.png">
 		</style>
-		<style name="Layouts" value="Show Cover" preview="layouts_cover.png">
+		<style name="Layouts" value="Cover" preview="layouts_cover.png">
 			<layout name="Movie_Info">
-				<widget name="cover" position="1420,100" size="180,270"
-					alphatest="blend" zPosition="3"/>
+				<widget render="MVCCover" source="Service"
+					position="1420,100" size="180,270"/>
 				<widget font="Regular;32" foregroundColor="yellow"
 					position="1235,375" valign="center" render="Label" size="560,40"
 					source="Service">
@@ -46,11 +46,15 @@ Copyright (C) 2018-2019 by dream-alpha
 					<convert type="MVCEventName">ShortAndExtendedDescription</convert>
 				</widget>
 			</layout>
+			<layout name="Media_Center">
+				<widget render="MVCCover" source="session.CurrentService"
+					position="40,5" size="150,225"/>
+			</layout>
 		</style>
-		<style name="Layouts" value="Show Mini-TV" preview="layouts_minitv.png">
+		<style name="Layouts" value="Mini-TV" preview="layouts_minitv.png">
 			<layout name="Movie_Info">
 				<widget name="mini_tv" backgroundColor="transparent" position="1240,100"
-					size="540,270" zPosition="1"/>
+					size="540,270" zPosition="2"/>
 				<widget backgroundColor="transparent" position="1255,110"
 					render="Pig" size="510,255" source="session.VideoPicture"/>
 				<widget font="Regular;32" foregroundColor="yellow"
@@ -84,46 +88,22 @@ Copyright (C) 2018-2019 by dream-alpha
 	<buttons name="Design">
 		<style name="Buttons" value="Default" preview="buttons_default.png">
 		</style>
-		<style name="Buttons" value="Zombi Style" preview="buttons_zombi.png">
+		<style name="Buttons" value="Zombi" preview="buttons_zombi.png">
 			<layout name="Color_Buttons">
-				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1" />
-				<eLabel backgroundColor="red" position="10,60" size="300,10" zPosition="-1" />
-				<eLabel backgroundColor="green" position="310,60" size="300,10" zPosition="-1" />
-				<eLabel backgroundColor="yellow" position="610,60" size="300,10" zPosition="-1" />
-				<eLabel backgroundColor="blue" position="910,60" size="300,10" zPosition="-1" />
-				<widget font="Regular;30" halign="center" name="key_red" position="10,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_green" position="310,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_yellow" position="610,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_blue" position="910,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
+				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1"/>
+				<eLabel backgroundColor="red" position="10,60" size="300,10" zPosition="-1"/>
+				<eLabel backgroundColor="green" position="310,60" size="300,10" zPosition="-1"/>
+				<eLabel backgroundColor="yellow" position="610,60" size="300,10" zPosition="-1"/>
+				<eLabel backgroundColor="blue" position="910,60" size="300,10" zPosition="-1"/>
 			</layout>
 		</style>
-		<style name="Buttons" value="Arki Style" preview="buttons_arki.png">
+		<style name="Buttons" value="Arki" preview="buttons_arki.png">
 			<layout name="Color_Buttons">
-				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1" />
-				<eLabel backgroundColor="red" position="20,10" size="10,60" zPosition="-1" />
-				<eLabel backgroundColor="green" position="320,10" size="10,60" zPosition="-1" />
-				<eLabel backgroundColor="yellow" position="620,10" size="10,60" zPosition="-1" />
-				<eLabel backgroundColor="blue" position="920,10" size="10,60" zPosition="-1" />
-				<widget font="Regular;30" halign="center" name="key_red" position="10,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_green" position="310,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_yellow" position="610,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
-				<widget font="Regular;30" halign="center" name="key_blue" position="910,0"
-					foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
-					size="300,70" transparent="1" valign="center" zPosition="1"/>
+				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1"/>
+				<eLabel backgroundColor="red" position="20,10" size="10,60" zPosition="-1"/>
+				<eLabel backgroundColor="green" position="320,10" size="10,60" zPosition="-1"/>
+				<eLabel backgroundColor="yellow" position="620,10" size="10,60" zPosition="-1"/>
+				<eLabel backgroundColor="blue" position="920,10" size="10,60" zPosition="-1"/>
 			</layout>
 		</style>
 	</buttons>

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -71,6 +71,7 @@ class FileListUtils(Bookmarks, object):
 		return filelist
 
 	def createDirList(self, path):
+		print("MVC: FileListUtils: createDirList: path: %s" % path)
 		filelist = []
 		if path:
 			filelist = FileCache.getInstance().getDirList([path])

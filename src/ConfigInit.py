@@ -1,4 +1,4 @@
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2019 by dream-alpha
@@ -119,7 +119,7 @@ choices_move = [
 choices_bqt = [
 	("", 		_("Home/End")),
 	("Skip", 	_("Skip")),
-	("Folder", 	_("Change Folder"))
+	("Folder", 	_("Change folder"))
 ]
 
 
@@ -194,6 +194,7 @@ class ConfigInit(MountPoints, object):
 		config.MVC.cover_auto_download       = ConfigYesNo(default=False)
 		config.MVC.cover_language            = ConfigSelection(default='de', choices=[('en', _('English')), ('de', _('German')), ('it', _('Italian')), ('es', _('Spanish')), ('fr', _('French')), ('pt', _('Portuguese'))])
 		config.MVC.cover_size                = ConfigSelection(default="w500", choices=["w92", "w185", "w500", "original"])
+		config.MVC.backdrop_size             = ConfigSelection(default="w1280", choices=["w300", "w780", "w1280", "original"])
 		config.MVC.movie_mountpoints         = ConfigYesNo(default=False)
 		config.MVC.movie_picons_path         = ConfigText(default="/usr/share/enigma2/picon", fixed_size=False, visible_width=35)
 		config.MVC.movie_watching_percent    = ConfigSelectionNumber(0, 30, 1, default=10)

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2011 by betonme
 # Copyright (C) 2018-2019 by dream-alpha
@@ -32,16 +32,6 @@ from Screens.MessageBox import MessageBox
 from DelayedFunction import DelayedFunction
 from CutListUtils import secondsToPts, ptsToSeconds, removeFirstMarks, getCutListLast
 from CutList import CutList
-
-
-# Just a dummy to prevent crash
-class InfoBarTimeshift(object):
-
-	def __init__(self):
-		pass
-
-	def startTimeshift(self):
-		pass
 
 
 class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
@@ -127,7 +117,7 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 							MessageBox,
 							_("Do you want to resume this playback?")
 							+ "\n"
-							+ (_("Resume position at %s") % ("%d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60))),
+							+ _("Resume position at") + " " + "%d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60),
 							timeout=10,
 							default=not (val == "ask no")
 						)

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -33,7 +33,6 @@ from Screens.TimerEdit import TimerEditList
 from Screens.LocationBox import LocationBox
 from Tools.BoundFunction import boundFunction
 from enigma import getDesktop
-from Components.VideoWindow import VideoWindow
 from Components.Sources.MVCServiceEvent import MVCServiceEvent
 from ServiceCenter import ServiceCenter
 from MovieSelectionContextMenu import MovieSelectionContextMenu
@@ -105,19 +104,14 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 		self["actions"].csel = self
 
 		self.filelist = []
-		self["cover"] = Pixmap()
-		self.cover = False
 		self["mini_tv"] = Pixmap()
 		self.mini_tv = False
 		self.skinName = self.getSkinName()
-		self["cover"] = Pixmap()
-		desktop_size = getDesktop(0).size()
-		self["Video"] = VideoWindow(decoder=0, fb_width=desktop_size.width(), fb_height=desktop_size.height())
 		self["Service"] = MVCServiceEvent(ServiceCenter.getInstance())
 		self["list"] = MovieList()
 		self.cursor_direction = 0
 		self.lastservice = None
-		self["no_support"] = Label(_("Skin resolution other than Full HD is not supported yet."))
+		self["no_support"] = Label(_("Skin resolution other than Full HD is not supported yet"))
 		self["space_info"] = Label()
 		self["sort_mode"] = Label()
 
@@ -131,8 +125,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 
 	def onDialogShow(self):
 		print("MVC-I: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
-		#print("MVC: MovieSelection: onDialogShow: self[\"cover\"].instance: " + str(self["cover"].instance.size().width()))
-		self.cover = self["cover"].instance.size().width() > -1
 		#print("MVC: MovieSelection: onDialogShow: self[\"mini_tv\"].instance: " + str(self["mini_tv"].instance.size().width()))
 		self.mini_tv = self["mini_tv"].instance.size().width() > -1
 		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -156,11 +148,9 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 		HelpableScreen.callHelpAction(self, *args)
 
 	def pigWorkaround(self):
+		self.session.nav.stopService()
 		desktop_size = getDesktop(0).size()
 		self.instance.resize(eSize(*(desktop_size.width(), desktop_size.height())))
-		self.session.nav.stopService()
-		self["Video"].instance.resize(eSize(*(desktop_size.width(), desktop_size.height())))
-		self["Video"].hide()
 
 	def getSkinName(self):
 		width = getDesktop(0).size().width()
@@ -261,8 +251,8 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 		config.MVC.movie_mountpoints.save()
 		self["list"].invalidateList()
 
-	def movieInfoEPG(self):
-		if self.short_key is False:
+	def showMovieInfoEPG(self):
+		if not self.short_key:
 			self.short_key = True
 		else:
 			path = self["list"].getCurrentPath()
@@ -282,15 +272,15 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 					MessageBox.TYPE_INFO
 				)
 
-	def movieInfoTMDB(self):
+	def showMovieInfoTMDB(self):
 		self.short_key = False
 		path = self["list"].getCurrentPath()
 		entry = self.getEntry4Path(self.filelist, path)
 		if entry and entry[FILE_IDX_EXT] in extVideo:
 			name = entry[FILE_IDX_NAME]
-			self.session.openWithCallback(self.movieInfoTMDBCallback, MovieInfoTMDB, path, name)
+			self.session.openWithCallback(self.showMovieInfoTMDBCallback, MovieInfoTMDB, path, name)
 
-	def movieInfoTMDBCallback(self):
+	def showMovieInfoTMDBCallback(self):
 		self.updateInfo()
 
 	def changeDir(self, path):
@@ -314,7 +304,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 			self.changeDir(os.path.normpath(path))
 
 	def videoFuncShort(self):
-		if self.short_key is False:
+		if not self.short_key:
 			self.short_key = True
 		else:
 			self.toggleSelection()
@@ -337,8 +327,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 		if path:
 			current_service = self.getService4Path(self.filelist, path)
 			self["Service"].newService(current_service)
-		if self.cover:
-			self.showCover(path)
 
 	def resetInfo(self):
 		#print("MVC: MovieSelection: resetInfo")
@@ -359,7 +347,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 	### sorting
 
 	def updateSortModeDisplay(self):
-		self["sort_mode"].setText(_("Sort Mode") + ": " + sort_modes[self.current_sort_mode][1])
+		self["sort_mode"].setText(_("Sort mode") + ": " + sort_modes[self.current_sort_mode][1])
 
 	def updateSortMode(self):
 		self.return_path = self["list"].getCurrentPath()
@@ -397,7 +385,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 			self.loadList(path)
 
 	def loadList(self, path):
-		#print("MVC: MovieSelection: loadList: path: %s" % path)
+		print("MVC: MovieSelection: loadList: path: %s" % path)
 		#print("MVC: MovieSelection: loadList start: self.return_path: %s" % self.return_path)
 		self.resetInfo()
 		MovieList.selection_list = []
@@ -411,7 +399,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 			self.moveToPath(self.return_path)
 		else:
 			self.moveTop()
-		#print("MVC: MovieSelection: loadList end: self.return_path: %s" % self.return_path)
 
 ### selection functions
 
@@ -500,13 +487,12 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileListUtils, FileOp
 			self.playerCallback,
 			MediaCenter,
 			self.getService4Path(self.filelist, path),
-			self.cover
 		)
 
 ### context menu
 
 	def openContextMenu(self):
-		if self.short_key is False:
+		if not self.short_key:
 			self.short_key = True
 		else:
 			self.return_path = self["list"].getCurrentPath()

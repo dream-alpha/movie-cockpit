@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2019 by dream-alpha
@@ -163,6 +163,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			(_("Show fallback cover")                           , config.MVC.cover_fallback            , None                  , None                  , 0     , []          , _("Help Cover fallback")),
 			(_("Search cover language")                         , config.MVC.cover_language            , None                  , None                  , 0     , []          , _("Help Cover language")),
 			(_("Search cover size")                             , config.MVC.cover_size                , None                  , None                  , 0     , []          , _("Help Cover size")),
+			(_("Search backdrop size")                          , config.MVC.backdrop_size             , None                  , None                  , 0     , []          , _("Help Backdrop size")),
 			(_("Download replace existing cover")               , config.MVC.cover_replace_existing    , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
 			(_("Download cover to flash")                       , config.MVC.cover_flash               , None                  , None                  , 0     , []          , _("Help Cover in flash")),
 			(_("Download cover bookmark")                       , config.MVC.cover_bookmark            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Cover bookmark")),
@@ -333,7 +334,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			self.close(True)
 
 	def restartGUI(self):
-		self.session.openWithCallback(self.restartGUIConfirmed, MessageBox, _("Some changes require a GUI restart.") + "\n" + _("Restart GUI now?"), MessageBox.TYPE_YESNO)
+		self.session.openWithCallback(self.restartGUIConfirmed, MessageBox, _("Some changes require a GUI restart") + "\n" + _("Restart GUI now?"), MessageBox.TYPE_YESNO)
 
 	def restartGUIConfirmed(self, answer):
 		if answer:
@@ -380,7 +381,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			self.session.openWithCallback(
 				self.dirSelected,
 				LocationBox,
-				windowTitle=_("Select Location"),
+				windowTitle=_("Select location"),
 				text=_("Select directory"),
 				currDir=path + "/",
 				bookmarks=config.movielist.videodirs,

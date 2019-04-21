@@ -13,6 +13,8 @@ Copyright (C) 2018-2019 by dream-alpha
 				position="610,0" size="300,70" alphatest="blend"/>
 			<ePixmap pixmap="Default-FHD/skin_default/buttons/blue.svg"
 				position="910,0" size="300,70" alphatest="blend"/>
+		</layout>
+		<layout name="Color_Buttons_Labels">
 			<widget font="Regular;30" halign="center" name="key_red" position="10,0"
 				foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 				size="300,70" transparent="1" valign="center" zPosition="1"/>
@@ -22,7 +24,7 @@ Copyright (C) 2018-2019 by dream-alpha
 			<widget font="Regular;30" halign="center" name="key_yellow" position="610,0"
 				foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 				size="300,70" transparent="1" valign="center" zPosition="1"/>
-			<widget font="Regular;30" halign="center" name="key_blue" position="910,5"
+			<widget font="Regular;30" halign="center" name="key_blue" position="910,0"
 				foregroundColor="white" shadowColor="black" shadowOffset="-2,-2"
 				size="300,70" transparent="1" valign="center" zPosition="1"/>
 		</layout>
@@ -69,12 +71,16 @@ Copyright (C) 2018-2019 by dream-alpha
 				<convert type="MVCEventName">ShortAndExtendedDescription</convert>
 			</widget>
 		</layout>
+		<layout name="Media_Center">
+			<ePixmap pixmap="Default-FHD/menu/mediacenter.svg" position="50,80" size="132,132"/>
+		</layout>
 	</layouts>
 
 	<screen name="MVCSelection" position="center,110" size="1800,930" title="">
 		<eLabel backgroundColor="grey" position="10,80" size="1780,1"/>
 		<eLabel backgroundColor="grey" position="1220,80" size="1,795"/>
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<layout name="Color_Buttons_Level"/>
 		<layout name="Time"/>
 		<layout name="Movie_List"/>
@@ -156,10 +162,7 @@ Copyright (C) 2018-2019 by dream-alpha
 			<convert type="ConditionalShowHide">Blink</convert>
 		</widget>
 
-		<widget name="mvc_logo"
-			pixmap="Default-FHD/menu/mediacenter.svg" position="50,80"
-			size="132,132"/>
-		<widget name="cover" position="40,5" size="150,225"/>
+		<layout name="Media_Center"/>
 
 		<widget backgroundColor="background" font="Regular;34"
 			position="230,88" render="Label" size="140,40"
@@ -215,8 +218,9 @@ Copyright (C) 2018-2019 by dream-alpha
 	<screen name="MVCMovieInfoTMDB" position="center,170" size="1220,820" title="">
 		<eLabel backgroundColor="grey" position="10,80" size="1200,1"/>
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<widget name="movie_name" position="20,90" size="1200,40"
-			font="Regular;35" valign="center" oregroundColor="yellow"/>
+			font="Regular;35" valign="center" foregroundColor="yellow"/>
 		<eLabel backgroundColor="grey" position="10,135" size="1200,1"/>
 		<widget name="previewlist" enableWrapAround="1"
 			position="340,155" size="860,500" itemHeight="45"
@@ -241,6 +245,7 @@ Copyright (C) 2018-2019 by dream-alpha
 
 	<screen name="MVCConfigScreen" position="center,110" size="1800,930" title="">
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<layout name="Time"/>
 		<eLabel backgroundColor="grey" position="10,80" size="1780,1"/>
 		<widget enableWrapAround="1" name="config" itemHeight="45"
@@ -253,6 +258,7 @@ Copyright (C) 2018-2019 by dream-alpha
 
 	<screen name="MVCFileOpsProgress" position="center,center" size="1220,350" title="">
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<eLabel backgroundColor="grey" position="10,75" size="1200,1"/>
 		<widget name="operation" position="10,95" size="1200,35"
 			font="Regular;32" halign="left" valign="center" transparent="1"/>
@@ -266,6 +272,7 @@ Copyright (C) 2018-2019 by dream-alpha
 
 	<screen name="MVCFileCacheLoadProgress" position="center,center" size="1220,305" title="">
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<eLabel backgroundColor="grey" position="10,75" size="1200,1"/>
 		<widget name="operation" position="10,95" size="1200,35"
 			font="Regular;32" halign="left" valign="center" transparent="1"/>
@@ -280,6 +287,7 @@ Copyright (C) 2018-2019 by dream-alpha
 		<eLabel backgroundColor="background" position="10,80" size="1780,1" />
 		<eLabel backgroundColor="background" position="1060,80" size="1,840" />
 		<layout name="Color_Buttons"/>
+		<layout name="Color_Buttons_Labels"/>
 		<widget font="Regular;34" halign="right" position="1650,25" render="Label" size="120,40" source="global.CurrentTime">
 			<convert type="ClockToText">Default</convert>
 		</widget>

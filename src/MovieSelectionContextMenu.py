@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -62,7 +62,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 		menu = []
 
 		if menu_mode == MENU_FUNCTIONS:
-			self.setTitle(_("Select function"))
+			self.setTitle(_("Movie list menu"))
 
 			if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
 				menu.append((_("Movie home"), csel.moveToMovieHome))
@@ -86,7 +86,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 			for list_style in range(len(MovieList.list_styles)):
 				menu.append((_(MovieList.list_styles[list_style][1]), boundFunction(csel.setListStyle, list_style)))
 
-			menu.append((_("Reload Cache"), csel.reloadCache))
+			menu.append((_("Reload cache"), csel.reloadCache))
 			menu.append((_("Styles"), csel.openStyles))
 			menu.append((_("Setup"), csel.openConfigScreen))
 		elif menu_mode == MENU_PLUGINS:
@@ -102,5 +102,3 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 
 	def ok(self):
 		self["menu"].getCurrent()[1]()
-		if self.menu_mode == MENU_FUNCTIONS:
-			self.close()

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -81,8 +81,8 @@ class KeyFunctions(object):
 				"MVCEXIT":		(csel.exit, 	 					_("Exit")),
 				"MVCMENU":		(csel.openContextMenu,				 	_("Context menu")),
 				"MVCMENUL":		(csel.openPluginsMenu,				 	_("Plugins menu")),
-				"MVCINFO":		(csel.movieInfoEPG, 					_("EPG info")),
-				"MVCINFOL":		(csel.movieInfoTMDB,					_("TMDB info")),
+				"MVCINFO":		(csel.showMovieInfoEPG, 				_("EPG info")),
+				"MVCINFOL":		(csel.showMovieInfoTMDB,				_("TMDB info")),
 				"MVCLEFT":		(csel.pageUp, 						_("Cursor page up")),
 				"MVCRIGHT":		(csel.pageDown, 					_("Cursor page down")),
 				"MVCUP":		(csel.moveUp, 						_("Cursor up")),
@@ -105,13 +105,13 @@ class KeyFunctions(object):
 		self.color_buttons_matrix = [
 			[							# level 0
 				[_("Delete"), csel.deleteMovies],		# red
-				[_("Sort Mode"), csel.toggleSortMode],		# green
+				[_("Sort mode"), csel.toggleSortMode],		# green
 				[_("Move"), csel.moveMovies],			# yellow
 				[_("Home"), csel.moveToMovieHome]		# blue
 			],
 			[							# level 1
 				[_("Delete"), csel.deleteMovies],		# red
-				[_("Sort Order"), csel.toggleSortOrder],	# green
+				[_("Sort order"), csel.toggleSortOrder],	# green
 				[_("Copy"), csel.copyMovies],			# yellow
 				[_("Home"), csel.moveToMovieHome]		# blue
 			],

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -28,10 +28,11 @@ from Components.config import config
 from FileUtils import readFile, writeFile, deleteFile
 from Bookmarks import Bookmarks
 
-SELECTION_ID = 1   # tmdb movie id
-SELECTION_TYPE = 2 # movie or tvshow
-SELECTION_URL = 4  # partial cover url
-INFO_COVER_URL = 6 # full cover url
+SELECTION_ID = 1	# tmdb movie id
+SELECTION_TYPE = 2	# movie or tvshow
+SELECTION_URL = 4	# partial cover url
+INFO_COVER_URL = 6	# full cover url
+INFO_BACKDROP_URL = 7	# full backdrop url
 
 class MovieTMDB(Bookmarks, object):
 
@@ -55,7 +56,7 @@ class MovieTMDB(Bookmarks, object):
 				writeFile(info_path, text)
 
 	def loadInfo(self, info_path):
-		info = ("", "", "", "", "", "", "")
+		info = ("", "", "", "", "", "", "", "")
 		if os.path.isfile(info_path):
 			text = readFile(info_path)
 			info = cPickle.loads(text)
@@ -171,7 +172,10 @@ class MovieTMDB(Bookmarks, object):
 			cover_url = response["poster_path"]
 			if cover_url is not None:
 				cover_url = cover_url.encode('utf-8')
-			return blurb, runtime, genres, countries, releasedate, vote, cover_url
+			backdrop_url = response["backdrop_path"]
+			if backdrop_url is not None:
+				backdrop_url = backdrop_url.encode('utf-8')
+			return blurb, runtime, genres, countries, releasedate, vote, cover_url, backdrop_url
 
 		response = None
 		if cat == "movie":
@@ -182,8 +186,10 @@ class MovieTMDB(Bookmarks, object):
 		info = None
 		if response:
 			#print("MVC: MovieTMDB: getMovieTMDBInfo: response:" + str(response))
-			blurb, runtime, genres, countries, releasedate, vote, cover_url = parseMovieData(response, cat)
+			blurb, runtime, genres, countries, releasedate, vote, cover_url, backdrop_url = parseMovieData(response, cat)
 			if cover_url is not None:
 				cover_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.cover_size.value, cover_url)
-			info = (blurb, runtime, genres, countries, releasedate, vote, cover_url)
+			if backdrop_url is not None:
+				backdrop_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.backdrop_size.value, backdrop_url)
+			info = (blurb, runtime, genres, countries, releasedate, vote, cover_url, backdrop_url)
 		return info

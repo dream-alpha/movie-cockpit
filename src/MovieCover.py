@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -38,26 +38,40 @@ class MovieCover(Bookmarks, PixmapDisplay, object):
 				if cover_path.startswith(bookmark):
 					cover_path = config.MVC.cover_bookmark.value + cover_path[len(bookmark):]
 					break
-		#print("MVC: MovieCover getCoverPath: cover_path: " + cover_path)
-		return cover_path
+		cover_filename, cover_ext = os.path.splitext(cover_path)
+		backdrop_path = cover_filename + ".backdrop" + cover_ext
+		#print("MVC: MovieCover getCoverPath: cover_path: %s, backdrop_path: %s" % (cover_path, backdrop_path))
+		return cover_path, backdrop_path
 
-	def showCover(self, path, no_cover_path=None):
+	def showCover(self, pixmap, path, no_cover_path=None):
 		print("MVC-I: MovieCover: showCover: path: %s" % path)
-		if path:
-			cover_path = self.getCoverPath(path)
-			if not os.path.exists(cover_path):
-				cover_path = None
-				if config.MVC.cover_fallback.value:
-					if no_cover_path and os.path.exists(no_cover_path):
-						cover_path = no_cover_path
-					else:
-						cover_path = getSkinPath("images/no_cover.svg")
+		_filename, ext = os.path.splitext(path)
+		cover_path = None
+		if path and ext and ext != "..":
+			cover_path, _backdrop_path = self.getCoverPath(path)
+			no_cover_path = getSkinPath("images/no_cover.svg")
+		return self.showImage(pixmap, cover_path, no_cover_path)
 
-			print("MVC-I: MovieCover: showCover: cover_path %s" % cover_path)
-			if cover_path:
-				self["cover"].show()
-				self.displayPixmap("cover", cover_path)
-				return True
-			else:
-				self["cover"].hide()
+	def showBackdrop(self, pixmap, path, no_backdrop_path=None):
+		print("MVC-I: MovieCover: showBackdrop: path: %s" % path)
+		_filename, ext = os.path.splitext(path)
+		backdrop_path = None
+		if path and ext and ext != "..":
+			_cover_path, backdrop_path = self.getCoverPath(path)
+			no_backdrop_path = getSkinPath("images/no_backdrop.svg")
+		return self.showImage(pixmap, backdrop_path, no_backdrop_path)
+
+	def showImage(self, pixmap, path, default_path):
+		print("MVC-I: MovieCover: showImage: path: %s" % path)
+		if path and not os.path.exists(path):
+			path = None
+			if config.MVC.cover_fallback.value:
+				if default_path and os.path.exists(default_path):
+					path = default_path
+		print("MVC-I: MovieCover: showImage: path %s" % path)
+		if path:
+			pixmap.instance.show()
+			self.displayPixmap(pixmap, path)
+			return True
+		pixmap.instance.hide()
 		return False

@@ -328,7 +328,7 @@ class MVCRunningText(Renderer):
 						self.mStep = abs(self.mStep)
 					else:  # if self.halign in (CENTER, BLOCK):
 						self.P = int(self.A / 2)
-						self.mStep = (self.direction == RIGHT) and abs(self.mStep) or -abs(self.mStep)
+						self.mStep = abs(self.mStep) if self.direction == RIGHT else -abs(self.mStep)
 			else:
 				return False
 		elif self.direction in (TOP, BOTTOM):

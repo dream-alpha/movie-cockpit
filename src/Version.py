@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -20,4 +20,4 @@
 #
 
 # MovieCockpit
-VERSION = "3.5.4"
+VERSION = "3.6.2"

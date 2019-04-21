@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# encoding: utf-8
+# coding=utf-8
 #
 # Copyright (C) 2018-2019 by dream-alpha
 #
@@ -195,7 +195,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 				if adir not in all_dirs:
 					all_dirs.append(adir)
 
-		#print("MVC: FileCache: __resolveVirtualDirs: all_dirs: %s" % all_dirs)
+		print("MVC: FileCache: __resolveVirtualDirs: all_dirs: %s" % all_dirs)
 		return all_dirs
 
 	def getFileList(self, dirs):
@@ -214,15 +214,16 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		return filelist
 
 	def getDirList(self, dirs):
-		#print("MVC: FileCache: getDirlist: %s" % dirs)
+		print("MVC: FileCache: getDirlist: %s" % dirs)
 		dirlist = []
 		all_dirs = self.__resolveVirtualDirs(dirs)
 		if all_dirs:
-			where = ""
+			where = "("
 			op = ""
 			for directory in all_dirs:
-				where += op + "path != \"" + directory + "\""
-				op = " AND "
+				where += op + "directory = \"" + directory + "\""
+				op = " OR "
+			where += ")"
 			where += " AND " + "filename != \"trashcan\""
 			where += " AND " + "filename != \"..\""
 			where += " AND " + "filetype > " + str(FILE_TYPE_FILE)
