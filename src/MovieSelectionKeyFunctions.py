@@ -35,7 +35,7 @@ KEY_LABEL = 0
 KEY_FUNCTION = 1
 
 
-class KeyFunctions(object):
+class KeyFunctions():
 	def __init__(self):
 		self["key_red"] = Button()
 		self["key_green"] = Button()
@@ -48,22 +48,22 @@ class KeyFunctions(object):
 ### color button management functions
 
 	def setColorButtons(self):
-		self["level"].setText("<%s>" % (self.level + 1))
-		self["key_red"].setText(self.color_buttons_matrix[self.level][KEY_RED][KEY_LABEL])
-		self["key_green"].setText(self.color_buttons_matrix[self.level][KEY_GREEN][KEY_LABEL])
-		self["key_yellow"].setText(self.color_buttons_matrix[self.level][KEY_YELLOW][KEY_LABEL])
-		self["key_blue"].setText(self.color_buttons_matrix[self.level][KEY_BLUE][KEY_LABEL])
+		self["level"].setText("<%s>" % (self.color_buttons_level + 1))
+		self["key_red"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_RED][KEY_LABEL])
+		self["key_green"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_GREEN][KEY_LABEL])
+		self["key_yellow"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_YELLOW][KEY_LABEL])
+		self["key_blue"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_BLUE][KEY_LABEL])
 
 	def nextColorButtonsLevel(self):
-		self.level = (self.level + 1) % len(self.color_buttons_matrix)
+		self.color_buttons_level = (self.color_buttons_level + 1) % len(self.color_buttons_matrix)
 		self.setColorButtons()
 
 	def previousColorButtonsLevel(self):
-		self.level = self.level - 1 if self.level > 0 else len(self.color_buttons_matrix) - 1
+		self.color_buttons_level = self.color_buttons_level - 1 if self.color_buttons_level > 0 else len(self.color_buttons_matrix) - 1
 		self.setColorButtons()
 
 	def resetColorButtonsLevel(self):
-		self.level = 0
+		self.color_buttons_level = 0
 		self.setColorButtons()
 
 ### key init
@@ -128,11 +128,12 @@ class KeyFunctions(object):
 				[_("Open setup"), csel.openConfigScreen],	# blue
 			],
 		]
-		if config.MVC.trashcan_enable.value:
+		if config.plugins.moviecockpit.trashcan_enable.value:
 			self.color_buttons_matrix[1][KEY_RED] = [_("Empty Trashcan"), csel.emptyTrashcan]
 			self.color_buttons_matrix[0][KEY_BLUE] = [_("Trashcan"), csel.openTrashcan]
 
 ### color key exection function
 
 	def execColorButton(self, key):
-		self.color_buttons_matrix[self.level][key][KEY_FUNCTION]()
+		self.color_buttons_matrix[self.color_buttons_level][key][KEY_FUNCTION]()
+		self.resetColorButtonsLevel()

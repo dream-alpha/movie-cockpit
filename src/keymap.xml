@@ -53,7 +53,7 @@
 		<key id="KEY_SUBTITLE" mapto="MVCRADIO" flags="m" />
 		<key id="KEY_TEXT" mapto="MVCTEXT" flags="m" />
 		<key id="KEY_LEFT" mapto="MVCLEFT" flags="mr" />
-		<key id="KEY_RIGHT" mapto="MVCRIGT" flags="mr" />
+		<key id="KEY_RIGHT" mapto="MVCRIGHT" flags="mr" />
 		<key id="KEY_UP" mapto="MVCUP" flags="mr" />
 		<key id="KEY_DOWN" mapto="MVCDOWN" flags="mr" />
 		<key id="KEY_NEXT" mapto="MVCARROWNEXT" flags="b" />

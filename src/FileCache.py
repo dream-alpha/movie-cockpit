@@ -48,10 +48,11 @@ FILE_TYPE_DIR = 2
 instance = None
 
 
-class FileCache(FileCacheSQL, Bookmarks, object):
+class FileCache(FileCacheSQL, Bookmarks):
 
 	def __init__(self):
 		print("MVC-I: FileCache: __init__")
+		Bookmarks.__init__(self)
 		FileCacheSQL.__init__(self)
 		#print("MVC: FileCache: __init__: done")
 
@@ -137,11 +138,9 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 				directory = dest_path
 				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
 			else:
-				#print("MVC: FileCache: copy: file already exists at destination")
-				pass
+				print("MVC-E: FileCache: copy: file already exists at destination")
 		else:
-			#print("MVC: FileCache: copy: source file not found")
-			pass
+			print("MVC-E: FileCache: copy: source file not found: src_path: %s" % src_path)
 
 	def move(self, src_path, dest_path):
 		src_path = os.path.normpath(src_path)
@@ -159,8 +158,8 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
 				self.delete(src_path)
 			else:
-				self.delete(src_path) # workaround
 				print("MVC-E: FileCache: move: source file already exists at destination: %s" % src_path)
+				self.delete(src_path)
 		else:
 			print("MVC-E: FileCache: move: source file not found: src_path: %s" % src_path)
 #		self.dump(detailed=False)
@@ -195,7 +194,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 				if adir not in all_dirs:
 					all_dirs.append(adir)
 
-		print("MVC: FileCache: __resolveVirtualDirs: all_dirs: %s" % all_dirs)
+		#print("MVC: FileCache: __resolveVirtualDirs: all_dirs: %s" % all_dirs)
 		return all_dirs
 
 	def getFileList(self, dirs):
@@ -214,7 +213,7 @@ class FileCache(FileCacheSQL, Bookmarks, object):
 		return filelist
 
 	def getDirList(self, dirs):
-		print("MVC: FileCache: getDirlist: %s" % dirs)
+		#print("MVC: FileCache: getDirlist: %s" % dirs)
 		dirlist = []
 		all_dirs = self.__resolveVirtualDirs(dirs)
 		if all_dirs:

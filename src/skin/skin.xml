@@ -76,6 +76,10 @@ Copyright (C) 2018-2019 by dream-alpha
 		</layout>
 	</layouts>
 
+	<listboxcontent>
+		<config onPixmap="skin_default/switch_on.svg" offPixmap="skin_default/switch_off.svg" size="60,32"/>
+	</listboxcontent>
+
 	<screen name="MVCSelection" position="center,110" size="1800,930" title="">
 		<eLabel backgroundColor="grey" position="10,80" size="1780,1"/>
 		<eLabel backgroundColor="grey" position="1220,80" size="1,795"/>
@@ -322,9 +326,7 @@ Copyright (C) 2018-2019 by dream-alpha
 		</widget>
 	</screen>
 
-	<!-- DM9xx and Buck Color display -->
-	<screen id="3" name="MVCMoviePlayerSummary" position="0,0"
-		size="400,240">
+	<screen id="3" name="MVCMediaCenterSummary" position="0,0" size="400,240">
 		<ePixmap position="0,0" size="400,240"
 			pixmap="skin_default/display_bg.png" zPosition="-1"/>
 		<widget font="Display;60" halign="center" position="5,5"

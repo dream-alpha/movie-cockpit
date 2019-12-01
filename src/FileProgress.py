@@ -29,10 +29,11 @@ from Components.Button import Button
 from Components.Slider import Slider
 from Bookmarks import Bookmarks
 
-class FileProgress(Screen, Bookmarks, object):
+class FileProgress(Screen, Bookmarks):
 
 	def __init__(self, session, return_path):
 		#print("MVC: FileProgress: __init__")
+		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 
 		self["slider1"] = Slider(0, 100)
@@ -109,7 +110,6 @@ class FileProgress(Screen, Bookmarks, object):
 
 	def reloadList(self, path):
 		print("MVC-E: FileProgress: reloadList: path: %s" % path)
-		return
 
 	def updateProgress(self):
 		#print("MVC: MovieCoverDownloadProgress: updateProgress: file_name: %s, current_files: %s, total_files: %s, status: %s" % (self.file_name, self.current_files, self.total_files, self.status))

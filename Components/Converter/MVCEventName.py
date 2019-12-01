@@ -24,7 +24,7 @@ from Components.Converter.Converter import Converter
 from Components.Element import cached
 
 
-class MVCEventName(Converter, object):
+class MVCEventName(Converter):
 	NAME = 0
 	SHORT_DESCRIPTION = 1
 	EXTENDED_DESCRIPTION = 2

@@ -21,6 +21,7 @@
 
 import os
 from __init__ import _
+from Version import VERSION
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
@@ -28,35 +29,13 @@ from Tools.BoundFunction import boundFunction
 from FileCacheLoad import FileCacheLoad
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
-from Version import VERSION
-from SkinUtils import getSkinPath
+from SkinUtils import initPluginSkinPath, loadPluginSkin
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
 from FileCacheSQL import SQL_DB_NAME
 from Debug import initLogFile, createLogFile
 from FileUtils import deleteFile
-from skin import loadSkin, loadSingleSkinData, dom_skins
-from StylesOps import applyStyle
-from enigma import getDesktop
-from Tools.Directories import resolveFilename, SCOPE_SKIN, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
-
-
-def loadPluginSkin(skin_file):
-	default_skin = resolveFilename(SCOPE_SKIN, "Default-FHD/MovieCockpit")
-	current_skin = resolveFilename(SCOPE_CURRENT_SKIN, "MovieCockpit")
-	plugin_skin = resolveFilename(SCOPE_PLUGINS, "Extensions/MovieCockpit")
-	print("MVC-I: plugin: loadPluginSkin: current_skin: %s" % current_skin)
-	print("MVC-I: plugin: loadPluginSkin: default_skin: %s" % default_skin)
-	print("MVC-I: plugin: loadPluginSkin: plugin_skin: %s" % plugin_skin)
-	if not (os.path.islink(default_skin) or os.path.isdir(default_skin)):
-		print("MVC-I: plugin: loadPluginSkin: ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
-		os.system("ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
-	# apply style first
-	applyStyle()
-	# then load styled skin
-	loadSkin(getSkinPath(skin_file), "")
-	path, dom_skin = dom_skins[-1:][0]
-	loadSingleSkinData(getDesktop(0), dom_skin, path)
+from StylesOps import applyPluginStyle
 
 
 def openSettings(session, **__):
@@ -79,13 +58,13 @@ def reloadMovieSelection(session=None, reload_movie_selection=False):
 def autostart(reason, **kwargs):
 	if reason == 0:  # startup
 		if "session" in kwargs:
-			if config.MVC.debug.value:
+			if config.plugins.moviecockpit.debug.value:
 				initLogFile()
 			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			print("MVC-I: plugin: autostart: reason: %s" % reason)
 			session = kwargs["session"]
-			if not config.MVC.plugin_disable.value:
-				launch_key = config.MVC.plugin_launch_key.value
+			if not config.plugins.moviecockpit.disable.value:
+				launch_key = config.plugins.moviecockpit.launch_key.value
 				if launch_key == "showMovies":
 					InfoBar.showMovies = boundFunction(openMovieSelection, session)
 				elif launch_key == "showTv":
@@ -101,17 +80,19 @@ def autostart(reason, **kwargs):
 			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
 				print("MVC-I: plugin: loading database...")
 				deleteFile("/etc/enigma2/.moviecockpit")
-				config.MVC.debug.value = False
-				config.MVC.debug.save()
+				config.plugins.moviecockpit.debug.value = False
+				config.plugins.moviecockpit.debug.save()
 				FileCacheLoad.getInstance().loadDatabase(sync=True)
 			else:
 				print("MVC-I: plugin: database is already loaded.")
 			Trashcan.getInstance()
+			initPluginSkinPath()
+			applyPluginStyle()
 			loadPluginSkin("skin.xml")
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
 		FileCacheLoad.getInstance().closeDatabase()
-		if config.MVC.debug.value:
+		if config.plugins.moviecockpit.debug.value:
 			createLogFile()
 	else:
 		print("MVC-I: plugin: autostart: reason not handled: %s" % reason)
@@ -130,7 +111,7 @@ def Plugins(**__):
 			],
 			fnc=autostart))
 
-	if config.MVC.plugin_extmenu_settings.value:
+	if config.plugins.moviecockpit.extmenu_settings.value:
 		descriptors.append(
 			PluginDescriptor(name="MovieCockpit" + " - " + _("Setup"),
 			description=_("Open setup"),
@@ -141,7 +122,7 @@ def Plugins(**__):
 			],
 			fnc=openSettings))
 
-	if config.MVC.plugin_extmenu_plugin.value and not config.MVC.plugin_disable.value:
+	if config.plugins.moviecockpit.extmenu_plugin.value and not config.plugins.moviecockpit.disable.value:
 		descriptors.append(
 			PluginDescriptor(name="MovieCockpit",
 			description=_("Manage recordings"),

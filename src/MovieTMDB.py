@@ -34,22 +34,25 @@ SELECTION_URL = 4	# partial cover url
 INFO_COVER_URL = 6	# full cover url
 INFO_BACKDROP_URL = 7	# full backdrop url
 
-class MovieTMDB(Bookmarks, object):
+class MovieTMDB(Bookmarks):
+
+	def __init__(self):
+		Bookmarks.__init__(self)
 
 	def getInfoPath(self, path):
 		#print("MVC: MovieTMDB: getInfoPath: path: " + path)
 		info_path = os.path.splitext(path)[0] + ".txt"
-		if config.MVC.cover_flash.value:
+		if config.plugins.moviecockpit.cover_flash.value:
 			bookmark = self.getBookmark(info_path)
 			if bookmark:
-				info_path = config.MVC.cover_bookmark.value + info_path[len(bookmark):]
+				info_path = config.plugins.moviecockpit.cover_bookmark.value + info_path[len(bookmark):]
 		#print("MVC: MovieTMDB: getInfoPath: info_path: " + info_path)
 		return info_path
 
 	def saveInfo(self, info_path, info):
 		#print("MVC: MovieTMDB: saveInfo: path: %s, info: %s" % (info_path, info))
 		if info:
-			if config.MVC.cover_replace_existing.value and os.path.isfile(info_path):
+			if config.plugins.moviecockpit.cover_replace_existing.value and os.path.isfile(info_path):
 				deleteFile(info_path)
 			if not os.path.isfile(info_path):
 				text = cPickle.dumps(info)
@@ -188,8 +191,8 @@ class MovieTMDB(Bookmarks, object):
 			#print("MVC: MovieTMDB: getMovieTMDBInfo: response:" + str(response))
 			blurb, runtime, genres, countries, releasedate, vote, cover_url, backdrop_url = parseMovieData(response, cat)
 			if cover_url is not None:
-				cover_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.cover_size.value, cover_url)
+				cover_url = "http://image.tmdb.org/t/p/%s%s" % (config.plugins.moviecockpit.cover_size.value, cover_url)
 			if backdrop_url is not None:
-				backdrop_url = "http://image.tmdb.org/t/p/%s%s" % (config.MVC.backdrop_size.value, backdrop_url)
+				backdrop_url = "http://image.tmdb.org/t/p/%s%s" % (config.plugins.moviecockpit.backdrop_size.value, backdrop_url)
 			info = (blurb, runtime, genres, countries, releasedate, vote, cover_url, backdrop_url)
 		return info

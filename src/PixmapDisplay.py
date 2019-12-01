@@ -23,7 +23,7 @@ from enigma import ePicLoad, gPixmapPtr
 from Components.AVSwitch import AVSwitch
 
 
-class PixmapDisplay(object):
+class PixmapDisplay():
 	def __init__(self):
 		self.picload = ePicLoad()
 		self.picload_conn = None

@@ -22,14 +22,15 @@
 import os
 from __init__ import _
 from Bookmarks import Bookmarks
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 from FileCacheLoad import FileCacheLoad
 from FileProgress import FileProgress
 
-class FileCacheLoadProgress(FileProgress, Bookmarks, object):
+class FileCacheLoadProgress(FileProgress, Bookmarks):
 
 	def __init__(self, session, return_path):
 		#print("MVC: FileCacheLoadProgress: __init__")
+		Bookmarks.__init__(self)
 		FileProgress.__init__(self, session, return_path)
 		self.skinName = "MVCFileCacheLoadProgress"
 		self.setTitle(_("File cache reload") + " ...")
@@ -38,7 +39,7 @@ class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 
 	def onDialogShow(self):
 		#print("MVC: FileCacheLoadProgress: onDialogShow")
-		DelayedFunction(10, self.execFileCacheLoadProgress)
+		DelayTimer(10, self.execFileCacheLoadProgress)
 
 	def doFileOp(self, entry):
 		path, filetype = entry
@@ -46,7 +47,7 @@ class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 		self.status = _("Please wait") + " ..."
 		self.updateProgress()
 		FileCacheLoad.getInstance().loadDatabaseFile(path, filetype)
-		DelayedFunction(10, self.nextFileOp)
+		DelayTimer(10, self.nextFileOp)
 
 	def execFileCacheLoadProgress(self):
 		print("MVC-I: FileCacheLoadProgress: execFileCacheLoadProgress")
@@ -55,4 +56,4 @@ class FileCacheLoadProgress(FileProgress, Bookmarks, object):
 		FileCacheLoad.getInstance().clearDatabase()
 		self.execution_list = FileCacheLoad.getInstance().getDirsLoadList(self.getBookmarks())
 		self.total_files = len(self.execution_list)
-		DelayedFunction(10, self.nextFileOp)
+		DelayTimer(10, self.nextFileOp)

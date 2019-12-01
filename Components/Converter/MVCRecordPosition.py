@@ -24,7 +24,7 @@ from Components.Converter.ServicePosition import ServicePosition
 from Components.Element import cached
 
 
-class MVCRecordPosition(ServicePosition, object):
+class MVCRecordPosition(ServicePosition):
 	def __init__(self, ptype):
 		ServicePosition.__init__(self, ptype)
 

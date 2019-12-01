@@ -29,6 +29,7 @@ class parseXML(ContentHandler, LexicalHandler, object):
 			except KeyError:
 				pass
 
+
 parser = make_parser()
 
 attrlist = set()

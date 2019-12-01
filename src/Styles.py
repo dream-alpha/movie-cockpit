@@ -22,21 +22,22 @@
 import os
 from xml.etree import ElementTree
 from datetime import datetime
+from Components.config import config
 
-class TreeBase(object):
+
+class TreeBase():
 	def __init__(self, filename=None):
 		self.read(filename)
 
 	def read(self, filename):
-		#print("MVC: style: TreeBase: read: filename: %s" % filename)
+		#print("MVC: Styles: TreeBase: read: filename: %s" % filename)
 		self.tree = None
 		self.root = None
 		if filename and os.path.exists(filename):
 			self.tree = ElementTree.parse(filename)
 			self.root = self.tree.getroot()
 			return True
-		else:
-			print("MVC-E: style: TreeBase: read: file does not exist: %s" % filename)
+		print("MVC-E: Styles: TreeBase: read: file does not exist: %s" % filename)
 		return False
 
 	def indent(self, elem, level=0, more_sibs=False):
@@ -65,12 +66,12 @@ class TreeBase(object):
 					elem.tail += t
 
 	def write(self, filename):
-		#print("MVC: style: TreeBase: write: %s" % filename)
+		#print("MVC: Styles: TreeBase: write: %s" % filename)
 		self.indent(self.root)
 		self.tree.write(filename, encoding="utf-8")
 
 
-class Skin(TreeBase, object):
+class Skin(TreeBase):
 	def __init__(self, filename=None):
 		TreeBase.__init__(self, filename)
 #		self.read(filename)
@@ -86,22 +87,6 @@ class Skin(TreeBase, object):
 				if line_count > 10:
 					break
 		return False
-
-#	@staticmethod
-#	def readUserMTime(filename):
-#		line_count = 0
-#		with open(filename, "r") as f:
-#			for line in f:
-#				items = line.split("user_mtime")
-#				if len(items) > 1:
-#					values = items[1].split('"')
-#					if len(values) > 1:
-#						return values[1]
-#					return ""
-#				line_count += 1
-#				if line_count > 10:
-#					break
-#		return ""
 
 	def isStyled(self):
 		return self.style_node is not None
@@ -121,13 +106,13 @@ class Skin(TreeBase, object):
 		return result
 
 	def write(self, filename):
-		#print("MVC: style: Skin: write: filename: %s, self.root: %s" % (filename, self.root))
+		#print("MVC: Styles: Skin: write: filename: %s, self.root: %s" % (filename, self.root))
 		if self.root is not None:
 			self.applyAttributes(self.replaces)
-			#print("MVC: style: Skin: write: filename: %s, self.replaces: %s" % (filename, self.replaces))
+			#print("MVC: Styles: Skin: write: filename: %s, self.replaces: %s" % (filename, self.replaces))
 			self.updateStyleInfo()
 			TreeBase.write(self, filename + "~")
-			#print("MVC: style: Skin: write: filename: %s" % filename)
+			#print("MVC: Styles: Skin: write: filename: %s" % filename)
 			os.rename(filename + "~", filename)
 
 	def updateStyleInfo(self):
@@ -142,7 +127,7 @@ class Skin(TreeBase, object):
 #		self.style_node.attrib["revision"] = __revision__
 		self.style_node.attrib["time_stamp"] = str(datetime.now())
 #		self.style_node.attrib["user_mtime"] = str(self.user_mtime)
-		#print("MVC: style: Skin: updateStyleInfo: self.style_info: %s" % self.style_info)
+		#print("MVC: Styles: Skin: updateStyleInfo: self.style_info: %s" % self.style_info)
 		for tag, key, value in self.style_info:
 			elem = ElementTree.Element(tag)
 			elem.attrib["name"] = key
@@ -157,19 +142,19 @@ class Skin(TreeBase, object):
 		for index, child in enumerate(root):
 			if child.tag == _tag:
 				if child.attrib.get("name", "") == _name and child.attrib.get("id", "") == _id:
-					#print("MVC: style: Skin: __replaceNode: replace tag: %s, name: %s, id: %s, index: %s" % (_tag, _name, _id, index))
+					#print("MVC: Styles: Skin: __replaceNode: replace tag: %s, name: %s, id: %s, index: %s" % (_tag, _name, _id, index))
 					root[index] = node
 					return True
 		return False
 
 	def applyNode(self, nodes):
-		#print("MVC: style: Skin: applyNode: nodes: %s" % str(nodes))
+		#print("MVC: Styles: Skin: applyNode: nodes: %s" % str(nodes))
 		if nodes is not None:
 			for node in nodes:
 				_tag = node.tag
 				_name = node.attrib.get("name", "")
 				_id = node.attrib.get("id", "")
-				#print("MVC: style: Skin: applyNode: _tag: %s, _name: %s, _id: %s" % (_tag, _name, _id))
+				#print("MVC: Styles: Skin: applyNode: _tag: %s, _name: %s, _id: %s" % (_tag, _name, _id))
 				if _tag == "attributes":
 					self.replaces.extend(node)
 					continue
@@ -182,11 +167,11 @@ class Skin(TreeBase, object):
 				found = self.__replaceNode(self.root, node, _tag, _name, _id)
 
 				if not found and _tag == "screen":
-					#print("MVC: style: Skin: applyNode: add tag: %s, name: %s, id: %s" % (_tag, _name, _id))
+					#print("MVC: Styles: Skin: applyNode: add tag: %s, name: %s, id: %s" % (_tag, _name, _id))
 					self.root.append(node)
 					found = True
 				if not found:
-					#print("MVC: style: Skin: applyNode: not found tag: %s, name: %s, id: %s" % (_tag, _name, _id))
+					#print("MVC: Styles: Skin: applyNode: not found tag: %s, name: %s, id: %s" % (_tag, _name, _id))
 					pass
 
 	def applyAttributes(self, nodes):
@@ -197,7 +182,7 @@ class Skin(TreeBase, object):
 				value = node.attrib.get("value", "")
 				expect = node.attrib.get("expect", None)
 				to_replace.append((name, value, expect, node.tag))
-			#print("MVC: style: Skin: replace: %s" % str(to_replace))
+			#print("MVC: Styles: Skin: replace: %s" % str(to_replace))
 			self.__replaceAttributes(self.root, to_replace)
 
 	def __replaceAttributes(self, node, replace):
@@ -228,7 +213,7 @@ class Skin(TreeBase, object):
 		return d
 
 
-class Style(TreeBase, object):
+class Style(TreeBase):
 	def __init__(self, filename=None):
 		TreeBase.__init__(self, filename)
 
@@ -236,17 +221,17 @@ class Style(TreeBase, object):
 		return
 
 	def hasStyle(self):
-		#print("MVC: style: Style: hasStyle: %s" % str(self.root is not None))
+		#print("MVC: Styles: Style: hasStyle: %s" % str(self.root is not None))
 		return self.root is not None
 
 	def printInfo(self):
 		groups = self.getGroup()
 		for key1 in sorted(groups):
-			#print("MVC: style: Style: printInfo: key1: %s" % key1)
+			#print("MVC: Styles: Style: printInfo: key1: %s" % key1)
 			for key2 in sorted(groups[key1]):
-				#print("MVC: style: Style: printInfo: key2:   %s" % key2)
+				#print("MVC: Styles: Style: printInfo: key2:   %s" % key2)
 				for _key3 in sorted(groups[key1][key2]):
-					#print("MVC: style: Style: printInfo:    %s" % _key3)
+					#print("MVC: Styles: Style: printInfo:    %s" % _key3)
 					pass
 
 	def getStyleNodes(self):
@@ -256,9 +241,9 @@ class Style(TreeBase, object):
 				continue
 			for style in node.findall("style"):
 				item = StyleItem(style, node)
-				#print("MVC: style: Style: getStyleNodes: item.getParentName: %s" % str(item.getParentName()))
-				#print("MVC: style: Style: getStyleNodes: item.getName: %s" % str(item.getName()))
-				#print("MVC: style: Style: getStyleNodes: item.getValue: %s" % str(item.getValue()))
+				#print("MVC: Styles: Style: getStyleNodes: item.getParentName: %s" % str(item.getParentName()))
+				#print("MVC: Styles: Style: getStyleNodes: item.getName: %s" % str(item.getName()))
+				#print("MVC: Styles: Style: getStyleNodes: item.getValue: %s" % str(item.getValue()))
 				l.append(item)
 		return l
 
@@ -268,7 +253,7 @@ class Style(TreeBase, object):
 			n = style.getName()
 			v = style.getValue()
 			if n == key and v == value:
-				#print("MVC: style: Style: getStyleNode: key: %s, value: %s" % (key, value))
+				#print("MVC: Styles: Style: getStyleNode: key: %s, value: %s" % (key, value))
 				return style
 		return None
 
@@ -276,7 +261,7 @@ class Style(TreeBase, object):
 		style = self.getStyleNode(key, value)
 		if style:
 			return style.getSkinNode()
-		#print("MVC: style: Style: getSkinNode: not skin, key: %s, value: %s" % (key, value))
+		#print("MVC: Styles: Style: getSkinNode: not skin, key: %s, value: %s" % (key, value))
 		return None
 
 	def getGroup(self):
@@ -297,7 +282,7 @@ class Style(TreeBase, object):
 
 	def getDefault(self):
 		d = dict()
-		#print("MVC: style: Style: getDefault: dict(): %s" % str(d))
+		#print("MVC: Styles: Style: getDefault: dict(): %s" % str(d))
 		for node1 in self.root.findall("presets"):
 			for default in node1.findall("default"):
 				for node2 in default:
@@ -380,7 +365,7 @@ class Style(TreeBase, object):
 		preset = self.getPreset()
 		node = ElementTree.Element("presets")
 		for key1 in sorted(preset):
-			#print("MVC: style: Style: checkPresets: key1: %s" % key1)
+			#print("MVC: Styles: Style: checkPresets: key1: %s" % key1)
 			for key2 in sorted(preset[key1]):
 				root = ElementTree.Element("style")
 				root.attrib["name"] = key1
@@ -394,7 +379,7 @@ class Style(TreeBase, object):
 						text = str.format('name="{0}" value="{1}"', key3, preset[key1][key2][key3])
 						if text not in errors:
 							errors.append(text)
-						#print("MVC: style: Style: checkPresets: text: %s" % text)
+						#print("MVC: Styles: Style: checkPresets: text: %s" % text)
 						element = ElementTree.Element("style")
 						element.attrib["name"] = key3
 						element.attrib["value"] = preset[key1][key2][key3]
@@ -409,35 +394,35 @@ class Style(TreeBase, object):
 			info.attrib["time_stamp"] = str(datetime.now())
 			for text in errors:
 				info.append(ElementTree.Comment(text))
-			#print("MVC: style: Style: checkPresets: %s errors found" % count)
+			#print("MVC: Styles: Style: checkPresets: %s errors found" % count)
 			self.indent(node)
 			return ElementTree.tostring(node)
 		return ""
 
-	def getSkinComponents(self, config_MVCStyles):
+	def getSkinComponents(self):
 		defaults = self.getDefault()
 		style_info = []
 		nodes = []
-		for key in sorted(config_MVCStyles.preset):
-			value = config_MVCStyles.preset[key].getValue()
+		for key in sorted(config.plugins.MVC.preset):
+			value = config.plugins.MVC.preset[key].getValue()
 			style_info.append(("preset", key, value))
-		for key in sorted(config_MVCStyles.style):
-			value = config_MVCStyles.style[key].getValue()
+		for key in sorted(config.plugins.MVC.style):
+			value = config.plugins.MVC.style[key].getValue()
 			node = self.getSkinNode(key, value)
 			if node is None and key in defaults:
-				#print("MVC: style: Style: getSkinComponents: no style key: %s, value: %s" % (key, value))
+				#print("MVC: Styles: Style: getSkinComponents: no style key: %s, value: %s" % (key, value))
 				value = defaults[key]
 				node = self.getSkinNode(key, value)
 				if node is None:
-					#print("MVC: style: Style: getSkinComponents: not found key: %s, value: %s" % (key, value))
+					#print("MVC: Styles: Style: getSkinComponents: not found key: %s, value: %s" % (key, value))
 					continue
-				#print("MVC: style: Style: getSkinComponents: use default key: %s, value: %s" % (key, value))
+				#print("MVC: Styles: Style: getSkinComponents: use default key: %s, value: %s" % (key, value))
 			nodes.append(node)
 			style_info.append(("style", key, value))
 		return (nodes, style_info)
 
 
-class StyleItem(object):
+class StyleItem():
 	def __init__(self, node, parent):
 		self.node = node
 		self.parent = parent
@@ -467,65 +452,3 @@ class StyleItem(object):
 
 	def getSkinNode(self):
 		return self.node
-
-
-# class StyleUser(object):
-# 	def __init__(self):
-# 		self.user_root = None
-#
-# 	def read(self, filename):
-# 		#print("MVC: style: StyleUser: read: filename: %s" % filename)
-# 		if filename and not os.path.exists(filename):
-# 			#print("MVC: style: StyleUser: read: file does not exist: %s" % filename)
-# 			return False
-# 		tree = ElementTree.parse(filename)
-# 		self.user_root = tree.getroot()
-# 		return True
-#
-# 	def loadToStyle(self, style, skin_name):
-# 		if style.root is None:
-# 			style.root = ElementTree.fromstring("<styles></styles>")
-# 		unused = self.__getUnusable(skin_name)
-# 		for node in self.user_root:
-# 			n = node.get("name")
-# 			if node.tag == "usable" or n in unused:
-# 				#print("MVC: style: StyleUser: loadToStyle: cancel: node.tag: %s, n: %s" % (str(node.tag), str(n)))
-# 				continue
-# 			#print("MVC: style: loadToStyle: StyleUser: add: %s" % str(node.tag))
-# 			self.__addNode(style, node)
-#
-# 	def __addNode(self, style, node):
-# 		for elem in style.root:
-# 			if elem.tag == node.tag:
-# 				for item in node:
-# 					elem.append(item)
-# 				return
-# 		style.root.append(node)
-#
-# 	def __getUnusable(self, skin_name):
-# 		l1 = []
-# 		l2 = []
-# 		for nodes in self.user_root.findall("usable"):
-# 			for node in nodes:
-# 				n = node.get("name")
-# 				if n:
-# 					v = node.get("value")
-# 					if v in skin_name:
-# 						l1.append(n)
-# 					else:
-# 						l2.append(n)
-# 		s1 = set(l1)
-# 		s2 = set(l2)
-# 		return s2 - s1
-#
-# 	def isUsable4Skin(self, skin_name):
-# 		#print("MVC: style: StyleUser: isUsable4Skin: check usability: %s" % skin_name)
-# 		if self.user_root is None:
-# 			return False
-# 		for nodes in self.user_root.findall("usable"):
-# 			for node in nodes:
-# 				n = node.get("name")
-# 				v = node.get("value")
-# 				if not n and v in skin_name:
-# 					return True
-# 		return False

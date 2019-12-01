@@ -17,22 +17,23 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from os import environ
+from Version import PLUGIN
 import gettext
 
 
 def localeInit():
 	lang = language.getLanguage()[:2]
 	environ["LANGUAGE"] = lang
-	gettext.bindtextdomain("MovieCockpit", resolveFilename(SCOPE_PLUGINS, "Extensions/MovieCockpit/locale"))
+	gettext.bindtextdomain(PLUGIN, resolveFilename(SCOPE_PLUGINS, "Extensions/" + PLUGIN + "/locale"))
 
 
 def _(txt):
-	return gettext.dgettext("MovieCockpit", txt)
+	return gettext.dgettext(PLUGIN, txt)
 
 
 localeInit()

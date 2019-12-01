@@ -25,14 +25,14 @@ from Components.Button import Button
 from Screens.EventView import EventViewSimple
 
 
-class MovieInfoEPG(EventViewSimple, object):
+class MovieInfoEPG(EventViewSimple):
 
 	def __init__(self, session, event, service_reference):
 		EventViewSimple.__init__(self, session, event, service_reference)
 		self.skinName = ["EventViewSimple", "EventView"]
 		text_blue = ""
 		self["key_blue"] = Button(text_blue)
-#		self["epgactions"] = ActionMap(["EventViewEPGActions"], {"openMultiServiceEPG": self.InfoDetail})
+#		self["epgactions"] = ActionMap(["EventViewEPGActions"], {"openMultiServiceEPG": self.InfoDetail}, 2)
 
 	def setService(self, service):
 		EventViewSimple.setService(self, service)

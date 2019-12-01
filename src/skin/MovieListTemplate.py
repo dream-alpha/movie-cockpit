@@ -1,5 +1,6 @@
 # Copyright (C) 2018-2019 by dream-alpha
 # pylint: skip-file
+# flake8: noqa
 #
 # value indexes:
 #  1: name

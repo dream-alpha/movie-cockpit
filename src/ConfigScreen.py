@@ -40,7 +40,7 @@ from Trashcan import Trashcan
 from StylesScreen import StylesScreen
 
 
-class ConfigScreen(ConfigListScreen, Screen, object):
+class ConfigScreen(ConfigListScreen, Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.skinName = "MVCConfigScreen"
@@ -113,81 +113,81 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		self.section = 400 * "¯"
 		#        config list entry
 		#                                                           , config element
-		#                                                           ,                                      , function called on save
-		#                                                           ,                                      ,                       , function called if user has pressed OK
-		#                                                           ,                                      ,                       ,                       , usage setup level from E2
-		#                                                           ,                                      ,                       ,                       ,   0: simple+
-		#                                                           ,                                      ,                       ,                       ,   1: intermediate+
-		#                                                           ,                                      ,                       ,                       ,   2: expert+
-		#                                                           ,                                      ,                       ,                       ,       , depends on relative parent entries
-		#                                                           ,                                      ,                       ,                       ,       ,   parent config value < 0 = true
-		#                                                           ,                                      ,                       ,                       ,       ,   parent config value > 0 = false
-		#                                                           ,                                      ,                       ,                       ,       ,             , context sensitive help text
-		#                                                           ,                                      ,                       ,                       ,       ,             ,
-		#        0                                                  , 1                                    , 2                     , 3                     , 4     , 5           , 6
+		#                                                           ,                                                       , function called on save
+		#                                                           ,                                                       ,                       , function called if user has pressed OK
+		#                                                           ,                                                       ,                       ,                       , usage setup level from E2
+		#                                                           ,                                                       ,                       ,                       ,   0: simple+
+		#                                                           ,                                                       ,                       ,                       ,   1: intermediate+
+		#                                                           ,                                                       ,                       ,                       ,   2: expert+
+		#                                                           ,                                                       ,                       ,                       ,       , depends on relative parent entries
+		#                                                           ,                                                       ,                       ,                       ,       ,   parent config value < 0 = true
+		#                                                           ,                                                       ,                       ,                       ,       ,   parent config value > 0 = false
+		#                                                           ,                                                       ,                       ,                       ,       ,             , context sensitive help text
+		#                                                           ,                                                       ,                       ,                       ,       ,             ,
+		#        0                                                  , 1                                                     , 2                     , 3                     , 4     , 5           , 6
 		self.MVCConfig = [
-			(self.section                                       , _("GENERAL")                         , None                  , None                  , 0     , []          , ""),
-			(_("About")                                         , config.MVC.fake_entry                , None                  , self.showInfo         , 0     , []          , _("HELP About")),
-			(_("Disable plugin")                                , config.MVC.plugin_disable            , self.needsRestart     , None                  , 1     , []          , _("Help Disable Plugin")),
-			(_("Start plugin with key")                         , config.MVC.plugin_launch_key         , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with key")),
-			(_("Show settings in extensions menu")              , config.MVC.plugin_extmenu_settings   , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
-			(_("Show plugin in extensions menu")                , config.MVC.plugin_extmenu_plugin     , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
-			(_("Movie home at start")                           , config.MVC.list_start_home           , None                  , None                  , 0     , []          , _("Help Movie home at start")),
-			(_("Default sort mode")                             , config.MVC.list_sort                 , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
-			(self.section                                       , _("KEY-MAPPING")                     , None                  , None                  , 0     , []          , ""),
-			(_("Bouquet buttons behavior")                      , config.MVC.list_bouquet_keys         , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
-			(_("List entries to skip")                          , config.MVC.list_skip_size            , None                  , None                  , 0     , []          , _("Help List entries to skip")),
-			(self.section                                       , _("PLAYBACK")                        , None                  , None                  , 0     , []          , ""),
-			(_("No resume below 10 seconds")                    , config.MVC.movie_ignore_firstcuts    , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
-			(_("Jump to first mark when playing movie")         , config.MVC.movie_jump_first_mark     , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
-			(_("Zap to live TV of recording")                   , config.MVC.record_eof_zap            , None                  , None                  , 1     , []          , _("Help Zap to Live TV of recording")),
-			(_("Automatic timers list cleaning")                , config.MVC.timer_autoclean           , None                  , None                  , 1     , []          , _("Help Automatic timers list cleaning")),
-			(self.section                                       , _("DISPLAY-SETTINGS")                , None                  , None                  , 0     , []          , ""),
-			(_("Show directories")                              , config.MVC.directories_show          , None                  , None                  , 0     , []          , _("Help Show directories")),
-			(_("Show directories within movie list")            , config.MVC.directories_ontop         , None                  , None                  , 0     , [-1]        , _("Help Show directories within movielist")),
-			(_("Show directories information")                  , config.MVC.directories_info          , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
-			(_("Cursor predictive move after selection")        , config.MVC.list_selmove              , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
-			(self.section                                       , _("SKIN-SETTINGS")                   , None                  , None                  , 0     , []          , ""),
-			(_("Show mountpoints")                              , config.MVC.movie_mountpoints         , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
-			(_("Date format")                                   , config.MVC.movie_date_format         , None                  , None                  , 0     , []          , _("Help Date format")),
-			(_("Path to movie picons")                          , config.MVC.movie_picons_path         , self.validatePath     , self.openLocationBox  , 0     , []          , _("Help Path to movie picons")),
-			(_("Watching in progress percent")                  , config.MVC.movie_watching_percent    , None                  , None                  , 0     , []          , _("Help Short watching percent")),
-			(_("Finished watching percent")                     , config.MVC.movie_finished_percent    , None                  , None                  , 0     , []          , _("Help Finished watching percent")),
-			(_("Default color for movie")                       , config.MVC.color                     , None                  , None                  , 0     , []          , _("Help Default color")),
-			(_("Default color for highlighted movie")           , config.MVC.color_sel                 , None                  , None                  , 0     , []          , _("Help Default color highlighted")),
-			(_("Default color for recording movie")             , config.MVC.recording_color           , None                  , None                  , 0     , []          , _("Help Default color recording")),
-			(_("Default color for highlighted recording movie") , config.MVC.recording_color_sel       , None                  , None                  , 0     , []          , _("Help Default color recording highlighted")),
-			(_("Default color for selected movie")              , config.MVC.selection_color           , None                  , None                  , 0     , []          , _("Help Default color selected")),
-			(_("Default color for highlighted selected movie")  , config.MVC.selection_color_sel       , None                  , None                  , 0     , []          , _("Help Default color selected highlighted")),
-			(self.section                                       , _("MOVIE-COVER")                     , None                  , None                  , 0     , []          , ""),
-			(_("Show fallback cover")                           , config.MVC.cover_fallback            , None                  , None                  , 0     , []          , _("Help Cover fallback")),
-			(_("Search cover language")                         , config.MVC.cover_language            , None                  , None                  , 0     , []          , _("Help Cover language")),
-			(_("Search cover size")                             , config.MVC.cover_size                , None                  , None                  , 0     , []          , _("Help Cover size")),
-			(_("Search backdrop size")                          , config.MVC.backdrop_size             , None                  , None                  , 0     , []          , _("Help Backdrop size")),
-			(_("Download replace existing cover")               , config.MVC.cover_replace_existing    , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
-			(_("Download cover to flash")                       , config.MVC.cover_flash               , None                  , None                  , 0     , []          , _("Help Cover in flash")),
-			(_("Download cover bookmark")                       , config.MVC.cover_bookmark            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Cover bookmark")),
-			(_("Download cover automatically for recording")    , config.MVC.cover_auto_download       , None                  , None                  , 0     , []          , _("Help Cover auto download")),
-			(self.section                                       , _("TRASHCAN")                        , None                  , None                  , 0     , []          , ""),
-			(_("Enable trashcan")                               , config.MVC.trashcan_enable           , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
-			(_("Show trashcan directory")                       , config.MVC.trashcan_show             , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
-			(_("Show trashcan information")                     , config.MVC.trashcan_info             , None                  , None                  , 0     , [-2, -1]    , _("Help Trashcan info")),
-			(_("Enable auto trashcan cleanup")                  , config.MVC.trashcan_clean            , None                  , None                  , 0     , [-3]        , _("Help Enable auto trashcan cleanup")),
-			(_("File retention period in trashcan")             , config.MVC.trashcan_retention        , None                  , None                  , 0     , [-4, -1]    , _("Help How many days files may remain in trashcan")),
-			(self.section                                       , _("LANGUAGE")                        , None                  , None                  , 1     , []          , ""),
-			(_("Preferred EPG language")                        , config.MVC.epglang                   , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
-			(_("Enable playback auto-subtitling")               , config.MVC.autosubs                  , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
-			(_("Primary playback subtitle language")            , config.MVC.sublang1                  , None                  , None                  , 1     , [-1]        , _("Help Primary playback subtitle language")),
-			(_("Secondary playback subtitle language")          , config.MVC.sublang2                  , None                  , None                  , 1     , [-2]        , _("Help Secondary playback subtitle language")),
-			(_("Tertiary playback subtitle language")           , config.MVC.sublang3                  , None                  , None                  , 1     , [-3]        , _("Help Tertiary playback subtitle language")),
-			(_("Enable playback auto-language selection")       , config.MVC.autoaudio                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-language selection")),
-			(_("Enable playback AC3-track first")               , config.MVC.autoaudio_ac3             , None                  , None                  , 1     , [-1]        , _("Help Enable playback AC3-track first")),
-			(_("Primary playback audio language")               , config.MVC.audlang1                  , None                  , None                  , 1     , [-2]        , _("Help Primary playback audio language")),
-			(_("Secondary playback audio language")             , config.MVC.audlang2                  , None                  , None                  , 1     , [-3]        , _("Help Secondary playback audio language")),
-			(_("Tertiary playback audio language")              , config.MVC.audlang3                  , None                  , None                  , 1     , [-4]        , _("Help Tertiary playback audio language")),
-			(self.section                                       , _("DEBUG")                           , None                  , None                  , 1     , []          , ""),
-			(_("Debug log")                                     , config.MVC.debug                     , self.setDebugMode     , None                  , 0     , []          , _("Help Debug")),
-			(_("Log file path")                                 , config.MVC.debug_log_path            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Log file path")),
+			(self.section                                       , _("GENERAL")                                          , None                  , None                  , 0     , []          , ""),
+			(_("About")                                         , config.plugins.moviecockpit.fake_entry                , None                  , self.showInfo         , 0     , []          , _("HELP About")),
+			(_("Disable plugin")                                , config.plugins.moviecockpit.disable                   , self.needsRestart     , None                  , 1     , []          , _("Help Disable Plugin")),
+			(_("Start plugin with key")                         , config.plugins.moviecockpit.launch_key                , self.needsRestart     , None                  , 0     , []          , _("Help Start plugin with key")),
+			(_("Show settings in extensions menu")              , config.plugins.moviecockpit.extmenu_settings          , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin config in extensions menu")),
+			(_("Show plugin in extensions menu")                , config.plugins.moviecockpit.extmenu_plugin            , self.needsRestart     , None                  , 0     , []          , _("Help Show plugin in extensions menu")),
+			(_("Movie home at start")                           , config.plugins.moviecockpit.list_start_home           , None                  , None                  , 0     , []          , _("Help Movie home at start")),
+			(_("Default sort mode")                             , config.plugins.moviecockpit.list_sort                 , None                  , None                  , 0     , []          , _("Help Sort mode at startup")),
+			(self.section                                       , _("KEY-MAPPING")                                      , None                  , None                  , 0     , []          , ""),
+			(_("Bouquet buttons behavior")                      , config.plugins.moviecockpit.list_bouquet_keys         , None                  , None                  , 0     , []          , _("Help Bouquet buttons behavior")),
+			(_("List entries to skip")                          , config.plugins.moviecockpit.list_skip_size            , None                  , None                  , 0     , []          , _("Help List entries to skip")),
+			(self.section                                       , _("PLAYBACK")                                         , None                  , None                  , 0     , []          , ""),
+			(_("No resume below 10 seconds")                    , config.plugins.moviecockpit.movie_ignore_firstcuts    , None                  , None                  , 1     , []          , _("Help No resume below 10 seconds")),
+			(_("Jump to first mark when playing movie")         , config.plugins.moviecockpit.movie_jump_first_mark     , None                  , None                  , 1     , []          , _("Help Jump to first mark when playing movie")),
+			(_("Zap to live TV of recording")                   , config.plugins.moviecockpit.record_eof_zap            , None                  , None                  , 1     , []          , _("Help Zap to Live TV of recording")),
+			(_("Automatic timers list cleaning")                , config.plugins.moviecockpit.timer_autoclean           , None                  , None                  , 1     , []          , _("Help Automatic timers list cleaning")),
+			(self.section                                       , _("DISPLAY-SETTINGS")                                 , None                  , None                  , 0     , []          , ""),
+			(_("Show directories")                              , config.plugins.moviecockpit.directories_show          , None                  , None                  , 0     , []          , _("Help Show directories")),
+			(_("Show directories within movie list")            , config.plugins.moviecockpit.directories_ontop         , None                  , None                  , 0     , [-1]        , _("Help Show directories within movielist")),
+			(_("Show directories information")                  , config.plugins.moviecockpit.directories_info          , None                  , None                  , 0     , [-2]        , _("Help Show directories information")),
+			(_("Cursor predictive move after selection")        , config.plugins.moviecockpit.list_selmove              , None                  , None                  , 0     , []          , _("Help Cursor predictive move after selection")),
+			(self.section                                       , _("SKIN-SETTINGS")                                    , None                  , None                  , 0     , []          , ""),
+			(_("Show mountpoints")                              , config.plugins.moviecockpit.movie_mountpoints         , None                  , None                  , 0     , []          , _("Help Show mountpoints")),
+			(_("Date format")                                   , config.plugins.moviecockpit.movie_date_format         , None                  , None                  , 0     , []          , _("Help Date format")),
+			(_("Path to movie picons")                          , config.plugins.moviecockpit.movie_picons_path         , self.validatePath     , self.openLocationBox  , 0     , []          , _("Help Path to movie picons")),
+			(_("Watching in progress percent")                  , config.plugins.moviecockpit.movie_watching_percent    , None                  , None                  , 0     , []          , _("Help Short watching percent")),
+			(_("Finished watching percent")                     , config.plugins.moviecockpit.movie_finished_percent    , None                  , None                  , 0     , []          , _("Help Finished watching percent")),
+			(_("Default color for movie")                       , config.plugins.moviecockpit.color                     , None                  , None                  , 0     , []          , _("Help Default color")),
+			(_("Default color for highlighted movie")           , config.plugins.moviecockpit.color_sel                 , None                  , None                  , 0     , []          , _("Help Default color highlighted")),
+			(_("Default color for recording movie")             , config.plugins.moviecockpit.recording_color           , None                  , None                  , 0     , []          , _("Help Default color recording")),
+			(_("Default color for highlighted recording movie") , config.plugins.moviecockpit.recording_color_sel       , None                  , None                  , 0     , []          , _("Help Default color recording highlighted")),
+			(_("Default color for selected movie")              , config.plugins.moviecockpit.selection_color           , None                  , None                  , 0     , []          , _("Help Default color selected")),
+			(_("Default color for highlighted selected movie")  , config.plugins.moviecockpit.selection_color_sel       , None                  , None                  , 0     , []          , _("Help Default color selected highlighted")),
+			(self.section                                       , _("MOVIE-COVER")                                      , None                  , None                  , 0     , []          , ""),
+			(_("Show fallback cover")                           , config.plugins.moviecockpit.cover_fallback            , None                  , None                  , 0     , []          , _("Help Cover fallback")),
+			(_("Search cover language")                         , config.plugins.moviecockpit.cover_language            , None                  , None                  , 0     , []          , _("Help Cover language")),
+			(_("Search cover size")                             , config.plugins.moviecockpit.cover_size                , None                  , None                  , 0     , []          , _("Help Cover size")),
+			(_("Search backdrop size")                          , config.plugins.moviecockpit.backdrop_size             , None                  , None                  , 0     , []          , _("Help Backdrop size")),
+			(_("Download replace existing cover")               , config.plugins.moviecockpit.cover_replace_existing    , None                  , None                  , 0     , []          , _("Help Cover replace existing cover")),
+			(_("Download cover to flash")                       , config.plugins.moviecockpit.cover_flash               , None                  , None                  , 0     , []          , _("Help Cover in flash")),
+			(_("Download cover bookmark")                       , config.plugins.moviecockpit.cover_bookmark            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Cover bookmark")),
+			(_("Download cover automatically for recording")    , config.plugins.moviecockpit.cover_auto_download       , None                  , None                  , 0     , []          , _("Help Cover auto download")),
+			(self.section                                       , _("TRASHCAN")                                         , None                  , None                  , 0     , []          , ""),
+			(_("Enable trashcan")                               , config.plugins.moviecockpit.trashcan_enable           , self.activateTrashcan , None                  , 0     , []          , _("Help Trashcan enable")),
+			(_("Show trashcan directory")                       , config.plugins.moviecockpit.trashcan_show             , None                  , None                  , 0     , [-1]        , _("Help Show trashcan directory")),
+			(_("Show trashcan information")                     , config.plugins.moviecockpit.trashcan_info             , None                  , None                  , 0     , [-2, -1]    , _("Help Trashcan info")),
+			(_("Enable auto trashcan cleanup")                  , config.plugins.moviecockpit.trashcan_clean            , None                  , None                  , 0     , [-3]        , _("Help Enable auto trashcan cleanup")),
+			(_("File retention period in trashcan")             , config.plugins.moviecockpit.trashcan_retention        , None                  , None                  , 0     , [-4, -1]    , _("Help How many days files may remain in trashcan")),
+			(self.section                                       , _("LANGUAGE")                                         , None                  , None                  , 1     , []          , ""),
+			(_("Preferred EPG language")                        , config.plugins.moviecockpit.epglang                   , ConfigScreen.setEPGLanguage, None             , 1     , []          , _("Help Preferred EPG language")),
+			(_("Enable playback auto-subtitling")               , config.plugins.moviecockpit.autosubs                  , None                  , None                  , 1     , []          , _("Help Enable playback auto-subtitling")),
+			(_("Primary playback subtitle language")            , config.plugins.moviecockpit.sublang1                  , None                  , None                  , 1     , [-1]        , _("Help Primary playback subtitle language")),
+			(_("Secondary playback subtitle language")          , config.plugins.moviecockpit.sublang2                  , None                  , None                  , 1     , [-2]        , _("Help Secondary playback subtitle language")),
+			(_("Tertiary playback subtitle language")           , config.plugins.moviecockpit.sublang3                  , None                  , None                  , 1     , [-3]        , _("Help Tertiary playback subtitle language")),
+			(_("Enable playback auto-language selection")       , config.plugins.moviecockpit.autoaudio                 , None                  , None                  , 1     , []          , _("Help Enable playback auto-language selection")),
+			(_("Enable playback AC3-track first")               , config.plugins.moviecockpit.autoaudio_ac3             , None                  , None                  , 1     , [-1]        , _("Help Enable playback AC3-track first")),
+			(_("Primary playback audio language")               , config.plugins.moviecockpit.audlang1                  , None                  , None                  , 1     , [-2]        , _("Help Primary playback audio language")),
+			(_("Secondary playback audio language")             , config.plugins.moviecockpit.audlang2                  , None                  , None                  , 1     , [-3]        , _("Help Secondary playback audio language")),
+			(_("Tertiary playback audio language")              , config.plugins.moviecockpit.audlang3                  , None                  , None                  , 1     , [-4]        , _("Help Tertiary playback audio language")),
+			(self.section                                       , _("DEBUG")                                            , None                  , None                  , 1     , []          , ""),
+			(_("Debug log")                                     , config.plugins.moviecockpit.debug                     , self.setDebugMode     , None                  , 0     , []          , _("Help Debug")),
+			(_("Log file path")                                 , config.plugins.moviecockpit.debug_log_path            , self.validatePath     , self.openLocationBox  , 0     , [-1]        , _("Help Log file path")),
 		]
 
 	def handleInputHelpers(self):
@@ -257,7 +257,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 					# Loop fell through without a break
 					if conf[0] == self.section:
 						if len(self.list) > 1:
-							self.list.append(getConfigListEntry("", config.MVC.fake_entry, None, None, 0, [], ""))
+							self.list.append(getConfigListEntry("", config.plugins.moviecockpit.fake_entry, None, None, 0, [], ""))
 						if conf[1] == "":
 							self.list.append(getConfigListEntry("<DUMMY CONFIGSECTION>",))
 						else:
@@ -303,7 +303,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			if current:
 				current[3](current[1])
 		except Exception:
-			pass
+			print("MVC-E: ConfigScreen: keyOK: function execution failed")
 
 	def keySaveNew(self):
 		for i, entry in enumerate(self.list):
@@ -311,7 +311,8 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 				if entry[1].isChanged():
 					if entry[2]:
 						# execute value changed -function
-						if entry[2](entry[1]):
+						if not entry[2](entry[1]):
+							print("MVC-E: ConfigScreen: keySaveNew: function called on save failed")
 							# Stop exiting, user has to correct the config
 							return
 					# Check parent entries
@@ -352,7 +353,7 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 		else:
 			cmd = "sed -i 's/print(\"MVC:/#print(\"MVC:/g' " + py_files
 			#print("MVC: ConfigScreen: setDebugMode: cmd: %s" % cmd)
-			#os.system(cmd)
+			os.system(cmd)
 			cmd = "sed -i 's/##print(\"MVC:/#print(\"MVC:/g' " + py_files
 			#print("MVC: ConfigScreen: setDebugMode: cmd: %s" % cmd)
 			os.system(cmd)
@@ -360,9 +361,10 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 
 	@staticmethod
 	def setEPGLanguage(_element=None):
-		if config.MVC.epglang.value:
-			#print("MVC: ConfigScreen: setEPGLanguage: %s" % config.MVC.epglang.value)
-			eServiceEvent.setEPGLanguage(config.MVC.epglang.value)
+		if config.plugins.moviecockpit.epglang.value:
+			#print("MVC: ConfigScreen: setEPGLanguage: %s" % config.plugins.moviecockpit.epglang.value)
+			eServiceEvent.setEPGLanguage(config.plugins.moviecockpit.epglang.value)
+		return True
 
 	def activateTrashcan(self, element):
 		if element.value:
@@ -370,10 +372,13 @@ class ConfigScreen(ConfigListScreen, Screen, object):
 			if rc > 0:
 				msg = _("Cannot create trashcan") + "\n" + _("Check mounts and permissions")
 				self.session.open(MessageBox, msg, MessageBox.TYPE_INFO, 10)
-			config.MVC.trashcan_enable.save()
+				return False
+			config.plugins.moviecockpit.trashcan_enable.save()
+		return True
 
 	def needsRestart(self, _element=None):
 		self.needs_restart_flag = True
+		return True
 
 	def openLocationBox(self, element):
 		if element:

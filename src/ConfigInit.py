@@ -27,7 +27,7 @@ from Tools.ISO639 import ISO639Language
 from MountPoints import MountPoints
 
 
-class Autoselect639Language(ISO639Language, object):
+class Autoselect639Language(ISO639Language):
 
 	def __init__(self):
 		ISO639Language.__init__(self, self.TERTIARY)
@@ -59,6 +59,7 @@ class Autoselect639Language(ISO639Language, object):
 def langList():
 	iso639 = Autoselect639Language()
 	newlist = iso639.getTranslatedChoicesDictAndSortedListAndDefaults()[1]
+	#print("MVC: ConfigInit: langList: %s" % str(newlist))
 	return newlist
 
 
@@ -124,10 +125,10 @@ choices_bqt = [
 
 
 sort_modes = {
-	0: (("date", False),	_("Date sort down")),
-	1: (("date", True), 	_("Date sort up")),
-	2: (("alpha", False),	_("Alpha sort up")),
-	3: (("alpha", True),	_("Alpha sort down"))
+	"0": (("date", False),	_("Date sort down")),
+	"1": (("date", True), 	_("Date sort up")),
+	"2": (("alpha", False),	_("Alpha sort up")),
+	"3": (("alpha", True),	_("Alpha sort down"))
 }
 
 
@@ -156,7 +157,9 @@ choices_color_mark = [
 ] + choices_color_selection
 
 
-class ConfigInit(MountPoints, object):
+class ConfigInit(MountPoints):
+
+	config = None
 
 	def checkList(self, cfg):
 		for choices in cfg.choices.choices:
@@ -170,72 +173,75 @@ class ConfigInit(MountPoints, object):
 
 	def __init__(self):
 		#print("MVC: ConfigInit: __init__")
-		config.MVC                           = ConfigSubsection()
-		config.MVC.fake_entry                = NoSave(ConfigNothing())
-		config.MVC.plugin_extmenu_settings   = ConfigYesNo(default=True)
-		config.MVC.plugin_extmenu_plugin     = ConfigYesNo(default=True)
-		config.MVC.epglang                   = ConfigSelection(default=language.getActiveLanguage(), choices=langList())
-		config.MVC.sublang1                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.sublang2                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.sublang3                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.audlang1                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.audlang2                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.audlang3                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
-		config.MVC.autosubs                  = ConfigYesNo(default=False)
-		config.MVC.autoaudio                 = ConfigYesNo(default=False)
-		config.MVC.autoaudio_ac3             = ConfigYesNo(default=False)
-		config.MVC.plugin_disable            = ConfigYesNo(default=False)
-		config.MVC.list_start_home           = ConfigYesNo(default=True)
-		config.MVC.movie_description_delay   = ConfigNumber(default=200)
-		config.MVC.cover_flash               = ConfigYesNo(default=False)
-		config.MVC.cover_bookmark            = ConfigText(default="/data/movie", fixed_size=False, visible_width=22)
-		config.MVC.cover_fallback            = ConfigYesNo(default=False)
-		config.MVC.cover_replace_existing    = ConfigYesNo(default=False)
-		config.MVC.cover_auto_download       = ConfigYesNo(default=False)
-		config.MVC.cover_language            = ConfigSelection(default='de', choices=[('en', _('English')), ('de', _('German')), ('it', _('Italian')), ('es', _('Spanish')), ('fr', _('French')), ('pt', _('Portuguese'))])
-		config.MVC.cover_size                = ConfigSelection(default="w500", choices=["w92", "w185", "w500", "original"])
-		config.MVC.backdrop_size             = ConfigSelection(default="w1280", choices=["w300", "w780", "w1280", "original"])
-		config.MVC.movie_mountpoints         = ConfigYesNo(default=False)
-		config.MVC.movie_picons_path         = ConfigText(default="/usr/share/enigma2/picon", fixed_size=False, visible_width=35)
-		config.MVC.movie_watching_percent    = ConfigSelectionNumber(0, 30, 1, default=10)
-		config.MVC.movie_finished_percent    = ConfigSelectionNumber(50, 100, 1, default=90)
-		config.MVC.movie_date_format         = ConfigSelection(default="%d.%m.%Y %H:%M", choices=choices_date)
-		config.MVC.movie_ignore_firstcuts    = ConfigYesNo(default=True)
-		config.MVC.movie_jump_first_mark     = ConfigYesNo(default=False)
-		config.MVC.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
-		config.MVC.trashcan_enable           = ConfigYesNo(default=False)
-		config.MVC.trashcan_show             = ConfigYesNo(default=True)
-		config.MVC.trashcan_info             = ConfigSelection(default="C", choices=choices_dir_info)
-		config.MVC.trashcan_clean            = ConfigYesNo(default=True)
-		config.MVC.trashcan_retention        = ConfigNumber(default=3)
-		config.MVC.directories_show          = ConfigYesNo(default=False)
-		config.MVC.directories_ontop         = ConfigYesNo(default=False)
-		config.MVC.directories_info          = ConfigSelection(default="", choices=choices_dir_info)
-		config.MVC.color                     = ConfigSelection(default="#bababa", choices=choices_color_selection)
-		config.MVC.color_sel                 = ConfigSelection(default="#ffffff", choices=choices_color_selection)
-		config.MVC.recording_color           = ConfigSelection(default="#ff1616", choices=choices_color_recording)
-		config.MVC.recording_color_sel       = ConfigSelection(default="#ff3838", choices=choices_color_recording)
-		config.MVC.selection_color           = ConfigSelection(default="#cccc00", choices=choices_color_mark)
-		config.MVC.selection_color_sel       = ConfigSelection(default="#ffff00", choices=choices_color_mark)
-		config.MVC.list_sort                 = ConfigSelection(default=0, choices=choices_sort)
-		config.MVC.list_selmove              = ConfigSelection(default="d", choices=choices_move)
-		config.MVC.list_style                = ConfigNumber(default=1)
-		config.MVC.timer_autoclean           = ConfigYesNo(default=False)
-		config.MVC.plugin_launch_key         = ConfigSelection(default="showMovies", choices=choices_launch_key)
-		config.MVC.list_bouquet_keys         = ConfigSelection(default="", choices=choices_bqt)
-		config.MVC.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
-		config.MVC.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
-		config.MVC.debug                     = ConfigYesNo(default=False)
-		config.MVC.debug_log_path            = ConfigText(default="/media/hdd", fixed_size=False, visible_width=35)
+		MountPoints.__init__(self)
+		config.plugins.moviecockpit                           = ConfigSubsection()
+		config.plugins.moviecockpit.fake_entry                = NoSave(ConfigNothing())
+		config.plugins.moviecockpit.extmenu_settings          = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.extmenu_plugin            = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.epglang                   = ConfigSelection(default=language.getActiveLanguage()[:2], choices=langList())
+		config.plugins.moviecockpit.sublang1                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.sublang2                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.sublang3                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.audlang1                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.audlang2                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.audlang3                  = ConfigSelection(default=language.lang[language.getActiveLanguage()][0], choices=langList())
+		config.plugins.moviecockpit.autosubs                  = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.autoaudio                 = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.autoaudio_ac3             = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.disable                   = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.list_start_home           = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.movie_description_delay   = ConfigNumber(default=200)
+		config.plugins.moviecockpit.cover_flash               = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.cover_bookmark            = ConfigText(default="/data/movie", fixed_size=False, visible_width=22)
+		config.plugins.moviecockpit.cover_fallback            = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.cover_replace_existing    = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.cover_auto_download       = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.cover_language            = ConfigSelection(default=language.getActiveLanguage()[:2], choices=langList())
+		config.plugins.moviecockpit.cover_size                = ConfigSelection(default="w500", choices=["w92", "w185", "w500", "original"])
+		config.plugins.moviecockpit.backdrop_size             = ConfigSelection(default="w1280", choices=["w300", "w780", "w1280", "original"])
+		config.plugins.moviecockpit.movie_mountpoints         = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.movie_picons_path         = ConfigText(default="/usr/share/enigma2/picon", fixed_size=False, visible_width=35)
+		config.plugins.moviecockpit.movie_watching_percent    = ConfigSelectionNumber(0, 30, 1, default=10)
+		config.plugins.moviecockpit.movie_finished_percent    = ConfigSelectionNumber(50, 100, 1, default=90)
+		config.plugins.moviecockpit.movie_date_format         = ConfigSelection(default="%d.%m.%Y %H:%M", choices=choices_date)
+		config.plugins.moviecockpit.movie_ignore_firstcuts    = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.movie_jump_first_mark     = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
+		config.plugins.moviecockpit.trashcan_enable           = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.trashcan_show             = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.trashcan_info             = ConfigSelection(default="C", choices=choices_dir_info)
+		config.plugins.moviecockpit.trashcan_clean            = ConfigYesNo(default=True)
+		config.plugins.moviecockpit.trashcan_retention        = ConfigNumber(default=3)
+		config.plugins.moviecockpit.directories_show          = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.directories_ontop         = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.directories_info          = ConfigSelection(default="", choices=choices_dir_info)
+		config.plugins.moviecockpit.color                     = ConfigSelection(default="#bababa", choices=choices_color_selection)
+		config.plugins.moviecockpit.color_sel                 = ConfigSelection(default="#ffffff", choices=choices_color_selection)
+		config.plugins.moviecockpit.recording_color           = ConfigSelection(default="#ff1616", choices=choices_color_recording)
+		config.plugins.moviecockpit.recording_color_sel       = ConfigSelection(default="#ff3838", choices=choices_color_recording)
+		config.plugins.moviecockpit.selection_color           = ConfigSelection(default="#cccc00", choices=choices_color_mark)
+		config.plugins.moviecockpit.selection_color_sel       = ConfigSelection(default="#ffff00", choices=choices_color_mark)
+		config.plugins.moviecockpit.list_sort                 = ConfigSelection(default="0", choices=choices_sort)
+		config.plugins.moviecockpit.list_selmove              = ConfigSelection(default="d", choices=choices_move)
+		config.plugins.moviecockpit.list_style                = ConfigNumber(default=1)
+		config.plugins.moviecockpit.timer_autoclean           = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.launch_key                = ConfigSelection(default="showMovies", choices=choices_launch_key)
+		config.plugins.moviecockpit.list_bouquet_keys         = ConfigSelection(default="", choices=choices_bqt)
+		config.plugins.moviecockpit.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
+		config.plugins.moviecockpit.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
+		config.plugins.moviecockpit.debug                     = ConfigYesNo(default=False)
+		config.plugins.moviecockpit.debug_log_path            = ConfigText(default="/media/hdd", fixed_size=False, visible_width=35)
 
-		config.MVCStyles                     = ConfigSubsection()
-		config.MVCStyles.style               = ConfigSubDict()
-		config.MVCStyles.preset              = ConfigSubDict()
+		config.plugins.MVC                                    = ConfigSubsection()
+		config.plugins.MVC.style                              = ConfigSubDict()
+		config.plugins.MVC.preset                             = ConfigSubDict()
 
-		self.checkList(config.MVC.epglang)
-		self.checkList(config.MVC.sublang1)
-		self.checkList(config.MVC.sublang2)
-		self.checkList(config.MVC.sublang3)
-		self.checkList(config.MVC.audlang1)
-		self.checkList(config.MVC.audlang2)
-		self.checkList(config.MVC.audlang3)
+		self.checkList(config.plugins.moviecockpit.epglang)
+		self.checkList(config.plugins.moviecockpit.sublang1)
+		self.checkList(config.plugins.moviecockpit.sublang2)
+		self.checkList(config.plugins.moviecockpit.sublang3)
+		self.checkList(config.plugins.moviecockpit.audlang1)
+		self.checkList(config.plugins.moviecockpit.audlang2)
+		self.checkList(config.plugins.moviecockpit.audlang3)
+
+		self.config = config

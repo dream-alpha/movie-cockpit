@@ -26,7 +26,7 @@ from Components.config import config
 from time import localtime, strftime, gmtime
 
 
-class MVCClockToText(Converter, object):
+class MVCClockToText(Converter):
 	DEFAULT = 0
 	WITH_SECONDS = 1
 	IN_MINUTES = 2

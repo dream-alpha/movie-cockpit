@@ -23,18 +23,22 @@ import os
 from Components.config import config
 import NavigationInstance
 from timer import TimerEntry
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 from Tasker import tasker
 from CutList import CutList
 
 
-class RecordingControl(CutList, object):
+class RecordingControl(CutList):
+
 	def __init__(self):
 		print("MVC-I: RecordingControl: __init__")
+		CutList.__init__(self)
 		# Register for recording events
 		NavigationInstance.instance.RecordTimer.on_state_change.append(self.recordingEvent)
 		# check for active recordings not yet in cache
 		self.check4ActiveRecordings()
+		if config.plugins.moviecockpit.timer_autoclean.value:
+			NavigationInstance.instance.RecordTimer.cleanup()
 
 	def recordingEvent(self, timer):
 		from FileCacheLoad import FileCacheLoad
@@ -50,22 +54,20 @@ class RecordingControl(CutList, object):
 
 			elif timer.state == TimerEntry.StateRunning:
 				#print("MVC: RecordingControl: recordingEvent: REC START for: " + timer.Filename)
-				DelayedFunction(250, FileCacheLoad.getInstance().loadDatabaseFile, timer.Filename)
-				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
-				if config.MVC.cover_auto_download.value:
-					DelayedFunction(1000, self.autoCoverDownload, timer.Filename)
+				DelayTimer(250, FileCacheLoad.getInstance().loadDatabaseFile, timer.Filename)
+				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
+				if config.plugins.moviecockpit.cover_auto_download.value:
+					DelayTimer(1000, self.autoCoverDownload, timer.Filename)
 
 			elif timer.state == TimerEntry.StateEnded or timer.state == TimerEntry.StateWaiting:
 				#print("MVC: RecordingControl: recordingEvent: REC END for: " + timer.Filename)
 				FileCache.getInstance().update(timer.Filename, psize=os.path.getsize(timer.Filename))
-				DelayedFunction(500, self.reloadList, os.path.dirname(timer.Filename))
+				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
 				# [Cutlist.Workaround] Initiate the Merge
 				self.updateFromCuesheet(timer.Filename)
 				if hasattr(timer, "move_recording_cmd"):
 					#print("MVC: RecordingControl: recordingEvent: file had been moved while recording was in progress, moving left over files...")
 					tasker.shellExecute(timer.move_recording_cmd)
-				if config.MVC.timer_autoclean.value:
-					DelayedFunction(2000, NavigationInstance.instance.RecordTimer.cleanup)  # postpone to avoid crash in basic timer delete by user
 
 	def autoCoverDownload(self, path):
 		from MovieCoverDownload import MovieCoverDownload

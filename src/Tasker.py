@@ -18,49 +18,42 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
 
+
+import random
 from enigma import eConsoleAppContainer
 from collections import Callable, deque
 from pipes import quote
 from itertools import izip_longest
 
 
-class Executioner(object):
+class Executioner():
 
-	def __init__(self, _identifier):
+	def __init__(self):
 		self.container = eConsoleAppContainer()
-		try:
-			self.container_appClosed_conn = self.container.appClosed.connect(self.runFinished)
-			# this will cause interfilesystem transfers to stall Enigma
-			self.container_dataAvail_conn = self.container.dataAvail.connect(self.dataAvail)
-		except Exception:
-			self.container_appClosed_conn = None
-			self.container_dataAvail_conn = None
-			self.container.appClosed.append(self.runFinished)
-			self.container.dataAvail.append(self.dataAvail)  # this will cause interfilesystem transfers to stall Enigma
+		self.container_appClosed_conn = self.container.appClosed.connect(self.runFinished)
 		self.script = deque()
 		self.associated = deque()
 		self.executing = ""
-		self.returnData = ""
 
 	def isIdle(self):
 		return len(self.script) == 0
 
 	def shellExecute(self, script, associated=None, sync=False):
 		# Parameters:
-		#  script = single command:   cmd
-		#			list of commands: [cmd, cmd]
+		#  script =	single command:   cmd
+		#		list of commands: [cmd, cmd]
 		#  associated = single callback: callback
-		#				single tuple:    (callback, args)
-		#				list of tuples:  [(callback),(callback, args),(...)]
+		#		single tuple:    (callback, args)
+		#		list of tuples:  [(callback),(callback, args),(...)]
 		#    callback = function to be executed
-		#    args = single parameter:    arg or (arg) or (a, b) or [a,b]
-		#			multiple parameters: arg1, arg2
+		#    args =	single parameter:    arg or (arg) or (a, b) or [a,b]
+		#		multiple parameters: arg1, arg2
 		#  sync (synchronous callback):
 		#    True  = After every command, one callback entry is executed, additionally callbacks will be executed after the last command
-		#            If the callback entry is a tuple or list, alle subcallbacks will be executed
+		#	     If the callback entry is a tuple or list, all subcallbacks will be executed
 		#    False = All callbacks are executed at the end
+
 		if not sync or not isinstance(script, list):
 			# Single command execution
 			#print("MVC: Tasker: shellExecute: single script: " + str(script))
@@ -93,7 +86,7 @@ class Executioner(object):
 
 	def runFinished(self, _retval=None):
 		associated = self.associated.popleft()
-		#print("MVC: Tasker: runFinished: sh exec %s finished, return status = %s %s" % (self.executing, str(_retval), self.returnData))
+		#print("MVC: Tasker: runFinished: sh exec %s finished, return status = %s" % (self.executing, str(_retval)))
 		if associated:
 			#P3 for foo, bar, *other in tuple:
 			for fargs in associated:
@@ -107,28 +100,22 @@ class Executioner(object):
 				else:
 					if isinstance(fargs, Callable):
 						fargs()
-		self.returnData = ""
 
 		if self.script:
-			# There is more to be executed
+			# there is more to be executed
 			#print("MVC: Tasker: runFinisched: sh exec rebound")
 			self.execCurrent()
 		else:
 			self.executing = ""
 
-	def dataAvail(self, string):
-		self.returnData += "\n" + string.replace("\n", "")
 
-
-class Tasker(object):
+class Tasker():
 
 	def __init__(self):
-		self.minutes = 0
-		self.timerActive = False
 		self.executioners = []
-		self.executioners.append(Executioner("A"))
-		self.executioners.append(Executioner("B"))
-		self.executioners.append(Executioner("C"))
+		self.executioners.append(Executioner())
+		self.executioners.append(Executioner())
+		self.executioners.append(Executioner())
 
 	def shellExecute(self, script, associated=None, sync=False):
 		for x in self.executioners:
@@ -136,7 +123,6 @@ class Tasker(object):
 				x.shellExecute(script, associated, sync)
 				return
 		# all were busy, just append to any task list randomly
-		import random
 		self.executioners[random.randint(0, 2)].shellExecute(script, associated, sync)
 
 

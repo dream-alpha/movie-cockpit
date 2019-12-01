@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from FileUtils import readFile
@@ -32,7 +32,7 @@ META_IDX_FILESIZE = 6
 
 
 # http://git.opendreambox.org/?p=enigma2.git;a=blob;f=doc/FILEFORMAT
-class ParserMetaFile(object):
+class ParserMetaFile():
 
 	def __init__(self, path=None):
 		self.meta = {}

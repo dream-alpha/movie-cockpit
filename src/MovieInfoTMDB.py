@@ -47,9 +47,11 @@ TEMP_BACKDROP_PATH = "/tmp/preview_cover.backdrop.jpg"
 TEMP_INFO_PATH = "/tmp/preview_info.txt"
 
 
-class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks, object):
+class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks):
+
 	def __init__(self, session, path, name):
 		#print("MVC: MovieInfoTMDB: __init__: path: %s, name: %s" % (path, name))
+		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 		MovieCoverDownload.__init__(self)
 		self.skinName = "MVCMovieInfoTMDB"
@@ -126,7 +128,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks, object):
 		self.selection = self["previewlist"].l.getCurrentSelection()
 		#print("MVC: MovieInfoTMDB: getInfoAndCoverForCurrentSelection: selection: " + str(self.selection))
 		if self.selection:
-			self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.MVC.cover_language.value)
+			self.info = self.getTMDBInfo(self.selection[SELECTION_ID], self.selection[SELECTION_TYPE], config.plugins.moviecockpit.cover_language.value)
 			self.saveInfo(info_path, self.info)
 			self.downloadCover(self.info[INFO_COVER_URL], cover_path, self.info[INFO_BACKDROP_URL])
 
@@ -182,7 +184,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks, object):
 		if self.info:
 			#print("MVC: MovieInfoTMDB: switchPage: info available")
 			self["movie_name"].setText(self.name)
-			print("MVC: MovieInfoTMDB: switchPage: self.info: %s" % str(self.info))
+			#print("MVC: MovieInfoTMDB: switchPage: self.info: %s" % str(self.info))
 			content, runtime, genres, countries, release, vote, _cover_url, _backdrop_url = self.info
 			self["contenttxt"].setText(content)
 			if runtime != "":
@@ -211,7 +213,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks, object):
 			self["movie_name"].setText(_("Search results for") + ": " + self.search_name)
 			self["contenttxt"].setText(_("No cover found"))
 			self["contenttxt"].show()
-		self.coverTimer.start(int(config.MVC.movie_description_delay.value), True)
+		self.coverTimer.start(int(config.plugins.moviecockpit.movie_description_delay.value), True)
 
 	def save(self):
 		#print("MVC: MovieInfoTMDB: save: self.path: %s" % self.path)

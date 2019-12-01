@@ -37,7 +37,7 @@ from Tools.ISO639 import LanguageCodes as langC
 from Components.Language import language
 from Tools.Notifications import AddPopup
 from ServiceReference import ServiceReference
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 from CutListUtils import secondsToPts, backupCutsFile
 from InfoBarSupport import InfoBarSupport
 from Components.Sources.MVCCurrentService import MVCCurrentService
@@ -46,15 +46,15 @@ from ServiceUtils import sidDVB
 from RecordingUtils import isRecording, getRecording
 from MovieInfoEPG import MovieInfoEPG
 
-class MVCMoviePlayerSummary(Screen, object):
+class MVCMediaCenterSummary(Screen):
 
 	def __init__(self, session, parent):
 		Screen.__init__(self, session, parent)
-		self.skinName = "MVCMoviePlayerSummary"
+		self.skinName = "MVCMediaCenterSummary"
 		self["Service"] = MVCCurrentService(session.nav, parent)
 
 
-class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
+class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
@@ -121,8 +121,8 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 			if self.service and self.service.type != sidDVB:
 				self.realSeekLength = self.getSeekLength()
 
-			DelayedFunction(50, self.setAudioTrack)
-			DelayedFunction(50, self.setSubtitleState, True)
+			DelayTimer(50, self.setAudioTrack)
+			DelayTimer(50, self.setSubtitleState, True)
 		else:
 			self.session.open(
 				MessageBox,
@@ -182,7 +182,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 		self.skip = 10
 		try:
 			#print("MVC: MediaCenter: setAudioTrack: audio")
-			if not config.MVC.autoaudio.value:
+			if not config.plugins.moviecockpit.autoaudio.value:
 				return
 			service = self.session.nav.getCurrentService()
 			tracks = service and self.getServiceInterface("audioTracks")
@@ -203,13 +203,13 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 				trackList += [track]
 			seltrack = tracks.getCurrentTrack()
 			# we need default selected language from image
-			# to set the audio track if "config.MVC.autoaudio.value" are not set
+			# to set the audio track if "config.plugins.moviecockpit.autoaudio.value" are not set
 			syslang = language.getLanguage()[:2]
-			if config.MVC.autoaudio.value:
-				audiolang = [config.MVC.audlang1.value, config.MVC.audlang2.value, config.MVC.audlang3.value]
+			if config.plugins.moviecockpit.autoaudio.value:
+				audiolang = [config.plugins.moviecockpit.audlang1.value, config.plugins.moviecockpit.audlang2.value, config.plugins.moviecockpit.audlang3.value]
 			else:
 				audiolang = syslang
-			useAc3 = config.MVC.autoaudio_ac3.value	  # mvc has new value, in some images it gives different values for that
+			useAc3 = config.plugins.moviecockpit.autoaudio_ac3.value	  # mvc has new value, in some images it gives different values for that
 			if useAc3:
 				matchedAc3 = self.tryAudioTrack(tracks, audiolang, trackList, seltrack, useAc3)
 				if matchedAc3:
@@ -218,7 +218,6 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 				if matchedMpeg:
 					return
 				tracks.selectTrack(0)  # fallback to track 1(0)
-				return
 			else:
 				matchedMpeg = self.tryAudioTrack(tracks, audiolang, trackList, seltrack, False)
 				if matchedMpeg:
@@ -288,7 +287,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 
 	def setSubtitleState(self, enabled):
 		try:
-			if not config.MVC.autosubs.value or not enabled:
+			if not config.plugins.moviecockpit.autosubs.value or not enabled:
 				return
 
 			subs = self.getCurrentServiceSubtitle() if isinstance(self, InfoBarSubtitleSupport) else None
@@ -325,7 +324,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 					l.append((e[0], e[1], e[2][0] in langC and langC[e[2][0]][0] or e[2][0]))
 					if l:
 						#print("MVC: MediaCenter: setSubtitleState: " + str(l))
-						for sublang in [config.MVC.sublang1.value, config.MVC.sublang2.value, config.MVC.sublang3.value]:
+						for sublang in [config.plugins.moviecockpit.sublang1.value, config.plugins.moviecockpit.sublang2.value, config.plugins.moviecockpit.sublang3.value]:
 							if self.trySubEnable(l, sublang):
 								break
 		except Exception as e:
@@ -341,7 +340,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 
 		if not reopen:
 			#print("MVC: MediaCenter: leavePlayer: closed due to EOF")
-			if config.MVC.record_eof_zap.value == "1":
+			if config.plugins.moviecockpit.record_eof_zap.value == "1":
 				AddPopup(
 					_("Zap to live TV of recording"),
 					MessageBox.TYPE_INFO,
@@ -381,7 +380,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 
 		timer = self.service and isRecording(self.service.getPath())
 		if timer:
-			if int(config.MVC.record_eof_zap.value) < 2:
+			if int(config.plugins.moviecockpit.record_eof_zap.value) < 2:
 				self.lastservice = timer.service_ref.ref
 				print("MVC-I: MediaCenter: doEofInternal: self.lastservice: %s" % (self.lastservice.toString() if self.lastservice else None))
 				self.leavePlayer(reopen=False)
@@ -403,4 +402,4 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport, object):
 
 
 	def createSummary(self):
-		return MVCMoviePlayerSummary
+		return MVCMediaCenterSummary

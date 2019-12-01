@@ -26,7 +26,7 @@ from enigma import iServiceInformation
 from ServiceReference import ServiceReference
 
 
-class MVCMovieInfo(MovieInfo, object):
+class MVCMovieInfo(MovieInfo):
 	def __init__(self, ptype):
 		MovieInfo.__init__(self, ptype)
 

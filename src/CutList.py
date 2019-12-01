@@ -30,7 +30,10 @@ from FileUtils import readFile, writeFile, deleteFile
 # cut_list[x][0] = pts  = long long
 # cut_list[x][1] = what = long
 
-class CutList(object):
+class CutList():
+
+	def __init__(self):
+		pass
 
 	def updateFromCuesheet(self, path):
 		#print("MVC: CutList: updateFromCuesheet")

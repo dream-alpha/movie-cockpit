@@ -37,14 +37,14 @@ def initLogFile():
 	os.system("rm /media/hdd/enigma2_crash_*")
 
 def createTarFile():
-	os.system("rm " + os.path.join(config.MVC.debug_log_path.value, LOG_FILE + "*.tar.gz"))
-	tar_file = os.path.join(config.MVC.debug_log_path.value, LOG_FILE + "_" + time.strftime("%Y%m%d_%H%M%S" + ".tar.gz"))
+	os.system("rm " + os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "*.tar.gz"))
+	tar_file = os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "_" + time.strftime("%Y%m%d_%H%M%S" + ".tar.gz"))
 	print("MVC-I: Debug: createTarFile: %s" % tar_file)
-	os.system("tar -zcf " + tar_file + " /media/hdd/enigma2_crash_* " + os.path.join(config.MVC.debug_log_path.value, LOG_FILE + "*"))
+	os.system("tar -zcf " + tar_file + " /media/hdd/enigma2_crash_* " + os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "*"))
 
 
 def createLogFile():
-	log_file = os.path.join(config.MVC.debug_log_path.value, LOG_FILE + "_" + time.strftime("%Y%m%d_%H%M%S" + ".log"))
+	log_file = os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "_" + time.strftime("%Y%m%d_%H%M%S" + ".log"))
 	print("MVC-I: Debug: createLogFile: %s" % log_file)
-	os.system("rm " + os.path.join(config.MVC.debug_log_path.value, LOG_FILE + "*.log"))
+	os.system("rm " + os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "*.log"))
 	os.system("journalctl | grep MVC > " + log_file)

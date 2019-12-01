@@ -32,7 +32,7 @@ instance = None
 
 def str2date(date_string, path=""):
 	date = None
-	#print("MVC: FileCache: str2date: %s" % date_string)
+	#print("MVC: ServiceCenter: str2date: %s" % date_string)
 	try:
 		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
 	except ValueError:
@@ -41,7 +41,7 @@ def str2date(date_string, path=""):
 	return date
 
 
-class ServiceCenter(object):
+class ServiceCenter():
 
 	def __init__(self):
 		global instance
@@ -58,7 +58,7 @@ class ServiceCenter(object):
 		return ServiceInfo(service)
 
 
-class ServiceInfo(object):
+class ServiceInfo():
 
 	def __init__(self, service):
 		self.info = None
@@ -97,7 +97,7 @@ class ServiceInfo(object):
 		return self.info and self.info.getMTime()
 
 
-class Info(object):
+class Info():
 
 	def __init__(self, service):
 		filetype, name, date, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", "", ""
@@ -144,7 +144,7 @@ class Info(object):
 		return self.__extendeddescription
 
 	def getBeginTimeString(self):
-		return self.__date.strftime(config.MVC.movie_date_format.value)
+		return self.__date.strftime(config.plugins.moviecockpit.movie_date_format.value)
 
 	def getMTime(self):
 		return self.__mtime

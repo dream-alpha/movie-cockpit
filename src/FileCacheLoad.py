@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 import datetime
@@ -33,15 +33,16 @@ from FileUtils import readFile
 from ServiceCenter import str2date
 from FileCache import FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileCacheSQL import FileCacheSQL
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 
 instance = None
 
 
-class FileCacheLoad(FileCacheSQL, Bookmarks, object):
+class FileCacheLoad(FileCacheSQL, Bookmarks):
 
 	def __init__(self):
 		print("MVC-I: FileCacheLoad: __init__")
+		Bookmarks.__init__(self)
 		FileCacheSQL.__init__(self)
 
 	@staticmethod
@@ -66,14 +67,14 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		if self.load_list:
 			path, filetype = self.load_list.pop(0)
 			self.loadDatabaseFile(path, filetype)
-			DelayedFunction(10, self.nextFileOp, callback)
+			DelayTimer(10, self.nextFileOp, callback)
 		else:
 			#print("MVC: FileCacheLoad: nextFileOp: done.")
 			if callback:
 				callback()
 
 	def loadDatabase(self, dirs=None, sync=False, callback=None):
-		print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
+		#print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
 		if dirs is None:
 			dirs = self.getBookmarks()
 		self.clearDatabase()
@@ -82,7 +83,7 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 			for path, filetype in self.load_list:
 				self.loadDatabaseFile(path, filetype)
 		else:
-			DelayedFunction(10, self.nextFileOp, callback)
+			DelayTimer(10, self.nextFileOp, callback)
 
 	### database directory functions
 
@@ -121,11 +122,11 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 					name = name.decode("iso-8859-1").encode("utf-8")
 			return name
 
-		ext, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
+		ext, short_description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
 		size, length = 0, 0
 		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 		name = convertToUtf8(os.path.basename(path))
-		filedata = (os.path.dirname(path), FILE_TYPE_DIR, path, os.path.basename(path), ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+		filedata = (os.path.dirname(path), FILE_TYPE_DIR, path, os.path.basename(path), ext, name, date, length, short_description, extended_description, service_reference, size, cuts, tags)
 		return filedata
 
 	def __newFileData(self, path):
@@ -161,7 +162,7 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		filepath, ext = os.path.splitext(path)
 		filename = os.path.basename(filepath)
 
-		description, extended_description, service_reference, tags = "", "", "", ""
+		short_description, extended_description, service_reference, tags = "", "", "", ""
 		length = 0
 		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
 		size = os.path.getsize(path)
@@ -194,8 +195,12 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 			if length == 0:
 				length = eit.get("duration", 0)
 
-			description = eit.get("short_description", "")
+			short_description = eit.get("short_description", "")
 			extended_description = eit.get("description", "")
+
+			if short_description.startswith(eit_name):
+				short_description = short_description[len(eit_name) + 1:]
+			short_description = short_description.replace("\n", ", ")
 
 			#parse meta file
 			meta = ParserMetaFile(path).getMeta()
@@ -204,7 +209,7 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-		return(os.path.dirname(path), FILE_TYPE_FILE, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags)
+		return(os.path.dirname(path), FILE_TYPE_FILE, path, filename, ext, name, date, length, short_description, extended_description, service_reference, size, cuts, tags)
 
 	### database load list functions
 
@@ -218,6 +223,8 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 
 		for walk_name in walk_listdir:
 			path = os.path.join(adir, walk_name)
+			if os.path.islink(path):
+				path = os.path.realpath(path)
 			if os.path.isfile(path):
 				_filename, ext = os.path.splitext(path)
 				if ext in extVideo:
@@ -226,8 +233,6 @@ class FileCacheLoad(FileCacheSQL, Bookmarks, object):
 				#print("MVC: FileCacheLoad: __getDirLoadList: dir: %s" % path)
 				self.load_list.append((path, FILE_TYPE_DIR))
 				self.__getDirLoadList(path)
-			elif os.path.islink(path):
-				print("MVC-I: FileCacheLoad: __getDirLoadList: unsupported link: %s" % path)
 
 		self.load_list.append((os.path.join(adir, ".."), FILE_TYPE_DIR))
 

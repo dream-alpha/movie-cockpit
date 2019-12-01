@@ -29,8 +29,10 @@ from FileUtils import deleteFile
 substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", ""), ("h264", ""), ("1080i", ""), ("AC3", "")]
 
 
-class MovieCoverDownload(MovieTMDB, MovieCover, object):
+class MovieCoverDownload(MovieTMDB, MovieCover):
+
 	def __init__(self):
+		MovieTMDB.__init__(self)
 		MovieCover.__init__(self)
 
 	def getMovieNameWithoutPhrases(self, moviename):
@@ -70,7 +72,7 @@ class MovieCoverDownload(MovieTMDB, MovieCover, object):
 		cover_tried = 0
 		cover_path, _backdrop_path = self.getCoverPath(path)
 		info_path = self.getInfoPath(path)
-		if not os.path.isfile(cover_path) or config.MVC.cover_replace_existing.value:
+		if not os.path.isfile(cover_path) or config.plugins.moviecockpit.cover_replace_existing.value:
 			cover_tried = 1
 			title = self.getMovieNameWithoutPhrases(title)
 			self.titles = [title]
@@ -85,7 +87,7 @@ class MovieCoverDownload(MovieTMDB, MovieCover, object):
 				if self.movielist:
 					selection = self.movielist[0]
 					if selection[SELECTION_URL]:
-						self.info = self.getTMDBInfo(selection[SELECTION_ID], selection[SELECTION_TYPE], config.MVC.cover_language.value)
+						self.info = self.getTMDBInfo(selection[SELECTION_ID], selection[SELECTION_TYPE], config.plugins.moviecockpit.cover_language.value)
 						if self.info:
 							cover_url = self.info[INFO_COVER_URL]
 							backdrop_url = self.info[INFO_BACKDROP_URL]

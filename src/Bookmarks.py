@@ -23,7 +23,10 @@ import os
 from Components.config import config
 
 
-class Bookmarks(object):
+class Bookmarks():
+
+	def __init__(self):
+		pass
 
 	def getHomeDir(self):
 		return self.getBookmarks()[0]

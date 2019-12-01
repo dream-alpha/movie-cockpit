@@ -19,12 +19,14 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
+import os
 from enigma import eServiceReference
 
 # DVB types
 sidDVB = eServiceReference.idDVB	# eServiceFactoryDVB::id   enum { id = 0x1 };
 sidDVD = 4369				# eServiceFactoryDVD::id   enum { id = 0x1111 };
 sidM2TS = 3				# eServiceFactoryM2TS::id  enum { id = 0x3 };
+sidDefault = 4097			# eServiceFactoryGST::id   enum { id = 0x1001 };
 
 # ext types
 extTS = frozenset([".ts", ".trp"])
@@ -41,8 +43,9 @@ plyM2TS = extM2ts			# ServiceM2TS
 plyDVD = extDvd				# ServiceDVD
 plyAll = plyDVB | plyM2TS | plyDVD | extBlu
 
-def getService(path, name="", ext=None):
+def getService(path, name=""):
 	service = None
+	ext = os.path.splitext(path)[1].lower()
 	if path:
 		if ext in plyDVB:
 			service = eServiceReference(sidDVB, 0, path)
@@ -51,10 +54,9 @@ def getService(path, name="", ext=None):
 		elif ext in plyM2TS:
 			service = eServiceReference(sidM2TS, 0, path)
 		else:
-			ENIGMA_SERVICE_ID = 0
 			DEFAULT_VIDEO_PID = 0x44
 			DEFAULT_AUDIO_PID = 0x45
-			service = eServiceReference(ENIGMA_SERVICE_ID, 0, path)
+			service = eServiceReference(sidDefault, 0, path)
 			service.setData(0, DEFAULT_VIDEO_PID)
 			service.setData(1, DEFAULT_AUDIO_PID)
 		service.setName(name)

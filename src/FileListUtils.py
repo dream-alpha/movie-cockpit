@@ -22,12 +22,15 @@
 import os
 from datetime import datetime
 from Components.config import config
-from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH, FILE_IDX_EXT
+from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH
 from Bookmarks import Bookmarks
 from ServiceUtils import getService
 from ConfigInit import sort_modes
 
-class FileListUtils(Bookmarks, object):
+class FileListUtils(Bookmarks):
+
+	def __init__(self):
+		Bookmarks.__init__(self)
 
 	def getEntry4Index(self, filelist, index):
 		return filelist[index]
@@ -60,7 +63,7 @@ class FileListUtils(Bookmarks, object):
 		service = None
 		for entry in filelist:
 			if entry and entry[FILE_IDX_PATH] == path:
-				service = getService(path, entry[FILE_IDX_NAME], entry[FILE_IDX_EXT])
+				service = getService(path, entry[FILE_IDX_NAME])
 				break
 		return service
 
@@ -71,7 +74,7 @@ class FileListUtils(Bookmarks, object):
 		return filelist
 
 	def createDirList(self, path):
-		print("MVC: FileListUtils: createDirList: path: %s" % path)
+		#print("MVC: FileListUtils: createDirList: path: %s" % path)
 		filelist = []
 		if path:
 			filelist = FileCache.getInstance().getDirList([path])
@@ -84,7 +87,7 @@ class FileListUtils(Bookmarks, object):
 			if path not in self.getBookmarks():
 				filelist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
 			else:  # path is a bookmark
-				if config.MVC.trashcan_enable.value and config.MVC.trashcan_show.value:
+				if config.plugins.moviecockpit.trashcan_enable.value and config.plugins.moviecockpit.trashcan_show.value:
 					filelist.append(FileCache.getInstance().getFile(path + "/trashcan"))
 		#print("MVC: MovieSelection: createCustomList: filelist: " + str(filelist))
 		return filelist
@@ -94,7 +97,7 @@ class FileListUtils(Bookmarks, object):
 		def date2ms(date_string):
 			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
 
-		filetype_list = [] if config.MVC.directories_ontop.value else [FILE_TYPE_DIR]
+		filetype_list = [] if config.plugins.moviecockpit.directories_ontop.value else [FILE_TYPE_DIR]
 		# This will find all unsortable items
 		tmp_list = [i for i in filelist if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
 		# Extract list items to be sorted

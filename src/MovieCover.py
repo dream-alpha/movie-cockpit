@@ -26,17 +26,18 @@ from Bookmarks import Bookmarks
 from PixmapDisplay import PixmapDisplay
 
 
-class MovieCover(Bookmarks, PixmapDisplay, object):
+class MovieCover(Bookmarks, PixmapDisplay):
 	def __init__(self):
+		Bookmarks.__init__(self)
 		PixmapDisplay.__init__(self)
 
 	def getCoverPath(self, path):
 		#print("MVC: MovieCover getCoverPath: path: " + path)
 		cover_path = os.path.splitext(path)[0] + ".jpg"
-		if config.MVC.cover_flash.value:
+		if config.plugins.moviecockpit.cover_flash.value:
 			for bookmark in self.getBookmarks():
 				if cover_path.startswith(bookmark):
-					cover_path = config.MVC.cover_bookmark.value + cover_path[len(bookmark):]
+					cover_path = config.plugins.moviecockpit.cover_bookmark.value + cover_path[len(bookmark):]
 					break
 		cover_filename, cover_ext = os.path.splitext(cover_path)
 		backdrop_path = cover_filename + ".backdrop" + cover_ext
@@ -65,7 +66,7 @@ class MovieCover(Bookmarks, PixmapDisplay, object):
 		print("MVC-I: MovieCover: showImage: path: %s" % path)
 		if path and not os.path.exists(path):
 			path = None
-			if config.MVC.cover_fallback.value:
+			if config.plugins.moviecockpit.cover_fallback.value:
 				if default_path and os.path.exists(default_path):
 					path = default_path
 		print("MVC-I: MovieCover: showImage: path %s" % path)

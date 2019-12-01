@@ -33,20 +33,22 @@ FILE_OP_MOVE = 2
 FILE_OP_COPY = 3
 
 
-class FileOps(MovieTMDB, MovieCover, MountPoints, object):
+class FileOps(MovieTMDB, MovieCover, MountPoints):
 
 	def __init__(self):
+		MovieTMDB.__init__(self)
 		MovieCover.__init__(self)
+		MountPoints.__init__(self)
 		self.execution_list = []
 
 	def reloadList(self, path):
 		print("MVC-I: FileOps: reloadList: path: %s" % path)
-		print("MVC-E: should not be called at all, as overwritten by child")
+		print("MVC-E: FileOps: reloadList: should not be called at all, as overwritten by child")
 
 	def updateSpaceInfo(self):
-		config.MVC.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
-		config.MVC.disk_space_info.save()
-		#print("MVC: MovieSelection: updateSpaceInfo: config.MVC.disk_space_info.value: %s" % config.MVC.disk_space_info.value)
+		config.plugins.moviecockpit.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
+		config.plugins.moviecockpit.disk_space_info.save()
+		#print("MVC: MovieSelection: updateSpaceInfo: config.plugins.moviecockpit.disk_space_info.value: %s" % config.plugins.moviecockpit.disk_space_info.value)
 
 	def execFileOpsNoProgress(self, execution_list):
 		print("MVC-I: FileOps: execFileOpsNoProgress: execution_list: " + str(execution_list))
@@ -78,23 +80,30 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			cmd.append(c)
 			association.append((self.__deleteCallback, path, target_path, filetype))
 		elif op == FILE_OP_MOVE:
-			free = 0
-			used = 0
-			if filetype != FILE_TYPE_FILE:
-				_count, used = FileCache.getInstance().getCountSize(path)
-				free = self.getMountPointSpaceFree(target_path)
-				#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
-			if free >= used:
-				c = self.__execFileMove(path, target_path, filetype)
-				cmd.append(c)
-				association.append((self.__moveCallback, path, target_path, filetype))
+			if os.path.dirname(path) != target_path:
+				free = 0
+				used = 0
+				if filetype != FILE_TYPE_FILE:
+					_count, used = FileCache.getInstance().getCountSize(path)
+					free = self.getMountPointSpaceFree(target_path)
+					#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
+				if free >= used:
+					c = self.__execFileMove(path, target_path, filetype)
+					cmd.append(c)
+					association.append((self.__moveCallback, path, target_path, filetype))
+				else:
+					print("MVC-I: FileOps: execFileOp: move_dir: not enough space left: size: %s, free: %s" % (used, free))
 			else:
-				print("MVC-I: FileOps: execFileOp: move_dir: not enough space left: size: %s, free: %s" % (used, free))
+				c = [":"]  # noop
+				cmd.append(c)
 		elif op == FILE_OP_COPY:
 			if os.path.dirname(path) != target_path:
 				c = self.__execFileCopy(path, target_path, filetype)
 				cmd.append(c)
 				association.append((self.__copyCallback, path, target_path, filetype))
+			else:
+				c = [":"]  # noop
+				cmd.append(c)
 		if cmd:
 			#print("MVC: FileOps: execFileOp: cmd: %s" % cmd)
 			association.append((self.execFileOpCallback, op, path, target_path, filetype))
@@ -153,9 +162,9 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			backdrop_target_dir = os.path.splitext(cover_target_path)[0] + "/"
 			info_target_dir = os.path.splitext(info_target_path)[0] + "/"
 
-			print("MVC: File_Ops: __execFileMove: cover_path: %s, cover_target_dir: %s" % (cover_path, cover_target_dir))
-			print("MVC: File_Ops: __execFileMove: backdrop_path: %s, backdrop_target_dir: %s" % (backdrop_path, backdrop_target_dir))
-			print("MVC: File_Ops: __execFileMove: inof_path: %s, info_target_dir: %s" % (info_path, info_target_dir))
+			#print("MVC: File_Ops: __execFileMove: cover_path: %s, cover_target_dir: %s" % (cover_path, cover_target_dir))
+			#print("MVC: File_Ops: __execFileMove: backdrop_path: %s, backdrop_target_dir: %s" % (backdrop_path, backdrop_target_dir))
+			#print("MVC: File_Ops: __execFileMove: inof_path: %s, info_target_dir: %s" % (info_path, info_target_dir))
 
 			c.append('mv "' + cover_path + '" "' + cover_target_dir + '"')
 			c.append('mv "' + backdrop_path + '" "' + backdrop_target_dir + '"')
@@ -169,7 +178,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints, object):
 			if os.path.basename(target_path) == "trashcan":
 				c.append('touch "' + path + '"')
 			c.append('mv "' + path + '" "' + target_path + '"')
-		print("MVC: FileOps: __execFileMove: c: %s" % c)
+		#print("MVC: FileOps: __execFileMove: c: %s" % c)
 		return c
 
 	def __execFileCopy(self, path, target_path, filetype):

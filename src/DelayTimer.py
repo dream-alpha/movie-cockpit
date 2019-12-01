@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2019 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
@@ -18,39 +17,32 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from operator import isCallable
 from enigma import eTimer
 
-instanceTab = []  # just seems to be required to keep the instances alive long enough
+
+timer_instances = []
 
 
-class DelayedFunction(object):
+class DelayTimer():
 
 	def __init__(self, delay, function, *params):
 		if isCallable(function):
-			instanceTab.append(self)
+			timer_instances.append(self)
 			self.function = function
 			self.params = params
-			self.timer = None
 			self.timer = eTimer()
-			self.timer_conn = None
-			self.timer_conn = self.timer.timeout.connect(self.timerLaunch)
-			self.timer.start(delay, False)
+			self.timer_conn = self.timer.timeout.connect(self.fire)
+			self.timer.start(delay, True)
 
-	def cancel(self):
-		instanceTab.remove(self)
-		self.timer.stop()
-		self.timer_conn = None
-		self.timer = None
+	def cancelAll(self):
+		for timer_instance in timer_instances:
+			timer_instance.timer.stop()
+			timer_instances.remove(timer_instance)
 
-	def timerLaunch(self):
-		instanceTab.remove(self)
+	def fire(self):
+		timer_instances.remove(self)
 		self.timer.stop()
-		self.timer_conn = None
-		self.timer = None
 		self.function(*self.params)
-
-	def exists(self):
-		return self in instanceTab

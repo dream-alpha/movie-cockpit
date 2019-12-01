@@ -25,7 +25,7 @@ from sqlite3 import dbapi2 as sqlite
 SQL_DB_NAME = "/etc/enigma2/moviecockpit.db"
 
 
-class FileCacheSQL(object):
+class FileCacheSQL():
 	def __init__(self):
 		print("MVC-I: FileCacheSQL: __init__")
 		self.sql_conn = sqlite.connect(SQL_DB_NAME)
@@ -45,7 +45,7 @@ class FileCacheSQL(object):
 
 	def sqlSelect(self, where):
 		sql = "SELECT * FROM recordings WHERE " + where
-		print("MVC: FileCacheSQL: sqlSelect: sql: %s" % sql)
+		#print("MVC: FileCacheSQL: sqlSelect: sql: %s" % sql)
 		self.cursor.execute(sql)
 		filelist = self.cursor.fetchall()
 		self.sql_conn.commit()

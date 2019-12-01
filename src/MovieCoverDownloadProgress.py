@@ -24,12 +24,13 @@ from Bookmarks import Bookmarks
 from FileProgress import FileProgress
 from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
 from MovieCoverDownload import MovieCoverDownload
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 
-class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, object):
+class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks):
 
 	def __init__(self, session):
 		#print("MVC: MovieCoverDownloadProgress: __init__")
+		Bookmarks.__init__(self)
 		FileProgress.__init__(self, session, None)
 		MovieCoverDownload.__init__(self)
 		self.covers_tried = 0
@@ -41,7 +42,7 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 
 	def onDialogShow(self):
 		#print("MVC: MovieCoverDownloadProgress: onDialogShow")
-		DelayedFunction(10, self.execMovieCoverDownloadProgress)
+		DelayTimer(10, self.execMovieCoverDownloadProgress)
 
 	def doFileOp(self, entry):
 		filename = entry[FILE_IDX_FILENAME]
@@ -53,7 +54,7 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 		cover_tried, cover_found = self.getCover(path, name)
 		self.covers_tried += cover_tried
 		self.covers_found += cover_found
-		DelayedFunction(10, self.nextFileOp)
+		DelayTimer(10, self.nextFileOp)
 
 	def completionStatus(self):
 		covers_percent = 0 if self.covers_tried == 0 else float(float(self.covers_found) / float(self.covers_tried)) * 100
@@ -66,4 +67,4 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks, ob
 		self.updateProgress()
 		self.execution_list = FileCache.getInstance().getFileList(self.getBookmarks())
 		self.total_files = len(self.execution_list)
-		DelayedFunction(10, self.nextFileOp)
+		DelayTimer(10, self.nextFileOp)

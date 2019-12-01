@@ -38,7 +38,7 @@ from MountPoints import MountPoints
 from FileUtils import readFile
 from MovieListParseTemplate import parseTemplate
 
-class MovieList(TemplatedMultiContentComponent, MountPoints, object):
+class MovieList(TemplatedMultiContentComponent, MountPoints):
 
 	COMPONENT_ID = ""
 	default_template = readFile(getSkinPath("MovieListTemplate.py"))
@@ -49,29 +49,30 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 
 	def __init__(self):
 		#print("MVC: MovieList: __init__")
+		MountPoints.__init__(self)
 		self.skinAttributes = None
 		TemplatedMultiContentComponent.__init__(self)
 		self.l.setBuildFunc(self.buildMovieListEntry)
 
-		self.color = parseColor(config.MVC.color.value).argb()
-		self.color_sel = parseColor(config.MVC.color_sel.value).argb()
-		self.recording_color = parseColor(config.MVC.recording_color.value).argb()
-		self.recording_color_sel = parseColor(config.MVC.recording_color_sel.value).argb()
-		self.selection_color = parseColor(config.MVC.selection_color.value).argb()
-		self.selection_color_sel = parseColor(config.MVC.selection_color_sel.value).argb()
+		self.color = parseColor(config.plugins.moviecockpit.color.value).argb()
+		self.color_sel = parseColor(config.plugins.moviecockpit.color_sel.value).argb()
+		self.recording_color = parseColor(config.plugins.moviecockpit.recording_color.value).argb()
+		self.recording_color_sel = parseColor(config.plugins.moviecockpit.recording_color_sel.value).argb()
+		self.selection_color = parseColor(config.plugins.moviecockpit.selection_color.value).argb()
+		self.selection_color_sel = parseColor(config.plugins.moviecockpit.selection_color_sel.value).argb()
 
 		skin_path = getSkinPath("images/")
-		self.pic_back = LoadPixmap(cached=True, path=skin_path + "back.svg")
-		self.pic_directory = LoadPixmap(cached=True, path=skin_path + "dir.svg")
-		self.pic_movie_default = LoadPixmap(cached=True, path=skin_path + "movie_default.svg")
-		self.pic_movie_watching = LoadPixmap(cached=True, path=skin_path + "movie_watching.svg")
-		self.pic_movie_finished = LoadPixmap(cached=True, path=skin_path + "movie_finished.svg")
-		self.pic_movie_rec = LoadPixmap(cached=True, path=skin_path + "movie_rec.svg")
-		self.pic_movie_cut = LoadPixmap(cached=True, path=skin_path + "movie_cut.svg")
-		self.pic_bookmark = LoadPixmap(cached=True, path=skin_path + "bookmark.svg")
-		self.pic_trashcan = LoadPixmap(cached=True, path=skin_path + "trashcan.svg")
-		self.pic_progress_bar = LoadPixmap(cached=True, path=skin_path + "progcl.svg")
-		self.pic_rec_progress_bar = LoadPixmap(cached=True, path=skin_path + "rec_progcl.svg")
+		self.pic_back = LoadPixmap(skin_path + "back.svg", cached=True)
+		self.pic_directory = LoadPixmap(skin_path + "dir.svg", cached=True)
+		self.pic_movie_default = LoadPixmap(skin_path + "movie_default.svg", cached=True)
+		self.pic_movie_watching = LoadPixmap(skin_path + "movie_watching.svg", cached=True)
+		self.pic_movie_finished = LoadPixmap(skin_path + "movie_finished.svg", cached=True)
+		self.pic_movie_rec = LoadPixmap(skin_path + "movie_rec.svg", cached=True)
+		self.pic_movie_cut = LoadPixmap(skin_path + "movie_cut.svg", cached=True)
+		self.pic_bookmark = LoadPixmap(skin_path + "bookmark.svg", cached=True)
+		self.pic_trashcan = LoadPixmap(skin_path + "trashcan.svg", cached=True)
+		self.pic_progress_bar = LoadPixmap(skin_path + "progcl.svg", cached=True)
+		self.pic_rec_progress_bar = LoadPixmap(skin_path + "rec_progcl.svg", cached=True)
 
 		self.onSelectionChanged = []
 
@@ -183,7 +184,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 # 		self.skinAttributes = attribs
 
 		MovieList.list_styles, template_attributes = parseTemplate(MovieList.default_template)
-		self.setListStyle(config.MVC.list_style.value)
+		self.setListStyle(config.plugins.moviecockpit.list_style.value)
 
 		#print("MVC: MovieList: applySkin: self.skinAttributes: " + str(self.skinAttributes))
 		GUIComponent.applySkin(self, desktop, parent)
@@ -197,26 +198,27 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 			pos = service_reference.rfind(':')
 			if pos != -1:
 				service_reference = service_reference[:pos].rstrip(':').replace(':', '_')
-			picon_path = os.path.join(config.MVC.movie_picons_path.value, service_reference + '.png')
+			picon_path = os.path.join(config.plugins.moviecockpit.movie_picons_path.value, service_reference + '.png')
 			#print("MVC: MovieList: buildMovieListEntry: picon_path: " + picon_path)
 			return loadPNG(picon_path)
 
 		def getDateText(path, filetype, date_string):
+			#print("MVC: MovieList: getDateText: path: %s, filetype: %s, date_string: %s" % (path, filetype, date_string))
 			count = 0
 			date_text = ""
 			if filetype == FILE_TYPE_FILE:
-				date_text = str2date(date_string, path).strftime(config.MVC.movie_date_format.value)
-				if config.MVC.movie_mountpoints.value:
+				date_text = str2date(date_string, path).strftime(config.plugins.moviecockpit.movie_date_format.value)
+				if config.plugins.moviecockpit.movie_mountpoints.value:
 					date_text = self.getMountPoint(path)
 			else:
 				if os.path.basename(path) == "trashcan":
-					info_value = config.MVC.trashcan_info.value
+					info_value = config.plugins.moviecockpit.trashcan_info.value
 				else:
-					info_value = config.MVC.directories_info.value
-				if info_value:
-					if os.path.basename(path) == "..":
-						date_text = _("up")
-					else:
+					info_value = config.plugins.moviecockpit.directories_info.value
+				if os.path.basename(path) == "..":
+					date_text = _("up")
+				else:
+					if info_value:
 						if info_value == "D":
 							if os.path.basename(path) == "trashcan":
 								date_text = _("trashcan")
@@ -275,10 +277,10 @@ class MovieList(TemplatedMultiContentComponent, MountPoints, object):
 				elif cutting:
 					pixmap = self.pic_movie_cut
 				else:
-					if progress >= int(config.MVC.movie_watching_percent.value) and progress < int(config.MVC.movie_finished_percent.value):
-						pixmap = self.pic_movie_watching
-					elif progress >= int(config.MVC.movie_finished_percent.value):
+					if progress >= int(config.plugins.moviecockpit.movie_finished_percent.value):
 						pixmap = self.pic_movie_finished
+					elif progress >= int(config.plugins.moviecockpit.movie_watching_percent.value):
+						pixmap = self.pic_movie_watching
 			else:
 				pixmap = self.pic_directory
 				if os.path.basename(path) == "trashcan":

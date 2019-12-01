@@ -17,15 +17,37 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
 
-from Tools.Directories import fileExists, resolveFilename, SCOPE_SKIN, SCOPE_CURRENT_SKIN
+
+import os
+from Version import PLUGIN
+from enigma import getDesktop
+from skin import loadSkin, loadSingleSkinData, dom_skins
+from Tools.Directories import fileExists, resolveFilename, SCOPE_SKIN, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
 
 
 def getSkinPath(filename):
 	#print("MVC: SkinUtils: getSkinPath: filename: %s" % filename)
-	skin_path = resolveFilename(SCOPE_CURRENT_SKIN, "MovieCockpit/skin/" + filename)
+	skin_path = resolveFilename(SCOPE_CURRENT_SKIN, PLUGIN + "/skin/" + filename)
 	if not fileExists(skin_path):
-		skin_path = resolveFilename(SCOPE_SKIN, "Default-FHD/MovieCockpit/skin/" + filename)
-	#print("MVC: SkinUtils: getSkinPath: skin_path: " + skin_path)
+		skin_path = resolveFilename(SCOPE_SKIN, "Default-FHD/" + PLUGIN + "/skin/" + filename)
+	#print("MVC: SkinUtils: getSkinPath: skin_path: %s" % skin_path)
 	return skin_path
+
+
+def initPluginSkinPath():
+	default_skin = resolveFilename(SCOPE_SKIN, "Default-FHD/" + PLUGIN)
+	current_skin = resolveFilename(SCOPE_CURRENT_SKIN, PLUGIN)
+	plugin_skin = resolveFilename(SCOPE_PLUGINS, "Extensions/" + PLUGIN)
+	print("MVC-I: SkinUtils: loadPluginSkin: current_skin: %s" % current_skin)
+	print("MVC-I: SkinUtils: loadPluginSkin: default_skin: %s" % default_skin)
+	print("MVC-I: SkinUtils: loadPluginSkin: plugin_skin: %s" % plugin_skin)
+	if not os.path.isdir(default_skin):
+		print("MVC-I: SkinUtils: loadPluginSkin: ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
+		os.system("ln -s " + plugin_skin + " " + resolveFilename(SCOPE_SKIN, "Default-FHD"))
+
+
+def loadPluginSkin(skin_file):
+	loadSkin(getSkinPath(skin_file), "")
+	path, dom_skin = dom_skins[-1:][0]
+	loadSingleSkinData(getDesktop(0), dom_skin, path)

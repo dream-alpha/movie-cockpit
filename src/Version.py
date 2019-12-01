@@ -19,5 +19,5 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-# MovieCockpit
-VERSION = "3.6.2"
+PLUGIN = "MovieCockpit"
+VERSION = "3.8.7"

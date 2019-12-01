@@ -49,13 +49,13 @@ def encodeConfig(conf, c):
 
 def storeConfig():
 	#print("MVC: StylesConfigUtils: storeConfig")
-	p = config.MVCStyles.preset
-	s = config.MVCStyles.style
-	config.MVCStyles.preset = ConfigSubDict()
-	config.MVCStyles.style = ConfigSubDict()
-	encodeConfig(config.MVCStyles.preset, p)
-	encodeConfig(config.MVCStyles.style, s)
-	config.MVCStyles.save()
+	p = config.plugins.MVC.preset
+	s = config.plugins.MVC.style
+	config.plugins.MVC.preset = ConfigSubDict()
+	config.plugins.MVC.style = ConfigSubDict()
+	encodeConfig(config.plugins.MVC.preset, p)
+	encodeConfig(config.plugins.MVC.style, s)
+	config.plugins.MVC.save()
 
 def loadConfig(conf):
 	#print("MVC: StylesConfigUtils: loadConfig")

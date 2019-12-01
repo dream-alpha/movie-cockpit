@@ -23,7 +23,7 @@
 from Components.Renderer.PositionGauge import PositionGauge
 
 
-class MVCPositionGauge(PositionGauge, object):
+class MVCPositionGauge(PositionGauge):
 	def __init__(self):
 		PositionGauge.__init__(self)
 		self.__cutlist = []

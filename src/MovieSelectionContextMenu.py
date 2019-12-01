@@ -38,8 +38,9 @@ MENU_FUNCTIONS = 1
 MENU_PLUGINS = 2
 
 
-class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
+class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks):
 	def __init__(self, session, csel, menu_mode, current_dir, service=None):
+		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		self.menu_mode = menu_mode
@@ -65,30 +66,30 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 			self.setTitle(_("Movie list menu"))
 
 			if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
-				menu.append((_("Movie home"), csel.moveToMovieHome))
-				menu.append((_("Directory up"), boundFunction(csel.changeDir, current_dir + "/..")))
+				menu.append((_("Movie home"), (csel.moveToMovieHome, True)))
+				menu.append((_("Directory up"), (boundFunction(csel.changeDir, current_dir + "/.."), True)))
 
-			menu.append((_("Select all"), csel.selectAll))
+			menu.append((_("Select all"), (csel.selectAll, True)))
 
-			menu.append((_("Delete"), csel.deleteMovies))
-			menu.append((_("Move"), csel.moveMovies))
-			menu.append((_("Copy"), csel.copyMovies))
+			menu.append((_("Delete"), (csel.deleteMovies, True)))
+			menu.append((_("Move"), (csel.moveMovies, True)))
+			menu.append((_("Copy"), (csel.copyMovies, True)))
 
-			if config.MVC.trashcan_enable.value:
-				menu.append((_("Empty trashcan"), csel.emptyTrashcan))
-				menu.append((_("Open trashcan"), csel.openTrashcan))
+			if config.plugins.moviecockpit.trashcan_enable.value:
+				menu.append((_("Empty trashcan"), (csel.emptyTrashcan, False)))
+				menu.append((_("Open trashcan"), (csel.openTrashcan, True)))
 
-			menu.append((_("Remove cutlist marker"), csel.removeCutListMarker))
-			menu.append((_("Delete cutlist file"), csel.deleteCutListFile))
+			menu.append((_("Remove cutlist marker"), (csel.removeCutListMarker, True)))
+			menu.append((_("Delete cutlist file"), (csel.deleteCutListFile, True)))
 
-			menu.append((_("Bookmarks"), csel.openBookmarks))
+			menu.append((_("Bookmarks"), (csel.openBookmarks, False)))
 
 			for list_style in range(len(MovieList.list_styles)):
-				menu.append((_(MovieList.list_styles[list_style][1]), boundFunction(csel.setListStyle, list_style)))
+				menu.append((_(MovieList.list_styles[list_style][1]), (boundFunction(csel.setListStyle, list_style), True)))
 
-			menu.append((_("Reload cache"), csel.reloadCache))
-			menu.append((_("Styles"), csel.openStyles))
-			menu.append((_("Setup"), csel.openConfigScreen))
+			menu.append((_("Reload cache"), (csel.reloadCache, False)))
+			menu.append((_("Styles"), (csel.openStyles, False)))
+			menu.append((_("Setup"), (csel.openConfigScreen, False)))
 		elif menu_mode == MENU_PLUGINS:
 			self.setTitle(_("Select plugin"))
 			if service is not None:
@@ -101,4 +102,10 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks, object):
 		plugin(session=self.session, service=self.service)
 
 	def ok(self):
-		self["menu"].getCurrent()[1]()
+		current_entry = self["menu"].getCurrent()
+		if self.menu_mode == MENU_FUNCTIONS:
+			current_entry[1][0]()  # execute function
+			if current_entry[1][1]:
+				self.close()
+		else:
+			current_entry[1]()  # execute plugin

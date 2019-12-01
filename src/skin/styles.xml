@@ -88,7 +88,7 @@ Copyright (C) 2018-2019 by dream-alpha
 	<buttons name="Design">
 		<style name="Buttons" value="Default" preview="buttons_default.png">
 		</style>
-		<style name="Buttons" value="Zombi" preview="buttons_zombi.png">
+		<style name="Buttons" value="Horizontal Buttons" preview="buttons_horizontal.png">
 			<layout name="Color_Buttons">
 				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1"/>
 				<eLabel backgroundColor="red" position="10,60" size="300,10" zPosition="-1"/>
@@ -97,7 +97,7 @@ Copyright (C) 2018-2019 by dream-alpha
 				<eLabel backgroundColor="blue" position="910,60" size="300,10" zPosition="-1"/>
 			</layout>
 		</style>
-		<style name="Buttons" value="Arki" preview="buttons_arki.png">
+		<style name="Buttons" value="Vertical Buttons" preview="buttons_vertical.png">
 			<layout name="Color_Buttons">
 				<eLabel backgroundColor="background" position="10,980" size="1220,90" zPosition="-1"/>
 				<eLabel backgroundColor="red" position="20,10" size="10,60" zPosition="-1"/>

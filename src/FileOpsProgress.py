@@ -29,7 +29,7 @@ from FileOps import FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 ACTIVITY_TIMER_DELAY = 1000
 
 
-class FileOpsProgress(FileProgress, FileOps, object):
+class FileOpsProgress(FileProgress, FileOps):
 
 	def __init__(self, session, csel, selection_list, return_path):
 		#print("MVC: FileOpsProgress: __init__")

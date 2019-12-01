@@ -21,7 +21,10 @@
 import os
 from Bookmarks import Bookmarks
 
-class MountPoints(Bookmarks, object):
+class MountPoints(Bookmarks):
+
+	def __init__(self):
+		Bookmarks.__init__(self)
 
 	def __disk_usage(self, path):
 		st = os.statvfs(path)

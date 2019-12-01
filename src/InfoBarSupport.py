@@ -29,18 +29,19 @@ from Screens.InfoBarGenerics import InfoBarExtensions, InfoBarSeek, InfoBarMenu,
 	InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport, InfoBarPlugins, InfoBarNumberZap, \
 	InfoBarPiP, InfoBarEPG, InfoBarShowHide, InfoBarNotifications, InfoBarServiceNotifications, Notifications
 from Screens.MessageBox import MessageBox
-from DelayedFunction import DelayedFunction
+from DelayTimer import DelayTimer
 from CutListUtils import secondsToPts, ptsToSeconds, removeFirstMarks, getCutListLast
 from CutList import CutList
 
 
 class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
 	InfoBarSimpleEventView, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin,
-	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG, CutList, object):
+	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG, CutList):
 
 	ENABLE_RESUME_SUPPORT = True
 
 	def __init__(self):
+		CutList.__init__(self)
 		self.allowPiP = True
 		self.allowPiPSwap = False
 
@@ -101,17 +102,17 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 		if not self.is_closing:
 			self.downloadCuesheet()
 
-			if config.usage.on_movie_start.value == "beginning" and config.MVC.movie_jump_first_mark.value:
+			if config.usage.on_movie_start.value == "beginning" and config.plugins.moviecockpit.movie_jump_first_mark.value:
 				self.jumpToFirstMark()
 			else:
 				last = 0
-				if config.MVC.movie_ignore_firstcuts.value:
+				if config.plugins.moviecockpit.movie_ignore_firstcuts.value:
 					last = getCutListLast(removeFirstMarks(self.cut_list))
 				if last > 0:
 					self.resume_point = last
 					l = ptsToSeconds(last)
 					val = config.usage.on_movie_start.value
-					if val == "ask" or val == "ask yes" or val == "ask no":
+					if val in ["ask", "ask yes", "ask no"]:
 						Notifications.AddNotificationWithCallback(
 							self.playLastCallback,
 							MessageBox,
@@ -129,13 +130,13 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 							timeout=2,
 							type=MessageBox.TYPE_INFO
 						)
-				elif config.MVC.movie_jump_first_mark.value:
+				elif config.plugins.moviecockpit.movie_jump_first_mark.value:
 					self.jumpToFirstMark()
 
 	def playLastCallback(self, answer):
 		if answer:
 			self.doSeek(self.resume_point)
-		elif config.MVC.movie_jump_first_mark.value:
+		elif config.plugins.moviecockpit.movie_jump_first_mark.value:
 			self.jumpToFirstMark()
 		self.showAfterSeek()
 
@@ -144,19 +145,17 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 		current_pos = self.cueGetCurrentPosition() or 0
 		# Increase current_pos by 2 seconds to make sure we get the correct mark
 		current_pos = current_pos + secondsToPts(2)
-		# MVC enhancement: increase recording margin to make sure we get the correct mark
+		# increase recording margin to make sure we get the correct mark
 		margin = secondsToPts(config.recording.margin_before.value * 60) * 2 or secondsToPts(20 * 60)
 		middle = (self.getSeekLength() or secondsToPts(90 * 60)) / 2
 
 		for (pts, what) in self.cut_list:
-			if what == self.CUT_TYPE_MARK:
-				if pts and (current_pos < pts and pts < margin and pts < middle):
-					if first_mark is None or pts < first_mark:
-						first_mark = pts
+			if pts and what == self.CUT_TYPE_MARK:
+				if current_pos < pts and pts < margin and pts < middle and not pts > first_mark:
+					first_mark = pts
 		if first_mark:
-			self.start_point = first_mark
-			#== wait to seek - in OE2.5 not seek without wait
-			DelayedFunction(500, self.doSeek, self.start_point)
+			# wait to seek - in OE2.5 no seek without wait
+			DelayTimer(500, self.doSeek, first_mark)
 
 	def jumpNextMark(self):
 		if not self.jumpPreviousNextMark(lambda x: x - secondsToPts(1)):

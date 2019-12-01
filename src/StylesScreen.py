@@ -91,8 +91,8 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 			self.session.open(MessageBox, _("Style presets contain errors") + "\n" + filename, MessageBox.TYPE_ERROR)
 
 	def keySave(self):
-		config.MVCStyles.preset = ConfigSubDict()
-		config.MVCStyles.style = ConfigSubDict()
+		config.plugins.MVC.preset = ConfigSubDict()
+		config.plugins.MVC.style = ConfigSubDict()
 
 		for item in self.list:
 			if len(item) > 1:
@@ -102,15 +102,15 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 					#print("MVC: StylesScreen: keySave: key: %s, value: %s" % (key, value))
 					if isinstance(item[1], ConfigSelectionEx):
 						#print("MVC: StylesScreen: keySave: ConfigSelectionEx")
-						config.MVCStyles.preset[key] = ConfigText()
-						config.MVCStyles.preset[key].value = value
+						config.plugins.MVC.preset[key] = ConfigText()
+						config.plugins.MVC.preset[key].value = value
 						continue
 					if isinstance(item[1], ConfigSelection):
 						#print("MVC: StylesScreen: keySave: ConfigSelection")
-						config.MVCStyles.style[key] = ConfigText()
-						config.MVCStyles.style[key].value = value
+						config.plugins.MVC.style[key] = ConfigText()
+						config.plugins.MVC.style[key].value = value
 
-		writeStyle(self.style, config.MVCStyles, getSkinPath("skin.xml"))
+		writeStyle(self.style, getSkinPath("skin.xml"))
 		storeConfig()
 		self.restartGUI()
 
@@ -209,7 +209,7 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 				for key1 in self.style.sort(self.preset):
 					if not self.checkDependency(depends.get(key1)):
 						continue
-					selected = self.getSelected(key1, config.MVCStyles.preset)
+					selected = self.getSelected(key1, config.plugins.MVC.preset)
 					if not selected:
 						selected = self.getSelected(key1, default)
 					self.list.append(getConfigListEntry(key1, self.getConfigSelection(ConfigSelectionEx, key1, sorted(self.preset[key1]), selected)))
@@ -225,7 +225,7 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 					#print "  " + key1
 					if not self.checkDependency(depends.get(key1)):
 						continue
-					selected = self.getSelected(key1, config.MVCStyles.style)
+					selected = self.getSelected(key1, config.plugins.MVC.style)
 					if not selected:
 						selected = self.getSelected(key1, default)
 					self.list.append(getConfigListEntry(key1, self.getConfigSelection(ConfigSelection, key1, sorted(groups[key][key1]), selected)))

@@ -29,7 +29,7 @@ from Tools.ISO639 import LanguageCodes
 from FileUtils import readFile
 
 # http://de.wikipedia.org/wiki/Event_Information_Table
-class ParserEitFile(object):
+class ParserEitFile():
 
 	def __init__(self, path=None):
 		self.eit = {}
@@ -89,7 +89,7 @@ class ParserEitFile(object):
 			MM = int((MJD - 14956.1 - int(YY * 365.25)) / 30.6001)
 			D = MJD - 14956 - int(YY * 365.25) - int(MM * 30.6001)
 			K = 0
-			if MM == 14 or MM == 15:
+			if MM in [14, 15]:
 				K = 1
 			return (1900 + YY + K), (MM - 1 - K * 12), D
 
@@ -231,7 +231,7 @@ class ParserEitFile(object):
 			#print("MVC: ParserEitFile: parseContentDescriptor")
 			self.content_descriptor.append("n/a")
 
-		epglang = config.MVC.epglang.value
+		epglang = config.plugins.moviecockpit.epglang.value
 		lang = (language_iso639_2to3(epglang.lower()[:2])).upper()
 
 		# Parse the data
