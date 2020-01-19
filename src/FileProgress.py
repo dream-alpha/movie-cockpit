@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #:
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
@@ -27,13 +27,12 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Button import Button
 from Components.Slider import Slider
-from Bookmarks import Bookmarks
 
-class FileProgress(Screen, Bookmarks):
+
+class FileProgress(Screen):
 
 	def __init__(self, session, return_path):
 		#print("MVC: FileProgress: __init__")
-		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 
 		self["slider1"] = Slider(0, 100)
@@ -142,6 +141,8 @@ class FileProgress(Screen, Bookmarks):
 			self.status = _("Cancelled")
 			self.cancelled = True
 			self.updateProgress()
+			if self.return_path is not None:
+				self.reloadList(os.path.dirname(self.return_path))
 		else:
 			if self.execution_list:
 				entry = self.execution_list.pop(0)

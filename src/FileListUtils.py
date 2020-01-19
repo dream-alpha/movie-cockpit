@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,106 +17,105 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
-from datetime import datetime
 from Components.config import config
-from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_DATE, FILE_IDX_PATH
-from Bookmarks import Bookmarks
+from FileCache import FileCache, FILE_TYPE_DIR, FILE_IDX_TYPE, FILE_IDX_DIR, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_PATH
+from Bookmarks import getBookmarks
 from ServiceUtils import getService
 from ConfigInit import sort_modes
 
-class FileListUtils(Bookmarks):
 
-	def __init__(self):
-		Bookmarks.__init__(self)
+def getEntry4Index(filelist, index):
+	return filelist[index]
 
-	def getEntry4Index(self, filelist, index):
-		return filelist[index]
 
-	def getEntry4Path(self, filelist, path):
-		list_entry = None
-		for entry in filelist:
-			if entry and entry[FILE_IDX_PATH] == path:
-				list_entry = entry
-				break
-		return list_entry
+def getEntry4Path(filelist, path):
+	list_entry = None
+	for entry in filelist:
+		if entry and entry[FILE_IDX_PATH] == path:
+			list_entry = entry
+			break
+	return list_entry
 
-	def getIndex4Path(self, filelist, path):
-		index = -1
-		for i, entry in enumerate(filelist):
-			if entry and entry[FILE_IDX_PATH] == path:
-				index = i
-				break
-		return index
 
-	def loadedDirs(self, filelist):
-		loaded_dirs = []
-		for afile in filelist:
-			adir = afile[FILE_IDX_DIR]
-			if adir not in loaded_dirs:
-				loaded_dirs.append(adir)
-		return loaded_dirs
+def getIndex4Path(filelist, path):
+	index = -1
+	for i, entry in enumerate(filelist):
+		if entry and entry[FILE_IDX_PATH] == path:
+			index = i
+			break
+	return index
 
-	def getService4Path(self, filelist, path):
-		service = None
-		for entry in filelist:
-			if entry and entry[FILE_IDX_PATH] == path:
-				service = getService(path, entry[FILE_IDX_NAME])
-				break
-		return service
 
-	def createFileList(self, path):
-		filelist = []
-		if path:
-			filelist = FileCache.getInstance().getFileList([path])
-		return filelist
+def loadedDirs(filelist):
+	loaded_dirs = []
+	for afile in filelist:
+		adir = afile[FILE_IDX_DIR]
+		if adir not in loaded_dirs:
+			loaded_dirs.append(adir)
+	return loaded_dirs
 
-	def createDirList(self, path):
-		#print("MVC: FileListUtils: createDirList: path: %s" % path)
-		filelist = []
-		if path:
-			filelist = FileCache.getInstance().getDirList([path])
-		return filelist
 
-	def createCustomList(self, path):
-		#print("MVC: MovieSelection: createCustomList: path: %s" % path)
-		filelist = []
-		if path:
-			if path not in self.getBookmarks():
-				filelist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
-			else:  # path is a bookmark
-				if config.plugins.moviecockpit.trashcan_enable.value and config.plugins.moviecockpit.trashcan_show.value:
-					filelist.append(FileCache.getInstance().getFile(path + "/trashcan"))
-		#print("MVC: MovieSelection: createCustomList: filelist: " + str(filelist))
-		return filelist
+def getService4Path(filelist, path):
+	service = None
+	for entry in filelist:
+		if entry and entry[FILE_IDX_PATH] == path:
+			service = getService(path, entry[FILE_IDX_NAME])
+			break
+	return service
 
-	def sortList(self, filelist, sort_mode):
 
-		def date2ms(date_string):
-			return int(datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S").strftime('%s')) * 1000
+def createFileList(path):
+	filelist = []
+	if path:
+		filelist = FileCache.getInstance().getFileList([path])
+	return filelist
 
-		filetype_list = [] if config.plugins.moviecockpit.directories_ontop.value else [FILE_TYPE_DIR]
-		# This will find all unsortable items
-		tmp_list = [i for i in filelist if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
-		# Extract list items to be sorted
-		filelist = [i for i in filelist if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
-		# Always sort via extension and sorttitle
-		tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
 
-		mode, order = sort_modes[sort_mode][0]
+def createDirList(path):
+	#print("MVC: FileListUtils: createDirList: path: %s" % path)
+	filelist = []
+	if path:
+		filelist = FileCache.getInstance().getDirList([path])
+	return filelist
 
-		if mode == "date":
-			if not order:
-				filelist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()), reverse=True)
-			else:
-				filelist.sort(key=lambda x: (x[FILE_IDX_DATE], x[FILE_IDX_NAME].lower()))
 
-		elif mode == "alpha":
-			if not order:
-				filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -date2ms(x[FILE_IDX_DATE])))
-			else:
-				filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_DATE]), reverse=True)
+def createCustomList(path):
+	#print("MVC: MovieSelection: createCustomList: path: %s" % path)
+	filelist = []
+	if path:
+		if path not in getBookmarks():
+			filelist.append(FileCache.getInstance().getFile(os.path.join(path, "..")))
+		else:  # path is a bookmark
+			if config.plugins.moviecockpit.trashcan_enable.value and config.plugins.moviecockpit.trashcan_show.value:
+				filelist.append(FileCache.getInstance().getFile(path + "/trashcan"))
+	#print("MVC: MovieSelection: createCustomList: filelist: " + str(filelist))
+	return filelist
 
-		return tmp_list + filelist
+
+def sortList(filelist, sort_mode):
+	filetype_list = [] if config.plugins.moviecockpit.directories_ontop.value else [FILE_TYPE_DIR]
+	# This will find all unsortable items
+	tmp_list = [i for i in filelist if i and i[FILE_IDX_TYPE] in filetype_list or i[FILE_IDX_NAME] == ".."]
+	# Extract list items to be sorted
+	filelist = [i for i in filelist if i and i[FILE_IDX_TYPE] not in filetype_list and i[FILE_IDX_NAME] != ".."]
+	# Always sort via extension and sorttitle
+	tmp_list.sort(key=lambda x: (x[FILE_IDX_TYPE], x[FILE_IDX_NAME].lower()))
+
+	mode, order = sort_modes[sort_mode][0]
+
+	if mode == "date":
+		if not order:
+			filelist.sort(key=lambda x: (x[FILE_IDX_EVENT_START_TIME], x[FILE_IDX_NAME].lower()), reverse=True)
+		else:
+			filelist.sort(key=lambda x: (x[FILE_IDX_EVENT_START_TIME], x[FILE_IDX_NAME].lower()))
+
+	elif mode == "alpha":
+		if not order:
+			filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), -x[FILE_IDX_EVENT_START_TIME]))
+		else:
+			filelist.sort(key=lambda x: (x[FILE_IDX_NAME].lower(), x[FILE_IDX_EVENT_START_TIME]), reverse=True)
+
+	return tmp_list + filelist

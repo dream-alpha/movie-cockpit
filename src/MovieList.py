@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,11 +17,12 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
 from time import time
+from datetime import datetime
 from CutListUtils import ptsToSeconds, getCutListLast, unpackCutList
 from SkinUtils import getSkinPath
 from ServiceReference import ServiceReference
@@ -32,13 +33,14 @@ from Tools.LoadPixmap import LoadPixmap
 from skin import parseColor  # , parseFont, parseSize
 from enigma import eListbox, loadPNG
 from FileCache import FileCache, FILE_TYPE_FILE, FILE_IDX_PATH, FILE_IDX_DIR
-from ServiceCenter import str2date
-from RecordingUtils import isCutting, getRecording
-from MountPoints import MountPoints
+from RecordingUtils import isCutting, isRecording
+from MountPoints import getMountPoint
 from FileUtils import readFile
 from MovieListParseTemplate import parseTemplate
+from ServiceCenter import Info
 
-class MovieList(TemplatedMultiContentComponent, MountPoints):
+
+class MovieList(TemplatedMultiContentComponent):
 
 	COMPONENT_ID = ""
 	default_template = readFile(getSkinPath("MovieListTemplate.py"))
@@ -49,7 +51,6 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 
 	def __init__(self):
 		#print("MVC: MovieList: __init__")
-		MountPoints.__init__(self)
 		self.skinAttributes = None
 		TemplatedMultiContentComponent.__init__(self)
 		self.l.setBuildFunc(self.buildMovieListEntry)
@@ -99,7 +100,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 			try:
 				f()
 			except Exception as e:
-				print("MVC-E: MovieList: selectionChanged: exception: %s" % e)
+				print("MVC-E: MovieList: selectionChanged: f: %s, exception: %s" % (f, e))
 
 	def moveUp(self):
 		self.instance.moveSelection(self.instance.moveUp)
@@ -136,12 +137,10 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 		return self.l.getCurrentSelection()
 
 	def getCurrentPath(self):
-		l = self.l.getCurrentSelection()
-		return l and l[FILE_IDX_PATH]
+		return self.l.getCurrentSelection()[FILE_IDX_PATH]
 
 	def getCurrentDir(self):
-		l = self.l.getCurrentSelection()
-		return l and l[FILE_IDX_DIR]
+		return self.l.getCurrentSelection()[FILE_IDX_DIR]
 
 	def getCurrentIndex(self):
 		return self.instance.getCurrentIndex()
@@ -192,7 +191,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 		template_attributes["width"] = self.l.getItemSize().width() - 15
 		self.applyTemplate(additional_locals=template_attributes)
 
-	def buildMovieListEntry(self, _directory, filetype, path, _filename, _ext, name, date_string, length, description, _extended_description, service_reference, _size, cuts, tags):
+	def buildMovieListEntry(self, _directory, filetype, path, _filename, _ext, name, event_start_time, _recording_start_time, _recording_stop_time, length, description, _extended_description, service_reference, _size, cuts, tags):
 
 		def getPicon(service_reference):
 			pos = service_reference.rfind(':')
@@ -202,14 +201,14 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 			#print("MVC: MovieList: buildMovieListEntry: picon_path: " + picon_path)
 			return loadPNG(picon_path)
 
-		def getDateText(path, filetype, date_string):
-			#print("MVC: MovieList: getDateText: path: %s, filetype: %s, date_string: %s" % (path, filetype, date_string))
+		def getDateText(path, filetype, date):
+			#print("MVC: MovieList: getDateText: path: %s, filetype: %s, date: %s" % (path, filetype, date))
 			count = 0
 			date_text = ""
 			if filetype == FILE_TYPE_FILE:
-				date_text = str2date(date_string, path).strftime(config.plugins.moviecockpit.movie_date_format.value)
+				date_text = datetime.fromtimestamp(date).strftime(config.plugins.moviecockpit.movie_date_format.value)
 				if config.plugins.moviecockpit.movie_mountpoints.value:
-					date_text = self.getMountPoint(path)
+					date_text = getMountPoint(path)
 			else:
 				if os.path.basename(path) == "trashcan":
 					info_value = config.plugins.moviecockpit.trashcan_info.value
@@ -242,15 +241,15 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 			#print("MVC: MovieList: getValues: count: %s, date_text: %s" % (count, date_text))
 			return date_text
 
-		def getProgress(recording, length, cuts):
+		def getProgress(recording, path, length, cuts):
 			# All calculations are done in seconds
 			#print("MVC: MovieList: getProgress: path: %s" % path)
 
 			# first get last and length
 			if recording:
-				begin, end, _service_ref = recording
-				last = time() - begin
-				length = end - begin
+				info = Info(path)
+				last = time() - info.getEventStartTime()
+				length = info.getLength()
 			else:
 				# Get last position from cut file
 				cut_list = unpackCutList(cuts)
@@ -265,7 +264,7 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 					last = length
 				progress = int(round(float(last) / float(length), 2) * 100)
 
-			#print("MVC: MovieList: getProgress: progress = %s, length = %s, recording = %s" % (progress, length, recording))
+			#print("MVC: MovieList: getProgress: progress: %s, path: %s, length: %s, recording: %s" % (progress, path, length, recording))
 			return progress
 
 		def getFileIcon(path, filetype, progress, recording, cutting):
@@ -310,13 +309,13 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 
 		service = ServiceReference(service_reference)
 		service_name = service.getServiceName() if service is not None else ""
-		recording = getRecording(path, True)
+		recording = isRecording(path)
 		cutting = isCutting(path)
 		color, color_sel = getColor(path, filetype, recording, cutting)
-		progress = getProgress(recording, length, cuts) if filetype == FILE_TYPE_FILE else -1
+		progress = getProgress(recording, path, length, cuts) if filetype == FILE_TYPE_FILE else -1
 		progress_string = str(progress) + "%" if progress >= 0 else ""
 		progress_bar = self.pic_rec_progress_bar if recording else self.pic_progress_bar
-		duration_string = str(length / 60) + " " + _("min") if filetype == FILE_TYPE_FILE else ""
+		length_string = str(length / 60) + " " + _("min") if filetype == FILE_TYPE_FILE else ""
 		picon = getPicon(service_reference) if filetype == FILE_TYPE_FILE else None
 		name = _(name) if name == "trashcan" else name
 
@@ -326,12 +325,12 @@ class MovieList(TemplatedMultiContentComponent, MountPoints):
 			tags,								#  2: tags
 			service_name,							#  3: service name
 			description,							#  4: short description
-			getDateText(path, filetype, date_string),			#  5: date string
-			duration_string,						#  6: duration string
+			getDateText(path, filetype, event_start_time),			#  5: event start time
+			length_string,							#  6: length
 			color,								#  7: color
 			color_sel,							#  8: color_sel
 			progress,							#  9: progress percent (-1 = don't show)
-			progress_string,						# 10: progress string (xx%)
+			progress_string,						# 10: progress (xx%)
 			progress_bar,							# 11: progress bar png
 			getFileIcon(path, filetype, progress, recording, cutting),	# 12: status icon png
 			picon,								# 13: picon png

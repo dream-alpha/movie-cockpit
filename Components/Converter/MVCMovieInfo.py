@@ -2,7 +2,7 @@
 # encoding: utf-8
 #
 # Copyright (C) 2011 betonme
-# Copyright (C) 2018-2019 dream-alpha
+# Copyright (C) 2018-2020 dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -18,7 +18,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from Components.Converter.MovieInfo import MovieInfo
 from Components.Element import cached
@@ -32,29 +32,29 @@ class MVCMovieInfo(MovieInfo):
 
 	@cached
 	def getText(self):
+		text = ""
 		service = self.source.service
 		info = self.source.info
 		if info and service:
 			if self.type == self.MOVIE_SHORT_DESCRIPTION:
 				event = self.source.event
 				if event:
-					descr = info.getInfoString(service, iServiceInformation.sDescription)
-					if descr == "":
-						return event.getShortDescription()
-					return descr
+					text = info.getInfoString(service, iServiceInformation.sDescription)
+					if text == "":
+						text = event.getShortDescription()
 			elif self.type == self.MOVIE_META_DESCRIPTION:
-				return info.getInfoString(service, iServiceInformation.sDescription)
+				text = info.getInfoString(service, iServiceInformation.sDescription)
 			elif self.type == self.MOVIE_REC_SERVICE_NAME:
 				rec_ref_str = info.getInfoString(service, iServiceInformation.sServiceref)
-				return ServiceReference(rec_ref_str).getServiceName()
+				text = ServiceReference(rec_ref_str).getServiceName()
 			elif self.type == self.MOVIE_REC_FILESIZE:
 				filesize = info.getInfoObject(service, iServiceInformation.sFileSize)
 				if filesize is not None:
 					filesize /= 1024 * 1024
 					if filesize > 0:
 						if filesize < 1000:
-							return "%d MB" % filesize
-						return "%d GB" % (filesize / 1024)
-		return ""
+							text = "%d MB" % filesize
+						text = "%d GB" % (filesize / 1024)
+		return text
 
 	text = property(getText)

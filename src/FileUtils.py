@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,9 +17,11 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
+import shutil
+
 
 def readFile(path):
 	try:
@@ -28,8 +30,9 @@ def readFile(path):
 		f.close()
 		return data
 	except Exception as e:
-		print("MVC-E: FileUtils: readFile: path: %s, exception: %s" % (path, e))
+		print("MVC-I: FileUtils: readFile: path: %s, exception: %s" % (path, e))
 		return ""
+
 
 def writeFile(path, data):
 	try:
@@ -39,8 +42,27 @@ def writeFile(path, data):
 	except Exception as e:
 		print("MVC-E: FileUtils: writeFile: path: %s, exception: %s" % (path, e))
 
+
 def deleteFile(path):
 	try:
 		os.remove(path)
 	except Exception as e:
 		print("MVC-E: FileUtils: deleteFile: exception: path: %s, exception: %s" % (path, e))
+
+
+def copyFile(src_path, dest_path):
+	try:
+		shutil.copyfile(src_path, dest_path)
+	except Exception as e:
+		print("MVC-E: FileUtils: copyFile: exception: src_path: %s, dest_path: %s, exception: %s" % (src_path, dest_path, e))
+
+
+def createDirectory(path):
+	return os.popen("mkdir -p %s" % path).read()
+
+
+def deleteDirectory(path):
+	try:
+		shutil.rmtree(path)
+	except Exception as e:
+		print("MVC-E: FileUtils: deleteDirectory: exception: path: %s, exception: %s" % (path, e))

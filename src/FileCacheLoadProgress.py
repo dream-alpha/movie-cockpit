@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,20 +17,20 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks
 from DelayTimer import DelayTimer
 from FileCacheLoad import FileCacheLoad
 from FileProgress import FileProgress
 
-class FileCacheLoadProgress(FileProgress, Bookmarks):
+
+class FileCacheLoadProgress(FileProgress):
 
 	def __init__(self, session, return_path):
 		#print("MVC: FileCacheLoadProgress: __init__")
-		Bookmarks.__init__(self)
 		FileProgress.__init__(self, session, return_path)
 		self.skinName = "MVCFileCacheLoadProgress"
 		self.setTitle(_("File cache reload") + " ...")
@@ -54,6 +54,6 @@ class FileCacheLoadProgress(FileProgress, Bookmarks):
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
 		FileCacheLoad.getInstance().clearDatabase()
-		self.execution_list = FileCacheLoad.getInstance().getDirsLoadList(self.getBookmarks())
+		self.execution_list = FileCacheLoad.getInstance().getDirsLoadList(getBookmarks())
 		self.total_files = len(self.execution_list)
 		DelayTimer(10, self.nextFileOp)

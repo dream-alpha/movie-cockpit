@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,20 +17,20 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks
 from FileProgress import FileProgress
 from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
 from MovieCoverDownload import MovieCoverDownload
 from DelayTimer import DelayTimer
 
-class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks):
+
+class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress):
 
 	def __init__(self, session):
 		#print("MVC: MovieCoverDownloadProgress: __init__")
-		Bookmarks.__init__(self)
 		FileProgress.__init__(self, session, None)
 		MovieCoverDownload.__init__(self)
 		self.covers_tried = 0
@@ -65,6 +65,6 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress, Bookmarks):
 		print("MVC-I: MovieCoverDownloadProgress: execMovieCoverDownloadProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
-		self.execution_list = FileCache.getInstance().getFileList(self.getBookmarks())
+		self.execution_list = FileCache.getInstance().getFileList(getBookmarks())
 		self.total_files = len(self.execution_list)
 		DelayTimer(10, self.nextFileOp)

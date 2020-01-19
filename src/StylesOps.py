@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from Components.config import config, ConfigText, ConfigSubDict
@@ -40,12 +40,13 @@ def applyPluginStyle():
 		style = loadStyle(getSkinPath("styles.xml"))
 		writeStyle(style, getSkinPath("skin.xml"))
 
+
 def loadStyleConfigFromSkin():
 	print("MVC-I: StylesOps: loadStyleConfigFromSkin")
 	conf = getSkinConfig(getSkinPath("skin.xml"))
 #	for key1 in sorted(conf):
 #		for key2 in sorted(conf[key1]):
-#			print("MVC: StylesOps: loadStyleConfigFromSkin: %s, %s, %s" % (key1, key2, str(conf[key1][key2])))
+#			#print("MVC: StylesOps: loadStyleConfigFromSkin: %s, %s, %s" % (key1, key2, str(conf[key1][key2])))
 #			pass
 	config.plugins.MVC.style = ConfigSubDict()
 	for key, value in conf["preset"].iteritems():
@@ -56,8 +57,10 @@ def loadStyleConfigFromSkin():
 		config.plugins.MVC.style[key].value = value
 	config.plugins.MVC.save()
 
+
 def isSkinStyled():
 	return Skin.checkStyled(getSkinPath("skin.xml"))
+
 
 def getSkinConfig(filename):
 	#print("MVC: StylesOps: getSkinConfig: filename: %s" % filename)
@@ -65,6 +68,7 @@ def getSkinConfig(filename):
 		skin = Skin(filename)
 		return skin.getConfig()
 	return dict()
+
 
 def backupSkin():
 	src = getSkinPath("skin.xml")
@@ -81,6 +85,7 @@ def backupSkin():
 
 	return dst
 
+
 def restoreSkin():
 	dst = getSkinPath("skin.xml")
 	src = getSkinPath("skin_org.xml")
@@ -90,10 +95,12 @@ def restoreSkin():
 	config.plugins.MVC.style.clear()
 	copy2(src, dst)
 
+
 def loadStyle(filename):
 	style = Style(filename)
 	style.printInfo()
 	return style
+
 
 def writeStyle(style, filename):
 	#print("MVC: StylesOps: writeStyle: filename %s" % filename)

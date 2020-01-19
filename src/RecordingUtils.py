@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,14 +17,11 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
-from enigma import eServiceReference
-from Components.config import config
 from RecordTimer import AFTEREVENT
 import NavigationInstance
-from ServiceUtils import sidDVB
 
 
 def isRecording(path):
@@ -59,41 +56,3 @@ def isCutting(path):
 	#print("MVC: RecordingUtils: isCutting: path: %s" % path)
 	filename, _ext = os.path.splitext(path)
 	return filename.endswith("_") and not os.path.exists(filename + ".eit")
-
-
-def getRecording(path, include_margin_before=True):
-#	import datetime
-	recording = None
-	timer = isRecording(path)
-	if timer:
-		#print("MVC: RecordingUtils: getRecording: path: %s" % path)
-		#print("MVC: RecordingUtils: getRecording: include_margin_before: %s" % include_margin_before)
-		if include_margin_before:
-			from ServiceCenter import ServiceCenter
-			service = eServiceReference(sidDVB, 0, path)
-			#print("MVC: RecordingUtils: getRecording: service path: " + service.getPath())
-			recording_start = ServiceCenter.getInstance().info(service).getStartTime()
-#			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
-			delta = recording_start - timer.begin
-			if delta > config.recording.margin_before.value * 60:
-				#print("MVC: RecordingUtils: getRecording: late recording")
-				rec_start = recording_start
-			elif delta > 0:
-				#print("MVC: RecordingUtils: getRecording: late recording but within margin_before")
-				rec_start = recording_start - (config.recording.margin_before.value - delta)
-			else:
-				#print("MVC: RecordingUtils: getRecording: ontime recording")
-				rec_start = timer.begin
-		else:
-			recording_start = int(os.stat(path).st_ctime)  # timestamp from file
-#			#print("MVC: RecordingUtils: getRecording: recording_start: " + str(datetime.datetime.fromtimestamp(recording_start)))
-			delta = recording_start - timer.begin
-			if delta > config.recording.margin_before.value * 60:
-				#print("MVC: RecordingUtils: getRecording: late recording")
-				rec_start = recording_start
-			else:
-				#print("MVC: RecordingUtils: getRecording: ontime recording or within margin_before")
-				rec_start = timer.begin + config.recording.margin_before.value * 60
-		rec_end = timer.end - config.recording.margin_after.value * 60
-		recording = (rec_start, rec_end, timer.service_ref.ref)
-	return recording

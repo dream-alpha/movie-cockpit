@@ -2,7 +2,7 @@
 # coding=utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -18,7 +18,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
@@ -38,13 +38,15 @@ from Components.Language import language
 from Tools.Notifications import AddPopup
 from ServiceReference import ServiceReference
 from DelayTimer import DelayTimer
-from CutListUtils import secondsToPts, backupCutsFile
+from CutList import reloadCutList, backupCutList, updateCutList
+from CutListUtils import secondsToPts
 from InfoBarSupport import InfoBarSupport
 from Components.Sources.MVCCurrentService import MVCCurrentService
-from ServiceCenter import ServiceCenter
+from ServiceCenter import ServiceCenter, Info
 from ServiceUtils import sidDVB
-from RecordingUtils import isRecording, getRecording
+from RecordingUtils import isRecording
 from MovieInfoEPG import MovieInfoEPG
+
 
 class MVCMediaCenterSummary(Screen):
 
@@ -137,7 +139,11 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		length = 0
 		if self.service.type == sidDVB:
 			__len = self.serviceHandler.info(self.service).getLength()
-			length = secondsToPts(__len + config.recording.margin_before.value * 60)
+			event_start_time = self.serviceHandler.info(self.service).getEventStartTime()
+			recording_start_time = self.serviceHandler.info(self.service).getRecordingStartTime()
+			if event_start_time > recording_start_time:
+				__len += event_start_time - recording_start_time
+			length = secondsToPts(__len)
 		else:
 			# non-ts movies
 			seek = self.getSeek()
@@ -152,9 +158,9 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		position = 0
 		path = self.service.getPath()
 		if path:
-			recording = getRecording(path, True)
+			recording = isRecording(path)
 			if recording:
-				begin, _end, _service_ref = recording
+				begin = Info(path).getRecordingStartTime()
 				position = secondsToPts(time() - begin)
 			else:
 				position = self.getPosition()
@@ -304,7 +310,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 				if rank > 0:
 					self.gstsub_format_dict[index] = short
 			lt = []
-			l = []
+			alist = []
 			for index in range(n):
 				info = subs.getSubtitleTrackInfo(index)
 				languages = info.getLanguage().split('/')
@@ -321,11 +327,11 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 			if lt:
 				#print("MVC: MediaCenter: setSubtitleState: " + str(lt))
 				for e in lt:
-					l.append((e[0], e[1], e[2][0] in langC and langC[e[2][0]][0] or e[2][0]))
-					if l:
-						#print("MVC: MediaCenter: setSubtitleState: " + str(l))
+					alist.append((e[0], e[1], e[2][0] in langC and langC[e[2][0]][0] or e[2][0]))
+					if alist:
+						#print("MVC: MediaCenter: setSubtitleState: " + str(alist))
 						for sublang in [config.plugins.moviecockpit.sublang1.value, config.plugins.moviecockpit.sublang2.value, config.plugins.moviecockpit.sublang3.value]:
-							if self.trySubEnable(l, sublang):
+							if self.trySubEnable(alist, sublang):
 								break
 		except Exception as e:
 			print("MVC-E: MediaCenter: setSubtitleState: exception: %s" % e)
@@ -336,7 +342,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		self.setSubtitleState(False)
 
 		if self.service and self.service.type != sidDVB:
-			self.updateServiceCutList(self.service)
+			self.updateCutList(self.service)
 
 		if not reopen:
 			#print("MVC: MediaCenter: leavePlayer: closed due to EOF")
@@ -351,18 +357,16 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		#print("MVC: MediaCenter: leavePlayer: stopping service")
 		self.session.nav.stopService()
 
-		# [Cutlist.Workaround]
-		# Always make a backup-copy when recording is running and we stopped the playback
+		# Always make a backup copy when recording is running and we stopped the playback
 		if self.service and self.service.type == sidDVB:
 			path = self.service.getPath()
 			if isRecording(path):
-				backupCutsFile(path + ".cuts")
+				backupCutList(path + ".cuts")
 
-			#print("MVC: MediaCenter: leavePlayer: update cuts: " + self.service.getPath())
-			#print("MVC: MediaCenter: leavePlayer: cut_list before update: " + str(self.cut_list))
-			cut_list = self.reloadCutListFromFile(self.service.getPath())
-			print("MVC-I: MediaCenter: leavePlayer: cut_list after  reload: " + str(cut_list))
-
+			#print("MVC: MediaCenter: leavePlayer: reload cuts: " + path)
+			#print("MVC: MediaCenter: leavePlayer: cut_list before reload: %s" % self.cut_list)
+			cut_list = reloadCutList(path)
+			print("MVC-I: MediaCenter: leavePlayer: cut_list after reload: %s" % cut_list)
 		self.close(reopen)
 
 	### functions for InfoBarGenerics.py
@@ -387,19 +391,18 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 
 		else:
 			if self.service.type != sidDVB:
-				self.updateServiceCutList(self.service)
+				self.updateCutList(self.service)
 
-	def updateServiceCutList(self, service):
+	def updateCutList(self, service):
 		print("MVC-I: MediaCenter: updateCutList")
 		if self.getSeekPlayPosition() == 0:
 			if self.realSeekLength:
-				self.updateCutList(service.getPath(), self.realSeekLength, self.realSeekLength)
+				updateCutList(service.getPath(), self.realSeekLength, self.realSeekLength)
 			else:
-				self.updateCutList(service.getPath(), self.getSeekLength(), self.getSeekLength())
+				updateCutList(service.getPath(), self.getSeekLength(), self.getSeekLength())
 		else:
-			self.updateCutList(service.getPath(), self.getSeekPlayPosition(), self.getSeekLength())
+			updateCutList(service.getPath(), self.getSeekPlayPosition(), self.getSeekLength())
 		#print("MVC: MediaCenter: updateCutList: pos: " + str(self.getSeekPlayPosition()) + ", length: " + str(self.getSeekLength()))
-
 
 	def createSummary(self):
 		return MVCMediaCenterSummary

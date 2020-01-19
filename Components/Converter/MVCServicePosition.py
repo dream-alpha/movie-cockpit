@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2018-2019 dream-alpha
+# Copyright (C) 2018-2020 dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -70,33 +70,33 @@ class MVCServicePosition(ServicePosition):
 	@cached
 	def getText(self):
 		text = ""
-		l = 0
+		pos = 0
 		seek = self.getSeek()
 		if seek is not None:
 			if self.type == self.TYPE_ENDTIME:
-				l = (self.length - self.position) / 90000
-				t = time.localtime(time.time() + l)
+				pos = (self.length - self.position) / 90000
+				t = time.localtime(time.time() + pos)
 				text = "%02d:%02d" % (t.tm_hour, t.tm_min)
 				if not self.showNoSeconds:
 					text += ":%02d" % t.tm_sec
 			else:
 				if self.type == self.TYPE_LENGTH:
-					l = self.length
+					pos = self.length
 				elif self.type == self.TYPE_POSITION:
-					l = self.position
+					pos = self.position
 				elif self.type == self.TYPE_REMAINING:
-					l = self.length - self.position
+					pos = self.length - self.position
 
-				l = -l if self.negate else l
-				milliseconds = (abs(l) % 90000) / 90
-				l = l / 90000
+				pos = -pos if self.negate else pos
+				milliseconds = (abs(pos) % 90000) / 90
+				pos /= 90000
 				if self.showHours:
-					text += "%+d:" % (l / 3600)  # hours
-					text += "%02d" % (abs(l) % 3600 / 60)  # minutes
+					text += "%+d:" % (pos / 3600)  # hours
+					text += "%02d" % (abs(pos) % 3600 / 60)  # minutes
 				else:
-					text += "%+d" % (l / 60)  # minutes
+					text += "%+d" % (pos / 60)  # minutes
 				if not self.showNoSeconds:
-					text += ":%02d" % (abs(l) % 60)  # seconds
+					text += ":%02d" % (abs(pos) % 60)  # seconds
 					if self.detailed:
 						text += ":%03d" % milliseconds  # milliseconds
 		return text

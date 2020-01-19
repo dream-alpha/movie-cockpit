@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,31 +17,46 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from Components.config import config
+from MountPoints import getMountPoint, getDiskSpaceInfo
 
 
-class Bookmarks():
+def getHomeDir():
+	return getBookmarks()[0]
 
-	def __init__(self):
-		pass
 
-	def getHomeDir(self):
-		return self.getBookmarks()[0]
+def isBookmark(path):
+	return path in getBookmarks()
 
-	def isBookmark(self, path):
-		return path in self.getBookmarks()
 
-	def getBookmarks(self):
-		bookmarks = []
-		if config.movielist and config.movielist.videodirs:
-			bookmarks = [os.path.normpath(bookmark) for bookmark in config.movielist.videodirs.value]
-		return bookmarks
+def getBookmarks():
+	bookmarks = []
+	if config.movielist and config.movielist.videodirs:
+		bookmarks = [os.path.normpath(bookmark) for bookmark in config.movielist.videodirs.value]
+	return bookmarks
 
-	def getBookmark(self, path):
-		for bookmark in self.getBookmarks():
-			if path.startswith(bookmark):
-				return bookmark
-		return None
+
+def getBookmark(path):
+	for bookmark in getBookmarks():
+		if path.startswith(bookmark):
+			return bookmark
+	return None
+
+
+def getBookmarksSpaceInfo():
+	space_used_percent = ""
+	bookmarks = getBookmarks()
+	mountpoints = []
+	for bookmark in bookmarks:
+		mountpoint = getMountPoint(bookmark)
+		if mountpoint and mountpoint not in mountpoints:
+			mountpoints.append(mountpoint)
+			percent_used, _used, _free = getDiskSpaceInfo(mountpoint)
+			if space_used_percent != "":
+				space_used_percent += ", "
+			space_used_percent += mountpoint + (": %.1f" % percent_used) + "%"
+	#print("MVC: Bookmarks: getBookmarksSpaceInfo: space_used_percent: %s" % space_used_percent)
+	return space_used_percent

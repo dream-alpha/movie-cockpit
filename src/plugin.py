@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
@@ -79,9 +79,9 @@ def autostart(reason, **kwargs):
 			RecordingControl()
 			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
 				print("MVC-I: plugin: loading database...")
-				deleteFile("/etc/enigma2/.moviecockpit")
 				config.plugins.moviecockpit.debug.value = False
 				config.plugins.moviecockpit.debug.save()
+				deleteFile("/etc/enigma2/.moviecockpit")
 				FileCacheLoad.getInstance().loadDatabase(sync=True)
 			else:
 				print("MVC-I: plugin: database is already loaded.")
@@ -91,7 +91,8 @@ def autostart(reason, **kwargs):
 			loadPluginSkin("skin.xml")
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
-		FileCacheLoad.getInstance().closeDatabase()
+		if not os.path.exists("/etc/enigma2/.moviecockpit"):
+			FileCacheLoad.getInstance().closeDatabase()
 		if config.plugins.moviecockpit.debug.value:
 			createLogFile()
 	else:
@@ -101,7 +102,6 @@ def autostart(reason, **kwargs):
 def Plugins(**__):
 	print("MVC-I: plugin: +++ Plugins")
 	ConfigInit()
-
 	descriptors = []
 	descriptors.append(
 		PluginDescriptor(
@@ -113,23 +113,29 @@ def Plugins(**__):
 
 	if config.plugins.moviecockpit.extmenu_settings.value:
 		descriptors.append(
-			PluginDescriptor(name="MovieCockpit" + " - " + _("Setup"),
-			description=_("Open setup"),
-			icon="MovieCockpit.svg",
-			where=[
-				PluginDescriptor.WHERE_PLUGINMENU,
-				PluginDescriptor.WHERE_EXTENSIONSMENU
-			],
-			fnc=openSettings))
+			PluginDescriptor(
+				name="MovieCockpit" + " - " + _("Setup"),
+				description=_("Open setup"),
+				icon="MovieCockpit.svg",
+				where=[
+					PluginDescriptor.WHERE_PLUGINMENU,
+					PluginDescriptor.WHERE_EXTENSIONSMENU
+				],
+				fnc=openSettings
+			)
+		)
 
 	if config.plugins.moviecockpit.extmenu_plugin.value and not config.plugins.moviecockpit.disable.value:
 		descriptors.append(
-			PluginDescriptor(name="MovieCockpit",
-			description=_("Manage recordings"),
-			icon="MovieCockpit.svg",
-			where=[
-				PluginDescriptor.WHERE_PLUGINMENU,
-				PluginDescriptor.WHERE_EXTENSIONSMENU
-			],
-			fnc=openMovieSelection))
+			PluginDescriptor(
+				name="MovieCockpit",
+				description=_("Manage recordings"),
+				icon="MovieCockpit.svg",
+				where=[
+					PluginDescriptor.WHERE_PLUGINMENU,
+					PluginDescriptor.WHERE_EXTENSIONSMENU
+				],
+				fnc=openMovieSelection
+			)
+		)
 	return descriptors

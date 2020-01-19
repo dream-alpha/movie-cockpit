@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from __init__ import _
@@ -27,7 +27,7 @@ from Components.Sources.List import List
 from Components.PluginComponent import plugins
 from Screens.Screen import Screen
 from Components.Sources.StaticText import StaticText
-from Bookmarks import Bookmarks
+from Bookmarks import isBookmark
 from MovieList import MovieList
 from Screens.HelpMenu import HelpableScreen
 from Plugins.Plugin import PluginDescriptor
@@ -38,9 +38,8 @@ MENU_FUNCTIONS = 1
 MENU_PLUGINS = 2
 
 
-class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks):
+class MovieSelectionContextMenu(Screen, HelpableScreen):
 	def __init__(self, session, csel, menu_mode, current_dir, service=None):
-		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		self.menu_mode = menu_mode
@@ -65,7 +64,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen, Bookmarks):
 		if menu_mode == MENU_FUNCTIONS:
 			self.setTitle(_("Movie list menu"))
 
-			if current_dir and not self.isBookmark(os.path.realpath(current_dir)):
+			if current_dir and not isBookmark(os.path.realpath(current_dir)):
 				menu.append((_("Movie home"), (csel.moveToMovieHome, True)))
 				menu.append((_("Directory up"), (boundFunction(csel.changeDir, current_dir + "/.."), True)))
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,11 +17,11 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from CutListUtils import unpackCutList
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks
 from FileCacheSQL import FileCacheSQL
 
 # file indexes
@@ -31,14 +31,16 @@ FILE_IDX_PATH = 2
 FILE_IDX_FILENAME = 3
 FILE_IDX_EXT = 4
 FILE_IDX_NAME = 5
-FILE_IDX_DATE = 6
-FILE_IDX_LENGTH = 7
-FILE_IDX_DESCRIPTION = 8
-FILE_IDX_EXTENTED_DESCRIPTION = 9
-FILE_IDX_SERVICE_REFERENCE = 10
-FILE_IDX_SIZE = 11
-FILE_IDX_CUTS = 12
-FILE_IDX_TAGS = 13
+FILE_IDX_EVENT_START_TIME = 6
+FILE_IDX_RECORDING_START_TIME = 7
+FILE_IDX_RECORDING_STOP_TIME = 8
+FILE_IDX_LENGTH = 9
+FILE_IDX_DESCRIPTION = 10
+FILE_IDX_EXTENTED_DESCRIPTION = 11
+FILE_IDX_SERVICE_REFERENCE = 12
+FILE_IDX_SIZE = 13
+FILE_IDX_CUTS = 14
+FILE_IDX_TAGS = 15
 
 # filetype values
 FILE_TYPE_FILE = 1
@@ -48,11 +50,10 @@ FILE_TYPE_DIR = 2
 instance = None
 
 
-class FileCache(FileCacheSQL, Bookmarks):
+class FileCache(FileCacheSQL):
 
 	def __init__(self):
 		print("MVC-I: FileCache: __init__")
-		Bookmarks.__init__(self)
 		FileCacheSQL.__init__(self)
 		#print("MVC: FileCache: __init__: done")
 
@@ -85,43 +86,17 @@ class FileCache(FileCacheSQL, Bookmarks):
 
 #		self.dump(detailed=False)
 
-	def update(self, path, pdirectory=None, pfiletype=None, ppath=None, pfilename=None, pext=None, pname=None, pdate=None, plength=None, pdescription=None, pextended_description=None, pservice_reference=None, psize=None, pcuts=None, ptags=None):
-		#print("MVC: FileCache: update: %s" % path)
+	def update(self, path, **kwargs):
+		#print("MVC: FileCache: update: %s, kwargs: %s" % (path, kwargs))
 		filedata = self.getFile(path)
-		if filedata is not None:
-			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
-			if path:
-				if pdirectory is not None:
-					directory = pdirectory
-				if pfiletype is not None:
-					filetype = pfiletype
-				if ppath is not None:
-					path = ppath
-				if pfilename is not None:
-					filename = pfilename
-				if pext is not None:
-					ext = pext
-				if pname is not None:
-					name = pname
-				if pdate is not None:
-					date = pdate
-				if plength is not None:
-					length = plength
-				if pdescription is not None:
-					description = pdescription
-				if pextended_description is not None:
-					extended_description = pextended_description
-				if pservice_reference is not None:
-					service_reference = pservice_reference
-				if psize is not None:
-					size = psize
-				if pcuts is not None:
-					cuts = pcuts
-				if ptags is not None:
-					tags = ptags
-
-				self.delete(path)
-				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+		if filedata:
+			self.directory, self.filetype, self.path, self.filename, self.ext, self.name, self.event_start_time, self.recording_start_time, self.recording_stop_time, self.length, self.description, self.extended_description, self.service_reference, self.size, self.cuts, self.tags = filedata
+			#print("MVC: FileCache: update: kwargs.items(): %s" % kwargs.items())
+			for key, value in kwargs.items():
+				#print("MVC: FileCache: update: key: %s, value: %s" % (key, value))
+				setattr(self, key, value)
+			self.delete(path)
+			self.add((self.directory, self.filetype, self.path, self.filename, self.ext, self.name, self.event_start_time, self.recording_start_time, self.recording_stop_time, self.length, self.description, self.extended_description, self.service_reference, self.size, self.cuts, self.tags))
 
 	def copy(self, src_path, dest_path):
 		src_path = os.path.normpath(src_path)
@@ -129,14 +104,14 @@ class FileCache(FileCacheSQL, Bookmarks):
 		#print("MVC: FileCache: copy: src_path: %s, dest_path: %s " % (src_path, dest_path))
 		filedata = self.getFile(src_path)
 		if filedata is not None:
-			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
+			directory, filetype, path, filename, ext, name, event_start_time, recording_start_time, recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags = filedata
 			path = os.path.join(dest_path, filename) + ext
 			# check of file already exists at destination
 			dest_file = self.getFile(path)
 			if dest_file is None:
 				#print("MVC: FileCache: copy: dest_path: %s" % path)
 				directory = dest_path
-				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+				self.add((directory, filetype, path, filename, ext, name, event_start_time, recording_start_time, recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags))
 			else:
 				print("MVC-E: FileCache: copy: file already exists at destination")
 		else:
@@ -148,14 +123,14 @@ class FileCache(FileCacheSQL, Bookmarks):
 		#print("MVC: FileCache: move: src_path: %s, dest_path: %s" % (src_path, dest_path))
 		srcfile = self.getFile(src_path)
 		if srcfile is not None:
-			directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = srcfile
+			directory, filetype, path, filename, ext, name, event_start_time, recording_start_time, recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags = srcfile
 			path = os.path.join(dest_path, filename) + ext
 			directory = dest_path
 			# check if file already exists at destination
 			dest_file = self.getFile(path)
 			if dest_file is None:
 				#print("MVC: FileCache: move: dest_path: %s" % path)
-				self.add((directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags))
+				self.add((directory, filetype, path, filename, ext, name, event_start_time, recording_start_time, recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags))
 				self.delete(src_path)
 			else:
 				print("MVC-E: FileCache: move: source file already exists at destination: %s" % src_path)
@@ -179,7 +154,7 @@ class FileCache(FileCacheSQL, Bookmarks):
 	def __resolveVirtualDirs(self, dirs):
 		#print("MVC: FileCache: __resolveVirtualDirs: dirs: %s" % dirs)
 		all_dirs = []
-		bookmarks = self.getBookmarks()
+		bookmarks = getBookmarks()
 		for adir in dirs:
 			if adir in bookmarks:
 				for bookmark in bookmarks:
@@ -247,7 +222,7 @@ class FileCache(FileCacheSQL, Bookmarks):
 		#print("MVC: FileCache: __getCountSize: where: %s" % where)
 		filelist = self.sqlSelect(where)
 
-		for directory, filetype, path, filename, _ext, _name, _date, _length, _description, _extended_description, _service_reference, size, _cuts, _tags in filelist:
+		for directory, filetype, path, filename, _ext, _name, _event_start_time, _recording_start_time, _recording_stop_time, _length, _description, _extended_description, _service_reference, size, _cuts, _tags in filelist:
 			#print("MVC: FileCache: __getCountSize: %s, %s" % (path, filetype))
 			if path and filetype == FILE_TYPE_FILE and directory == in_path:
 				#print("MVC: FileCache: __getCountSize: path: %s " % path)
@@ -263,11 +238,11 @@ class FileCache(FileCacheSQL, Bookmarks):
 		rows = self.cursor.fetchall()
 		print("MVC-I: FileCache: dump: =========== database dump ==============")
 
-		for directory, filetype, path, filename, ext, name, date, length, description, extended_description, service_reference, size, cuts, tags in rows:
+		for directory, filetype, path, filename, ext, name, event_start_time, _recording_start_time, _recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags in rows:
 			print("MVC-I: FileCache: dump: media: %s|%s|%s|%s|%s" % (directory, filetype, path, filename, ext))
 			if detailed:
 				print("MVC-I: FileCache: dump: - name : %s" % name)
-				print("MVC-I: FileCache: dump: - date : %s" % date)
+				print("MVC-I: FileCache: dump: - date : %s" % event_start_time)
 				print("MVC-I: FileCache: dump: - len  : %s" % length)
 				print("MVC-I: FileCache: dump: - desc : %s" % description)
 				print("MVC-I: FileCache: dump: - ext  : %s" % extended_description)

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,14 +17,15 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from Components.config import config
 from MovieCover import MovieCover
 from MovieTMDB import MovieTMDB
 from Tasker import tasker
-from MountPoints import MountPoints
+from MountPoints import getMountPoint, getDiskSpaceInfo
+from Bookmarks import getBookmarksSpaceInfo
 from FileCache import FileCache, FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileCacheLoad import FileCacheLoad
 
@@ -33,12 +34,11 @@ FILE_OP_MOVE = 2
 FILE_OP_COPY = 3
 
 
-class FileOps(MovieTMDB, MovieCover, MountPoints):
+class FileOps(MovieTMDB, MovieCover):
 
 	def __init__(self):
 		MovieTMDB.__init__(self)
 		MovieCover.__init__(self)
-		MountPoints.__init__(self)
 		self.execution_list = []
 
 	def reloadList(self, path):
@@ -46,7 +46,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints):
 		print("MVC-E: FileOps: reloadList: should not be called at all, as overwritten by child")
 
 	def updateSpaceInfo(self):
-		config.plugins.moviecockpit.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
+		config.plugins.moviecockpit.disk_space_info.value = getBookmarksSpaceInfo()
 		config.plugins.moviecockpit.disk_space_info.save()
 		#print("MVC: MovieSelection: updateSpaceInfo: config.plugins.moviecockpit.disk_space_info.value: %s" % config.plugins.moviecockpit.disk_space_info.value)
 
@@ -85,7 +85,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints):
 				used = 0
 				if filetype != FILE_TYPE_FILE:
 					_count, used = FileCache.getInstance().getCountSize(path)
-					free = self.getMountPointSpaceFree(target_path)
+					_used_percent, _used, free = getDiskSpaceInfo(target_path)
 					#print("MVC: FileOps: execFileOp: move_dir: used: %s, free: %s" % (used, free))
 				if free >= used:
 					c = self.__execFileMove(path, target_path, filetype)
@@ -194,7 +194,7 @@ class FileOps(MovieTMDB, MovieCover, MountPoints):
 
 	def __changeFileOwner(self, path, target_path):
 		c = []
-		if self.getMountPoint(target_path) != self.getMountPoint(path):
+		if getMountPoint(target_path) != getMountPoint(path):
 			# need to change file ownership to match target filesystem file creation
 			tfile = "\"" + target_path + "/owner_test" + "\""
 			path = path.replace("'", "\'")

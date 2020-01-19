@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2018 cmikula
-# Copyright (C) 2019 dream-alpha
+# Copyright (C) 2018 by cmikula
+# Copyright (C) 2019-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -22,7 +22,7 @@
 # For example, if you distribute copies of such a program, whether gratis or for a fee, you
 # must pass on to the recipients the same freedoms that you received. You must make sure
 # that they, too, receive or can get the source code. And you must show them these terms so they know their rights.
-#
+
 
 import os
 from __init__ import _
@@ -55,15 +55,22 @@ class StylesScreen(Screen, ConfigListScreen, PixmapDisplay):
 		PixmapDisplay.__init__(self)
 		self.skinName = "MVCStyles"
 
-		self["setupActions"] = ActionMap(["ColorActions", "OkCancelActions", "MenuActions"],
-		{
-			"ok": self.keySave,
-			"cancel": self.close,
-			"red": self.close,
-			"green": self.keySave,
-			"yellow": self.keyDefault,
-			"blue": self.restoreBackupSkin,
-		}, -2)
+		self["setupActions"] = ActionMap(
+			[
+				"ColorActions",
+				"OkCancelActions",
+				"MenuActions",
+			],
+			{
+				"ok": self.keySave,
+				"cancel": self.close,
+				"red": self.close,
+				"green": self.keySave,
+				"yellow": self.keyDefault,
+				"blue": self.restoreBackupSkin,
+			},
+			-2
+		)
 		self["key_red"] = Button(_("Exit"))
 		self["key_green"] = Button(_("Apply"))
 		self["key_yellow"] = Button(_("Default"))

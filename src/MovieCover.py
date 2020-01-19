@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,25 +17,24 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from Components.config import config
 from SkinUtils import getSkinPath
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks
 from PixmapDisplay import PixmapDisplay
 
 
-class MovieCover(Bookmarks, PixmapDisplay):
+class MovieCover(PixmapDisplay):
 	def __init__(self):
-		Bookmarks.__init__(self)
 		PixmapDisplay.__init__(self)
 
 	def getCoverPath(self, path):
 		#print("MVC: MovieCover getCoverPath: path: " + path)
 		cover_path = os.path.splitext(path)[0] + ".jpg"
 		if config.plugins.moviecockpit.cover_flash.value:
-			for bookmark in self.getBookmarks():
+			for bookmark in getBookmarks():
 				if cover_path.startswith(bookmark):
 					cover_path = config.plugins.moviecockpit.cover_bookmark.value + cover_path[len(bookmark):]
 					break

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -18,52 +18,57 @@
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
 
+
 import os
-from Bookmarks import Bookmarks
+from FileUtils import readFile
 
-class MountPoints(Bookmarks):
 
-	def __init__(self):
-		Bookmarks.__init__(self)
+def parseFstab():
+	mountpoints = []
+	lines = readFile("/etc/fstab").splitlines()
+	for line in lines:
+		if line and not line.startswith("#"):
+			line = line.replace("\t", " ")
+			words = line.split(" ")
+			#print("MVC": MountPointUtils: parseFstab: words: %s" % str(words))
+			if len(words) >= 2:
+				mountpoint = words[1]
+				if mountpoint not in ["none", "/"]:
+					mountpoints.append(mountpoint)
+	#print("MVC": MountPointUtils: parseFstab: mountpoints: %s" % str(mountpoints))
+	return mountpoints
 
-	def __disk_usage(self, path):
-		st = os.statvfs(path)
-		free = (st.f_bavail * st.f_frsize)
-		total = (st.f_blocks * st.f_frsize)
-		used = (st.f_blocks - st.f_bfree) * st.f_frsize
-		percent_used = round((float(used) / total) * 100, 1) if total > 0 else 0
-		return percent_used, free
 
-	def getMountPoint(self, path, first=True):
-		if first:
-			path = os.path.realpath(path)
-		if os.path.ismount(path) or not path:
-			return path
-		return self.getMountPoint(os.path.dirname(path), False)
+def getDiskSpaceInfo(path):
+	st = os.statvfs(path)
+	free = (st.f_bavail * st.f_frsize)
+	total = (st.f_blocks * st.f_frsize)
+	used = (st.f_blocks - st.f_bfree) * st.f_frsize
+	percent_used = round((float(used) / total) * 100, 1) if total > 0 else 0
+	return percent_used, used, free
 
-	def getMountPointsSpaceUsedPercent(self):
-		space_used_percent = ""
-		bookmarks = self.getBookmarks()
-		mountpoints = []
-		for bookmark in bookmarks:
-			mountpoint = self.getMountPoint(bookmark)
-			if mountpoint not in mountpoints:
-				mountpoints.append(mountpoint)
-				percent_used = self.__getMountPointSpaceUsedPercent(mountpoint)
-				if space_used_percent != "":
-					space_used_percent += ", "
-				space_used_percent += mountpoint + (": %.1f" % percent_used) + "%"
-		#print("MVC: MountPoints: getMountPointsSpaceUsedPercent: space_used_percent: %s" % space_used_percent)
-		return space_used_percent
 
-	def __getMountPointSpaceUsedPercent(self, path):
-		percent_used = 0
-		if os.path.exists(path):
-			percent_used, _free = self.__disk_usage(path)
-		return percent_used
+def isMounted(path):
+	is_mounted = True
+	mountpoints = parseFstab()
+	for mountpoint in mountpoints:
+		if path.startswith(mountpoint):
+			stat = os.stat(path)
+			#print("MVC": MountPointUtils: isMounted: stat: %s, st_mtime: %s, st_ctime: %s" % (stat, stat.st_mtime, stat.st_ctime))
+			if int(stat.st_mtime) == 0 and int(stat.st_ctime) == 0:
+				#print("MVC": MountPointUtils: isMounted: mountpoint: %s is not mounted" % mountpoint)
+				is_mounted = False
+				break
+	#print("MVC": MountPointUtils: isMounted: path: %s, is_mounted: %s" % (path, is_mounted))
+	return is_mounted
 
-	def getMountPointSpaceFree(self, path):
-		free = 0
-		if os.path.exists(path):
-			_percent_used, free = self.__disk_usage(path)
-		return free
+
+def getMountPoint(path):
+	path = os.path.realpath(path)
+	mountpoints = parseFstab()
+	mountpoint = None
+	for __mountpoint in mountpoints:
+		if path.startswith(__mountpoint):
+			mountpoint = __mountpoint
+			break
+	return mountpoint

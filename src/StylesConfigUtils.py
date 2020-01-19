@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2018 cmikula
-# Copyright (C) 2019 dream-alpha
+# Copyright (C) 2018 by cmikula
+# Copyright (C) 2019-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -22,21 +22,24 @@
 # For example, if you distribute copies of such a program, whether gratis or for a fee, you
 # must pass on to the recipients the same freedoms that you received. You must make sure
 # that they, too, receive or can get the source code. And you must show them these terms so they know their rights.
-#
+
 
 from Components.config import config, ConfigSubDict, ConfigText
 
 KEYS = ((".", "\s01"), ("=", "\s02"))
+
 
 def __encodeConfig(value):
 	for x in KEYS:
 		value = value.replace(x[0], x[1])
 	return value
 
+
 def __decodeConfig(value):
 	for x in KEYS:
 		value = value.replace(x[1], x[0])
 	return value
+
 
 def encodeConfig(conf, c):
 	try:
@@ -47,6 +50,7 @@ def encodeConfig(conf, c):
 	except Exception as e:
 		print("MVC-E: StylesConfigUtils: encodeConfig: exception: %s" % e)
 
+
 def storeConfig():
 	#print("MVC: StylesConfigUtils: storeConfig")
 	p = config.plugins.MVC.preset
@@ -56,6 +60,7 @@ def storeConfig():
 	encodeConfig(config.plugins.MVC.preset, p)
 	encodeConfig(config.plugins.MVC.style, s)
 	config.plugins.MVC.save()
+
 
 def loadConfig(conf):
 	#print("MVC: StylesConfigUtils: loadConfig")

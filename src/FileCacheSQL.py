@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from sqlite3 import dbapi2 as sqlite
 
@@ -33,7 +33,7 @@ class FileCacheSQL():
 
 	def sqlCreateTable(self):
 		self.sql_conn.execute(
-			'''CREATE TABLE IF NOT EXISTS recordings (directory TEXT, filetype INTEGER, path TEXT, fileName TEXT, fileExt TEXT, name TEXT, date TEXT, length INTEGER,\
+			'''CREATE TABLE IF NOT EXISTS recordings (directory TEXT, filetype INTEGER, path TEXT, fileName TEXT, fileExt TEXT, name TEXT, event_start_time INTEGER, recording_start_time INTEGER, recording_stop_time INTEGER, length INTEGER,\
 			description TEXT, extended_description TEXT, service_reference TEXT, size INTEGER, cuts TEXT, tags TEXT)'''
 		)
 		self.sql_conn.text_factory = str
@@ -58,7 +58,7 @@ class FileCacheSQL():
 		self.sql_conn.commit()
 
 	def sqlInsert(self, filedata):
-		self.cursor.execute("INSERT INTO recordings VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", filedata)
+		self.cursor.execute("INSERT INTO recordings VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", filedata)
 		self.sql_conn.commit()
 
 	def sqlClose(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,14 +17,16 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
 
-import os
+
 import struct
-import shutil
 from bisect import insort
 
 cutsParser = struct.Struct('>QI')  # big-endian, 64-bit PTS and 32-bit type
+
+# cut_list data structure
+# cut_list[x][0] = pts  = long long
+# cut_list[x][1] = what = long
 
 # InfoBarCueSheetSupport types
 CUT_TYPE_IN = 0
@@ -34,12 +36,6 @@ CUT_TYPE_LAST = 3
 # Additional custom MVC specific types
 # Have to be removed before starting a player
 CUT_TYPE_LENGTH = 5
-
-
-def backupCutsFile(path):
-	backup_path = path + ".cuts.save"
-	if os.path.exists(path):
-		shutil.copy2(path, backup_path)
 
 
 def removeFirstMarks(cut_list):
@@ -129,6 +125,7 @@ def replaceLength(cut_list, pts):
 	if pts > 0:
 		cut_list = insortCutList(cut_list, pts, CUT_TYPE_LENGTH)
 	return cut_list
+
 
 def removeMarks(cut_list):
 	for cp in cut_list:

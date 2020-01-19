@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -20,29 +20,28 @@
 
 
 import os
-import datetime
+import time
+from datetime import datetime
 from ParserEitFile import ParserEitFile
 from ParserMetaFile import ParserMetaFile
 #from ServiceReference import ServiceReference
 from CutListUtils import unpackCutList, ptsToSeconds, getCutListLength
-from Components.config import config
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks
 from ServiceUtils import extTS, extVideo
-from RecordingUtils import getRecording
 from FileUtils import readFile
-from ServiceCenter import str2date
 from FileCache import FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileCacheSQL import FileCacheSQL
 from DelayTimer import DelayTimer
+from UnicodeUtils import convertToUtf8
+
 
 instance = None
 
 
-class FileCacheLoad(FileCacheSQL, Bookmarks):
+class FileCacheLoad(FileCacheSQL):
 
 	def __init__(self):
 		print("MVC-I: FileCacheLoad: __init__")
-		Bookmarks.__init__(self)
 		FileCacheSQL.__init__(self)
 
 	@staticmethod
@@ -76,14 +75,15 @@ class FileCacheLoad(FileCacheSQL, Bookmarks):
 	def loadDatabase(self, dirs=None, sync=False, callback=None):
 		#print("MVC: FileCacheLoad: loadDatabase: dirs: %s" % dirs)
 		if dirs is None:
-			dirs = self.getBookmarks()
-		self.clearDatabase()
-		self.load_list = self.getDirsLoadList(dirs)
-		if sync:
-			for path, filetype in self.load_list:
-				self.loadDatabaseFile(path, filetype)
-		else:
-			DelayTimer(10, self.nextFileOp, callback)
+			dirs = getBookmarks()
+		if dirs:
+			self.clearDatabase()
+			self.load_list = self.getDirsLoadList(dirs)
+			if sync:
+				for path, filetype in self.load_list:
+					self.loadDatabaseFile(path, filetype)
+			else:
+				DelayTimer(10, self.nextFileOp, callback)
 
 	### database directory functions
 
@@ -101,115 +101,150 @@ class FileCacheLoad(FileCacheSQL, Bookmarks):
 
 	### database load file/dir functions
 
+	def reloadDatabaseFile(self, path, filetype=FILE_TYPE_FILE):
+		where = "path = \"" + path + "\""
+		self.sqlDelete(where)
+		self.loadDatabaseFile(path, filetype)
+
 	def loadDatabaseFile(self, path, filetype=FILE_TYPE_FILE):
 		#print("MVC: FileCacheLoad: loadDatabaseFile: path: %s, filetype: %s" % (path, filetype))
 		if filetype == FILE_TYPE_FILE:
-			filedata = self.__newFileData(path)
+			filedata = self.newFileData(path)
 			self.sqlInsert(filedata)
 		elif filetype == FILE_TYPE_DIR:
-			filedata = self.__newDirData(path)
+			filedata = self.newDirData(path)
 			self.sqlInsert(filedata)
 
-	def __newDirData(self, path):
-
-		def convertToUtf8(name):
-			try:
-				name.decode('utf-8')
-			except UnicodeDecodeError:
-				try:
-					name = name.decode("cp1252").encode("utf-8")
-				except UnicodeDecodeError:
-					name = name.decode("iso-8859-1").encode("utf-8")
-			return name
-
+	def newDirData(self, path):
 		ext, short_description, extended_description, service_reference, cuts, tags = "", "", "", "", "", ""
-		size, length = 0, 0
-		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
+		size = length = recording_start_time = recording_stop_time = 0
+		event_start_time = int(os.stat(path).st_ctime)
 		name = convertToUtf8(os.path.basename(path))
-		filedata = (os.path.dirname(path), FILE_TYPE_DIR, path, os.path.basename(path), ext, name, date, length, short_description, extended_description, service_reference, size, cuts, tags)
+		filedata = (os.path.dirname(path), FILE_TYPE_DIR, path, os.path.basename(path), ext, name, event_start_time, recording_start_time, recording_stop_time, length, short_description, extended_description, service_reference, size, cuts, tags)
 		return filedata
 
-	def __newFileData(self, path):
+	def newFileData(self, path):
 
-		def parseCutNo(filename):
-			#print("MVC: FileCacheLoad: parseCutNo: filename: %s" % filename)
-			cutno = ""
-			if filename[-4:-3] == "_" and filename[-3:].isdigit():
-				cutno = filename[-3:]
-				filename = filename[:-4]
-			#print("MVC: FileCacheLoad: parseCutNo: filename: %s, cutno: %s" % (filename, cutno))
-			return cutno, filename
+		def parseFilename(filename):
+			#print("MVC: FileCacheLoad: parseFilename: filename: %s" % filename)
+			name = filename
+			date, service_name = "", ""
+			start_time = 0
 
-		def parseDate(filename):
-			#print("MVC: FileCacheLoad: parseDate: filename: %s" % filename)
-			date = ""
 			# extract title from recording filename
-			filename = filename.strip()
-			if filename[0:8].isdigit():
-				if filename[8] == " " and filename[9:13].isdigit():
+			words = filename.split(" - ", 2)
+
+			date_string = words[0]
+			if date_string[0:8].isdigit():
+				if date_string[8] == " " and date_string[9:13].isdigit():
 					# Default: filename = YYYYMMDD TIME - service_name
-					d = filename[0:13]
+					d = date_string[0:13]
 					dyear = d[0:4]
 					dmonth = d[4:6]
 					dday = d[6:8]
 					dhour = d[9:11]
 					dmin = d[11:13]
 					date = dyear + "-" + dmonth + "-" + dday + " " + dhour + ":" + dmin + ":" + "00"
-			#print("MVC: FileCacheLoad: parseDate: date: %s" % date)
-			return date
+			#print("MVC: FileCacheLoad: parseFilename: date: %s" % date)
 
-		#print("MVC: FileCacheLoad: __newFileData: %s" % path)
+			if len(words) > 1:
+				service_name = words[1]
+				#print("MVC: FileCacheLoad: parseFilename: service_name: %s" % service_name)
+			if len(words) > 2:
+				name = words[2]
+
+			#print("MVC: FileCacheLoad: parseFilename: filename: %s" % filename)
+			cutno = ""
+			if name[-4:-3] == "_" and name[-3:].isdigit():
+				cutno = name[-3:]
+				name = name[:-4]
+
+			if date:
+				dt = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+				start_time = int(time.mktime(dt.timetuple()))
+			#print("MVC: FileCacheLoad: parseFilename: filename: %s, cutno: %s" % (filename, cutno))
+			return start_time, service_name, name, cutno
+
+		def getEitData(eit, recording_start_time, recording_stop_time):
+			print("MVC-I: FileCacheLoad: getEitData: recording_start_time: %s, recording_stop_time: %s" % (recording_start_time, recording_stop_time))
+			name = eit["name"]
+			event_start_time = eit["start"]
+			length = eit["length"]
+			short_description = eit["short_description"]
+			extended_description = eit["description"]
+			if recording_start_time and (recording_start_time > event_start_time):
+				length -= recording_start_time - event_start_time
+				event_start_time = recording_start_time
+			if recording_stop_time and (recording_stop_time > event_start_time) and (recording_stop_time < event_start_time + length):
+				length = recording_stop_time - event_start_time
+			elif recording_stop_time and (recording_stop_time < event_start_time):
+				length = 0
+			#print("MVC: FileCacheLoad: getEitData: event_start_time: %s, length: %s" % (event_start_time, length))
+			return name, event_start_time, length, short_description, extended_description
+
+		def getMetaData(meta, recording_start_time, recording_stop_time, timer_start_time, timer_stop_time):
+			print("MVC-I: FileCacheLoad: getMetaData: recording_start_time: %s, recording_stop_time: %s, timer_start_time: %s, timer_stop_time: %s" % (recording_start_time, recording_stop_time, timer_start_time, timer_stop_time))
+			name = meta["name"]
+			start_time = meta["rec_time"]
+			if meta["recording_margin_before"]:
+				start_time += meta["recording_margin_before"]
+			length = 0
+			short_description = ""
+			extended_description = ""
+
+			if timer_start_time and timer_stop_time:
+				start = timer_start_time
+				stop = timer_stop_time
+				if recording_start_time and recording_start_time > timer_start_time:
+					start = recording_start_time
+				if recording_stop_time > start and recording_stop_time < timer_stop_time:
+					stop = recording_stop_time
+				length = stop - start
+			#print("MVC: FileCacheLoad: getMetaData: start_time: %s, length: %s" % (start_time, length))
+			return name, start_time, length, short_description, extended_description
+
+		#print("MVC: FileCacheLoad: newFileData: %s" % path)
 		filepath, ext = os.path.splitext(path)
 		filename = os.path.basename(filepath)
-
-		short_description, extended_description, service_reference, tags = "", "", "", ""
-		length = 0
-		date = str(datetime.datetime.fromtimestamp(os.stat(path).st_ctime))[0:19]
-		size = os.path.getsize(path)
 		name = filename
+		short_description, extended_description, service_reference, tags = "", "", "", ""
+		recording_start_time = recording_stop_time = length = size = 0
 		cuts = readFile(path + ".cuts")
+		event_start_time = int(os.stat(path).st_ctime)
+		size = os.path.getsize(path)
 
 		if ext in extTS:
-			filename_date = str2date(parseDate(os.path.basename(path)))
-			#print("MVC: FileCacheLoad: __newFileData: filename date: %s" % filename_date)
-			if filename_date:
-				date = str(filename_date + datetime.timedelta(minutes=config.recording.margin_before.value))
-
-			recording = getRecording(path, False)
-			if recording:
-				#print("MVC: FileCacheLoad: __newFileData: recording")
-				timer_begin, timer_end, _service_reference = recording
-				date = str(datetime.datetime.fromtimestamp(timer_begin))
-				length = timer_end - timer_begin
-				#print("MVC: FileCacheLoad: __newFileData: timer_begin: %s, length: %s" % (date, length / 60))
-
-			# parse eit file
+			start_time, _service_name, name, cutno = parseFilename(filename)
+			#print("MVC: FileCacheLoad: newFileData: filename date: %s, service_name: %s, filename: %s, cutno: %s" % (filename_date, _service_name, filename, cutno))
+			if start_time:
+				event_start_time = start_time
+			meta = ParserMetaFile(path).getMeta()
+			meta_name = meta["name"]
 			eit = ParserEitFile(path).getEit()
-			eit_name = eit.get("name", "")
-			if eit_name:
-				name = eit_name
-				cutno, _filename = parseCutNo(filename)
+			eit_name = eit["name"]
+
+			if eit_name and meta_name:
+				service_reference = meta["service_reference"]
+				tags = meta["tags"]
+				recording_start_time = meta["recording_start_time"]
+				recording_stop_time = meta["recording_stop_time"]
+				timer_start_time = meta["timer_start_time"]
+				timer_stop_time = meta["timer_stop_time"]
+
+				eit_event_start_time = eit["start"]
+
+				if timer_stop_time and eit_event_start_time and eit_event_start_time >= timer_stop_time:
+					data = getMetaData(meta, recording_start_time, recording_stop_time, timer_start_time, timer_stop_time)
+				else:
+					data = getEitData(eit, recording_start_time, recording_stop_time)
+				name, event_start_time, length, short_description, extended_description = data
 				if cutno:
 					name = "%s (%s)" % (name, cutno)
-
-			if length == 0:
-				length = eit.get("duration", 0)
-
-			short_description = eit.get("short_description", "")
-			extended_description = eit.get("description", "")
-
-			if short_description.startswith(eit_name):
-				short_description = short_description[len(eit_name) + 1:]
-			short_description = short_description.replace("\n", ", ")
-
-			#parse meta file
-			meta = ParserMetaFile(path).getMeta()
-			service_reference = meta.get("service_reference", "")
-			tags = meta.get("tags", "")
 		else:
 			length = ptsToSeconds(getCutListLength(unpackCutList(cuts)))
 
-		return(os.path.dirname(path), FILE_TYPE_FILE, path, filename, ext, name, date, length, short_description, extended_description, service_reference, size, cuts, tags)
+		print("MVC: FileCacheLoad: newFileData: name: %s, event_start_time %s, length: %s" % (name, datetime.fromtimestamp(event_start_time), length))
+		return(os.path.dirname(path), FILE_TYPE_FILE, path, filename, ext, name, event_start_time, recording_start_time, recording_stop_time, length, short_description, extended_description, service_reference, size, cuts, tags)
 
 	### database load list functions
 

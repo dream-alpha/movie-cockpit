@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
 #from Components.ActionMap import ActionMap
@@ -44,4 +44,5 @@ class MovieInfoEPG(EventViewSimple):
 		if (self.isRecording) and (event.getDuration() == 0):
 			self["duration"].setText("")
 		else:
-			self["duration"].setText(("%d" % (event.getDuration() / 60)) + " " + _("min"))
+			self["duration"].setText(("%2d" % (event.getDuration() / 60)) + " " + _("min"))
+			self["datetime"].setText(event.getBeginTimeString())

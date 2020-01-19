@@ -3,7 +3,7 @@
 #
 # EitSupport
 # Copyright (C) 2011 by betonme
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -19,7 +19,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 import struct
@@ -27,12 +27,23 @@ import re
 from Components.config import config
 from Tools.ISO639 import LanguageCodes
 from FileUtils import readFile
+import datetime
+import time
+from UnicodeUtils import convertToUtf8
 
-# http://de.wikipedia.org/wiki/Event_Information_Table
+
 class ParserEitFile():
 
-	def __init__(self, path=None):
-		self.eit = {}
+	def __init__(self, path):
+		self.eit = {
+			"start": int(os.stat(path).st_ctime),
+			"length": 0,
+			"name": convertToUtf8(os.path.basename(path)),
+			"short_description": "",
+			"description": "",
+			"when": "",
+			"content": "",
+		}
 		self.name_event_descriptor = []
 		self.name_event_descriptor_multi = []
 		self.name_event_codepage = None
@@ -68,6 +79,9 @@ class ParserEitFile():
 	### Get functions
 
 	def getEit(self):
+		if self.eit["short_description"].startswith(self.eit["name"]):
+			self.eit["short_description"] = self.eit["short_description"][len(self.eit["name"]) + 1:]
+		self.eit["short_description"] = self.eit["short_description"].replace("\n", ", ")
 		return self.eit
 
 	def __parse(self, data):
@@ -105,17 +119,6 @@ class ParserEitFile():
 							return alpha
 			return alpha2
 
-		def convertToUtf8(descriptor, codepage=""):
-			if descriptor:
-				try:
-					if codepage != 'utf-8':
-						descriptor = descriptor.decode(codepage).encode("utf-8")
-					else:
-						descriptor.decode('utf-8')
-				except (UnicodeDecodeError, AttributeError) as e:
-					print("MVC-E: ParserEitFile: convertToUtf8: exception: %s" % e)
-			return descriptor.strip()
-
 		def determineCodepage(byte):
 			codepage = None
 			if byte == "1":
@@ -145,20 +148,25 @@ class ParserEitFile():
 		def parseHeader(data, pos):
 			e = struct.unpack(">HHBBBBBBH", data[pos:pos + 12])
 			#event_id = e[0]
-			date = parseMJD(e[1])					# Y, M, D
-			self.eit['startdate'] = date
+			y, mo, d = parseMJD(e[1])				# Y, M, D
+			h, mi, s = unBCD(e[2]), unBCD(e[3]), unBCD(e[4])	# HH, MM, SS
+			try:
+				dt = datetime.datetime(y, mo, d, h, mi, s)
+				#print("MVC: ParserEitFile: parseHeader: dt: %s" % str(dt))
+				start_seconds = int(time.mktime(dt.timetuple()))
+				self.eit["start"] = start_seconds - time.timezone + time.localtime(start_seconds).tm_isdst * 3600  # daylight savings time
+			except Exception as e:
+				print("MVC-E: ParserEitFile: parseHeader: exception: %s" % e)
+				self.eit["start"] = 0
 
-			time_hhmmss = unBCD(e[2]), unBCD(e[3]), unBCD(e[4])	# HH, MM, SS
-			self.eit['starttime'] = time_hhmmss
-
-			duration_hhmmss = unBCD(e[5]), unBCD(e[6]), unBCD(e[7])	# HH, MM, SS
-			if len(duration_hhmmss) > 2:
-				duration = make_int((duration_hhmmss[0] * 60 + duration_hhmmss[1]) * 60 + duration_hhmmss[2])
-			elif len(duration_hhmmss) > 1:
-				duration = make_int(duration_hhmmss[0] * 60 + duration_hhmmss[1])
+			length_hhmmss = unBCD(e[5]), unBCD(e[6]), unBCD(e[7])	# HH, MM, SS
+			if len(length_hhmmss) > 2:
+				event_length = make_int((length_hhmmss[0] * 60 + length_hhmmss[1]) * 60 + length_hhmmss[2])
+			elif len(length_hhmmss) > 1:
+				event_length = make_int(length_hhmmss[0] * 60 + length_hhmmss[1])
 			else:
-				duration = make_int(duration_hhmmss)
-			self.eit['duration'] = duration
+				event_length = make_int(length_hhmmss)
+			self.eit["length"] = event_length
 
 			#free_CA_mode = e[8] & 0x1000
 			#descriptors_loop_length = e[8] & 0x0fff

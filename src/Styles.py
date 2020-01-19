@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 from xml.etree import ElementTree
@@ -235,7 +235,7 @@ class Style(TreeBase):
 					pass
 
 	def getStyleNodes(self):
-		l = []
+		alist = []
 		for node in self.root:
 			if node.tag in ("presets", "sorted", "depends"):
 				continue
@@ -244,8 +244,8 @@ class Style(TreeBase):
 				#print("MVC: Styles: Style: getStyleNodes: item.getParentName: %s" % str(item.getParentName()))
 				#print("MVC: Styles: Style: getStyleNodes: item.getName: %s" % str(item.getName()))
 				#print("MVC: Styles: Style: getStyleNodes: item.getValue: %s" % str(item.getValue()))
-				l.append(item)
-		return l
+				alist.append(item)
+		return alist
 
 	def getStyleNode(self, key, value):
 		styles = self.getStyleNodes()

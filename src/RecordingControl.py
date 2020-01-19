@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,22 +17,26 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
+import time
 from Components.config import config
 import NavigationInstance
 from timer import TimerEntry
 from DelayTimer import DelayTimer
-from Tasker import tasker
-from CutList import CutList
+from CutList import mergeBackupCutList
+from ParserMetaFile import ParserMetaFile
+from FileCache import FileCache, FILE_IDX_NAME
+from FileCacheLoad import FileCacheLoad
+from MovieSelection import MovieSelection
+from MovieCoverDownload import MovieCoverDownload
 
 
-class RecordingControl(CutList):
+class RecordingControl():
 
 	def __init__(self):
 		print("MVC-I: RecordingControl: __init__")
-		CutList.__init__(self)
 		# Register for recording events
 		NavigationInstance.instance.RecordTimer.on_state_change.append(self.recordingEvent)
 		# check for active recordings not yet in cache
@@ -41,19 +45,26 @@ class RecordingControl(CutList):
 			NavigationInstance.instance.RecordTimer.cleanup()
 
 	def recordingEvent(self, timer):
-		from FileCacheLoad import FileCacheLoad
 		TIMER_STATES = ["StateWaiting", "StatePrepared", "StateRunning", "StateEnded"]
-		from FileCache import FileCache
 		if timer and not timer.justplay:
-			print("MVC-I: RecordingControl: recordingEvent: timer.Filename: %s, timer.state: %s"
-				% (timer.Filename, (TIMER_STATES[timer.state] if timer.state in range(0, len(TIMER_STATES)) else timer.state)))
+			print(
+				"MVC-I: RecordingControl: recordingEvent: timer.Filename: %s, timer.state: %s"
+				% (timer.Filename, (TIMER_STATES[timer.state] if timer.state in range(0, len(TIMER_STATES)) else timer.state))
+			)
 
 			if timer.state == TimerEntry.StatePrepared:
-#				#print("MVC: RecordingControl: recordingEvent: timer.StatePrepared")
+				#print("MVC: RecordingControl: recordingEvent: timer.StatePrepared")
 				pass
 
 			elif timer.state == TimerEntry.StateRunning:
 				#print("MVC: RecordingControl: recordingEvent: REC START for: " + timer.Filename)
+				ParserMetaFile(timer.Filename).updateXMeta({
+					"recording_start_time": int(time.time()),
+					"timer_start_time": timer.begin + config.recording.margin_before.value * 60,
+					"timer_stop_time": timer.end - config.recording.margin_after.value * 60,
+					"recording_margin_before": config.recording.margin_before.value * 60,
+					"recording_margin_after": config.recording.margin_after.value * 60,
+				})
 				DelayTimer(250, FileCacheLoad.getInstance().loadDatabaseFile, timer.Filename)
 				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
 				if config.plugins.moviecockpit.cover_auto_download.value:
@@ -61,41 +72,37 @@ class RecordingControl(CutList):
 
 			elif timer.state == TimerEntry.StateEnded or timer.state == TimerEntry.StateWaiting:
 				#print("MVC: RecordingControl: recordingEvent: REC END for: " + timer.Filename)
-				FileCache.getInstance().update(timer.Filename, psize=os.path.getsize(timer.Filename))
+				if os.path.exists(timer.Filename):
+					ParserMetaFile(timer.Filename).updateXMeta({"recording_stop_time": int(time.time())})
+					FileCacheLoad.getInstance().reloadDatabaseFile(timer.Filename)
+					mergeBackupCutList(timer.Filename + ".cuts")  # merge cutlists
 				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
-				# [Cutlist.Workaround] Initiate the Merge
-				self.updateFromCuesheet(timer.Filename)
-				if hasattr(timer, "move_recording_cmd"):
-					#print("MVC: RecordingControl: recordingEvent: file had been moved while recording was in progress, moving left over files...")
-					tasker.shellExecute(timer.move_recording_cmd)
 
 	def autoCoverDownload(self, path):
-		from MovieCoverDownload import MovieCoverDownload
-		from FileCache import FileCache
 		filedata = FileCache.getInstance().getFile(path)
 		if filedata is not None:
-			_directory, _filetype, path, _filename, _ext, name, _date, _length, _description, _extended_description, _service_reference, _size, _cuts, _tags = filedata
-			MovieCoverDownload().getCover(path, name)
+			MovieCoverDownload().getCover(path, filedata[FILE_IDX_NAME])
 
 	def check4ActiveRecordings(self):
-		from FileCacheLoad import FileCacheLoad
-		from FileCache import FileCache
 		#print("MVC: RecordingControl: check4ActiveRecordings")
 		for timer in NavigationInstance.instance.RecordTimer.timer_list:
 			# check if file is in cache
 			if timer.Filename and timer.isRunning() and not timer.justplay:
 				if not FileCache.getInstance().exists(timer.Filename):
 					#print("MVC: RecordingControl: check4ActiveRecordings: loadDatabaseFile: " + timer.Filename)
+					ParserMetaFile(timer.Filename).updateXMeta({
+						"recording_start_time": int(time.time()),
+						"timer_start_time": timer.begin + config.recording.margin_before.value * 60,
+						"timer_stop_time": timer.end - config.recording.margin_after.value * 60,
+						"recording_margin_before": config.recording.margin_before.value * 60,
+						"recording_margin_after": config.recording.margin_after.value * 60
+					})
 					FileCacheLoad.getInstance().loadDatabaseFile(timer.Filename)
 
 	def reloadList(self, path):
 		#print("MVC: RecordingControl: reloadList")
-		try:
-			from MovieSelection import MovieSelection
-			movie_selection = MovieSelection.getInstance()
-			if movie_selection:
-				#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
-				movie_selection.reloadList(path)
-				movie_selection.updateSpaceInfo()
-		except Exception as e:
-			print("MVC-E: RecordingControl: reloadList: movie_selection.reloadList exception: %s" % e)
+		movie_selection = MovieSelection.getInstance()
+		if movie_selection:
+			#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
+			movie_selection.reloadList(path)
+			movie_selection.updateSpaceInfo()

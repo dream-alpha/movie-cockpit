@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # encoding: utf-8
 #
-# Copyright (C) 2011 betonme
-# Copyright (C) 2018-2019 dream-alpha
+# Copyright (C) 2018-2020 dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -18,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from Converter import Converter
 from Components.Element import cached
@@ -55,40 +54,42 @@ class MVCClockToText(Converter):
 
 	@cached
 	def getText(self):
+		text = ""
 		time = self.source.time
-		if not time or time > 169735005176 or time < 11:
-			return ""
-		if self.text_type == self.IN_MINUTES:
-			mins = time / 60
-			if time % 60 > 30:
-				mins += 1
-			return "%d min" % mins
-		if self.text_type == self.AS_LENGTH:
-			return "%d:%02d" % (time / 60, time % 60)
-		if self.text_type == self.TIMESTAMP:
-			return str(time)
+		if not(not time or time > 169735005176 or time < 11):
+			if self.text_type == self.IN_MINUTES:
+				mins = time / 60
+				if time % 60 >= 30:
+					mins += 1
+				text = "%d min" % mins
+			elif self.text_type == self.AS_LENGTH:
+				text = "%d:%02d" % (time / 60, time % 60)
+			elif self.text_type == self.TIMESTAMP:
+				text = str(time)
+			else:
+				if time > (31 * 24 * 60 * 60):
+					# No Recording should be longer than 1 month
+					t = localtime(time)
+				else:
+					t = gmtime(time)
 
-		if time > (31 * 24 * 60 * 60):
-			# No Recording should be longer than 1 month :-)
-			t = localtime(time)
-		else:
-			t = gmtime(time)
-
-		if self.text_type == self.WITH_SECONDS:
-			return "%2d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
-		if self.text_type == self.DEFAULT:
-			return "%02d:%02d" % (t.tm_hour, t.tm_min)
-		if self.text_type == self.DATE:
-			if config.osd.language.value == "de_DE":
-				return strftime("%A, %d. %B %Y", t)
-			return strftime("%A %B %d, %Y", t)
-		if self.text_type == self.FORMAT:
-			spos = self.fmt_string.find('%')
-			if spos > -1:
-				s1 = self.fmt_string[:spos]
-				s2 = strftime(self.fmt_string[spos:], t)
-				return str(s1 + s2)
-			return strftime(self.fmt_string, t)
-		return "???"
+				if self.text_type == self.WITH_SECONDS:
+					text = "%2d:%02d:%02d" % (t.tm_hour, t.tm_min, t.tm_sec)
+				elif self.text_type == self.DEFAULT:
+					text = "%02d:%02d" % (t.tm_hour, t.tm_min)
+				elif self.text_type == self.DATE:
+					if config.osd.language.value == "de_DE":
+						text = strftime("%A, %d. %B %Y", t)
+					else:
+						text = strftime("%A %B %d, %Y", t)
+				elif self.text_type == self.FORMAT:
+					spos = self.fmt_string.find("%")
+					if spos > -1:
+						s1 = self.fmt_string[:spos]
+						s2 = strftime(self.fmt_string[spos:], t)
+						text = str(s1 + s2)
+					else:
+						text = strftime(self.fmt_string, t)
+		return text
 
 	text = property(getText)

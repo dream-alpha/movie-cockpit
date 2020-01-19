@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,14 +17,17 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
+
 import os
 from Components.config import config
 from DelayTimer import DelayTimer
 from FileCache import FileCache, FILE_IDX_PATH, FILE_IDX_TYPE
 from FileCacheLoad import FileCacheLoad
 from FileOps import FileOps, FILE_OP_DELETE
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmarks, getHomeDir, getBookmarksSpaceInfo
+from FileUtils import createDirectory
+
 
 RC_TRASHCAN_CREATED = 0
 RC_TRASHCAN_CREATE_DIR_FAILED = 1
@@ -32,14 +35,12 @@ RC_TRASHCAN_CREATE_DIR_FAILED = 1
 instance = None
 
 
-class Trashcan(FileOps, Bookmarks):
+class Trashcan(FileOps):
 
 	def __init__(self):
-		Bookmarks.__init__(self)
 		FileOps.__init__(self)
-		if config.plugins.moviecockpit.trashcan_enable.value:
-			self.__schedulePurge()
-		config.plugins.moviecockpit.disk_space_info.value = self.getMountPointsSpaceUsedPercent()
+		self.__schedulePurge()
+		config.plugins.moviecockpit.disk_space_info.value = getBookmarksSpaceInfo()
 
 	@staticmethod
 	def getInstance():
@@ -62,16 +63,16 @@ class Trashcan(FileOps, Bookmarks):
 
 	def __createTrashcan(self):
 		print("MVC-I: Trashcan: __createTrashcan")
-		for bookmark in self.getBookmarks():
+		for bookmark in getBookmarks():
 			path = bookmark + "/trashcan"
 			if not FileCache.getInstance().exists(path):
-				try:
-					os.makedirs(path)
-					if not FileCache.getInstance().exists(path):
-						FileCacheLoad.getInstance().makeDir(path)
-					config.trashcan_enable.value = True
-				except IOError as e:
-					print("MVC-E: Trashcan: __createTrashcan: exception: %s" % e)
+				rc = createDirectory(path)
+				if not rc:
+					print("MVC-I: Trashcan: __createTrashcan: successful")
+					FileCacheLoad.getInstance().makeDir(path)
+					config.plugins.moviecockpit.trashcan_enable.value = True
+				else:
+					print("MVC-E: Trashcan: __createTrashcan: failed")
 					config.plugins.moviecockpit.trashcan_enable.value = False
 					return RC_TRASHCAN_CREATE_DIR_FAILED
 		return RC_TRASHCAN_CREATED
@@ -88,7 +89,7 @@ class Trashcan(FileOps, Bookmarks):
 		print("MVC-I: Trashcan: purgeTrashcan")
 		file_ops_list = []
 		now = time.localtime()
-		filelist = FileCache.getInstance().getFileList([self.getHomeDir() + "/trashcan"])
+		filelist = FileCache.getInstance().getFileList([getHomeDir() + "/trashcan"])
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			filetype = afile[FILE_IDX_TYPE]

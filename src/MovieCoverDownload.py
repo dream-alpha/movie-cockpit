@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 import re
@@ -82,7 +82,7 @@ class MovieCoverDownload(MovieTMDB, MovieCover):
 					self.titles += titles
 
 			for atitle in self.titles:
-				#print("MVC: MovieCoverDownload: getCover: stitle: %s" % stitle)
+				#print("MVC: MovieCoverDownload: getCover: atitle: %s" % atitle)
 				self.movielist = self.getMovieList(atitle)
 				if self.movielist:
 					selection = self.movielist[0]

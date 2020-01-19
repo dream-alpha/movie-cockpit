@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,28 +17,17 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
-import datetime
-from time import mktime
-from Components.config import config
+from datetime import datetime
 from enigma import eServiceCenter, iServiceInformation
 from FileCache import FileCache, FILE_TYPE_FILE
 from CutListUtils import unpackCutList
+from Components.config import config
+
 
 instance = None
-
-
-def str2date(date_string, path=""):
-	date = None
-	#print("MVC: ServiceCenter: str2date: %s" % date_string)
-	try:
-		date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-	except ValueError:
-		print("MVC-E: FileCache: str2date: exception: date_string: %s, path: %s" % (date_string, path))
-		date = datetime.datetime.fromtimestamp(0)
-	return date
 
 
 class ServiceCenter():
@@ -63,7 +52,7 @@ class ServiceInfo():
 	def __init__(self, service):
 		self.info = None
 		if service:
-			self.info = Info(service)
+			self.info = Info(service.getPath())
 
 	def getLength(self, _service=None):
 		return self.info and self.info.getLength()
@@ -79,7 +68,7 @@ class ServiceInfo():
 
 	def getInfo(self, _service=None, info_type=None):
 		if info_type == iServiceInformation.sTimeCreate:
-			return self.info and self.info.getMTime()
+			return self.info and self.info.getEventStartTime()
 		return None
 
 	def getInfoObject(self, _service=None, info_type=None):
@@ -93,24 +82,27 @@ class ServiceInfo():
 	def getEvent(self, _service=None):
 		return self.info
 
-	def getStartTime(self, _service=None):
-		return self.info and self.info.getMTime()
+	def getEventStartTime(self, _service=None):
+		return self.info and self.info.getEventStartTime()
+
+	def getRecordingStartTime(self, _service=None):
+		return self.info and self.info.getRecordingStartTime()
 
 
 class Info():
 
-	def __init__(self, service):
-		filetype, name, date, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", "", ""
-		size = length = 0
-		self.path = service and service.getPath()
+	def __init__(self, path):
+		filetype, name, event_start_time, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", "", ""
+		size = length = recording_start_time = 0
+		self.path = path
 		if self.path:
 			filedata = FileCache.getInstance().getFile(self.path)
 			if filedata is not None:
-				_dirname, filetype, _path, _filename, _ext, name, date, length, description, extended_description, service_reference, size, cuts, tags = filedata
+				_dirname, filetype, _path, _filename, _ext, name, event_start_time, recording_start_time, _recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags = filedata
 		self.__filetype = filetype
-		self.__date = str2date(date)
+		self.__event_start_time = event_start_time
+		self.__recording_start_time = recording_start_time
 		self.__name = name if name != "trashcan" else _(name)
-		self.__mtime = int(mktime(self.__date.timetuple()))
 		self.__shortdescription = description
 		self.__extendeddescription = extended_description
 		self.__length = length
@@ -144,16 +136,19 @@ class Info():
 		return self.__extendeddescription
 
 	def getBeginTimeString(self):
-		return self.__date.strftime(config.plugins.moviecockpit.movie_date_format.value)
+		return datetime.fromtimestamp(self.__event_start_time).strftime(config.plugins.moviecockpit.movie_date_format.value)
 
-	def getMTime(self):
-		return self.__mtime
+	def getEventStartTime(self):
+		return self.__event_start_time
+
+	def getRecordingStartTime(self):
+		return self.__recording_start_time
+
+	def getDuration(self):
+		return self.__length
 
 	def getLength(self):
 		return self.__length
-
-	def getDuration(self):
-		return self.getLength()
 
 	def getSize(self):
 		if self.__filetype == FILE_TYPE_FILE:

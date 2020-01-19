@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import shutil
 from __init__ import _
@@ -35,7 +35,6 @@ from enigma import eTimer
 from Tools.Directories import fileExists
 from FileUtils import deleteFile
 from SkinUtils import getSkinPath
-from Bookmarks import Bookmarks
 from MovieCoverDownload import MovieCoverDownload
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL, INFO_BACKDROP_URL
 from MovieCoverDownloadProgress import MovieCoverDownloadProgress
@@ -47,11 +46,10 @@ TEMP_BACKDROP_PATH = "/tmp/preview_cover.backdrop.jpg"
 TEMP_INFO_PATH = "/tmp/preview_info.txt"
 
 
-class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks):
+class MovieInfoTMDB(Screen, MovieCoverDownload):
 
 	def __init__(self, session, path, name):
 		#print("MVC: MovieInfoTMDB: __init__: path: %s, name: %s" % (path, name))
-		Bookmarks.__init__(self)
 		Screen.__init__(self, session)
 		MovieCoverDownload.__init__(self)
 		self.skinName = "MVCMovieInfoTMDB"
@@ -224,9 +222,7 @@ class MovieInfoTMDB(Screen, MovieCoverDownload, Bookmarks):
 				self.session.openWithCallback(
 					self.saveCallback,
 					MessageBox,
-					_("Cover/TMDB Info already exists")
-					+ "\n"
-					+ _("Do you want to replace the existing cover/TMDB info?"),
+					_("Cover/TMDB Info already exists") + "\n" + _("Do you want to replace the existing cover/TMDB info?"),
 					MessageBox.TYPE_YESNO
 				)
 			else:

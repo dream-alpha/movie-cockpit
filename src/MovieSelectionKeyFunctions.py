@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
 from Components.Button import Button
@@ -36,23 +36,24 @@ KEY_FUNCTION = 1
 
 
 class KeyFunctions():
-	def __init__(self):
-		self["key_red"] = Button()
-		self["key_green"] = Button()
-		self["key_yellow"] = Button()
-		self["key_blue"] = Button()
-		self["level"] = Label()
+	def __init__(self, csel):
+		self.csel = csel
+		self.csel["key_red"] = Button()
+		self.csel["key_green"] = Button()
+		self.csel["key_yellow"] = Button()
+		self.csel["key_blue"] = Button()
+		self.csel["level"] = Label()
 		self.initColorKeyFunctions(self)
 		self.setColorButtons()
 
 ### color button management functions
 
 	def setColorButtons(self):
-		self["level"].setText("<%s>" % (self.color_buttons_level + 1))
-		self["key_red"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_RED][KEY_LABEL])
-		self["key_green"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_GREEN][KEY_LABEL])
-		self["key_yellow"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_YELLOW][KEY_LABEL])
-		self["key_blue"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_BLUE][KEY_LABEL])
+		self.csel["level"].setText("<%s>" % (self.color_buttons_level + 1))
+		self.csel["key_red"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_RED][KEY_LABEL])
+		self.csel["key_green"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_GREEN][KEY_LABEL])
+		self.csel["key_yellow"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_YELLOW][KEY_LABEL])
+		self.csel["key_blue"].setText(self.color_buttons_matrix[self.color_buttons_level][KEY_BLUE][KEY_LABEL])
 
 	def nextColorButtonsLevel(self):
 		self.color_buttons_level = (self.color_buttons_level + 1) % len(self.color_buttons_matrix)
@@ -70,7 +71,7 @@ class KeyFunctions():
 
 	def initActions(self, csel):
 		actions = HelpableActionMap(
-			self,
+			csel,
 			"PluginMovieSelectionActions",
 			{
 				"MVCRED":		(boundFunction(self.execColorButton, KEY_RED),  	_("Color key red")),

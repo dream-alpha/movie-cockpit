@@ -19,5 +19,16 @@
 #	<http://www.gnu.org/licenses/>.
 
 
-PLUGIN = "MovieCockpit"
-VERSION = "4.5.4"
+def convertToUtf8(text, codepage="cp1252", first=True):
+	if text:
+		try:
+			if codepage != 'utf-8':
+				text = text.decode(codepage).encode("utf-8")
+			else:
+				text.decode('utf-8')
+		except (UnicodeDecodeError, AttributeError) as e:
+			if first:
+				text = convertToUtf8(text, "iso-8859-1", False)
+			else:
+				print("MVC-E: UnicodeUtils: convertToUtf8: text: %s, codepage: %s, first: %s, exception: %s" % (text, codepage, first, e))
+	return text.strip()

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 try:
 	from __init__ import _  # pylint: disable=W0611
@@ -25,19 +25,24 @@ except ImportError:
 	def _(txt):
 		return "_(\"" + txt + "\")"
 
+
 def MultiContentEntryProgressPixmap(pos, size, png, foreColor, percent, borderWidth):
 	return "MultiContentEntryProgressPixmap(" + "pos=" + str(pos) + ", size=" + str(size) + ", percent=" + str(percent) + ", png=" + str(png)\
 		+ ", foreColor=" + ("0x%x" % foreColor) + ", borderWidth=" + str(borderWidth) + ")"
+
 
 def MultiContentEntryText(pos, size, font, flags, text, color, color_sel):
 	return "MultiContentEntryText(" + "pos=" + str(pos) + ", size=" + str(size) + ", font=" + str(font) + ", flags=" + str(flags)\
 		+ ", text=" + str(text) + ", color=" + ("0x%x" % color) + ", color_sel=" + ("0x%x" % color_sel) + ")"
 
+
 def MultiContentEntryPixmapAlphaBlend(pos, size, png):
 	return "MultiContentEntryPixmapAlphaBlend(" + "pos=" + str(pos) + ", size=" + str(size) + ", png=" + str(png) + ")"
 
+
 def gFont(_font_name, font_size):
 	return font_size
+
 
 def parseTemplate(template_string):
 
@@ -66,7 +71,7 @@ def parseTemplate(template_string):
 	start = 0			# noqa: F841 pylint: disable=W0612
 	spacer = 0			# noqa: F841 pylint: disable=W0612
 	date_width = 0			# noqa: F841 pylint: disable=W0612
-	duration_width = 0		# noqa: F841 pylint: disable=W0612
+	length_width = 0		# noqa: F841 pylint: disable=W0612
 	progress_width = 0		# noqa: F841 pylint: disable=W0612
 	width = 0			# noqa: F841 pylint: disable=W0612
 	bar_size = (0, 0)		# noqa: F841 pylint: disable=W0612
@@ -121,7 +126,7 @@ def main():
 		icon_size = template_attributes["icon_size"]		# noqa: F841 pylint: disable=W0612
 		picon_size = template_attributes["picon_size"]		# noqa: F841 pylint: disable=W0612
 		date_width = template_attributes["date_width"]		# noqa: F841 pylint: disable=W0612
-		duration_width = template_attributes["duration_width"]	# noqa: F841 pylint: disable=W0612
+		length_width = template_attributes["length_width"]	# noqa: F841 pylint: disable=W0612
 		progress_width = template_attributes["progress_width"]	# noqa: F841 pylint: disable=W0612
 		yoffs = template_attributes["yoffs"]			# noqa: F841 pylint: disable=W0612
 		font_height = template_attributes["font_height"]	# noqa: F841 pylint: disable=W0612
@@ -134,6 +139,7 @@ def main():
 		else:
 			print(eval(data_string))
 	print("Done.")
+
 
 if __name__ == "__main__":
 	main()

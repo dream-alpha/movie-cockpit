@@ -2,7 +2,7 @@
 # coding=utf-8
 #
 # Copyright (C) 2011 by betonme
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -18,7 +18,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
 from Components.config import config
@@ -31,23 +31,23 @@ from Screens.InfoBarGenerics import InfoBarExtensions, InfoBarSeek, InfoBarMenu,
 from Screens.MessageBox import MessageBox
 from DelayTimer import DelayTimer
 from CutListUtils import secondsToPts, ptsToSeconds, removeFirstMarks, getCutListLast
-from CutList import CutList
+from CutList import readCutList, writeCutList
 
 
-class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
+class InfoBarSupport(
+	InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
 	InfoBarSimpleEventView, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin,
-	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG, CutList):
+	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG):
 
 	ENABLE_RESUME_SUPPORT = True
 
 	def __init__(self):
-		CutList.__init__(self)
 		self.allowPiP = True
 		self.allowPiPSwap = False
 
-		for x in InfoBarShowHide, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarShowMovies, InfoBarAudioSelection, InfoBarSimpleEventView, InfoBarServiceNotifications, InfoBarPVRState, \
-			InfoBarSubtitleSupport, InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarNotifications, InfoBarPlugins, InfoBarNumberZap, \
-			InfoBarPiP, InfoBarEPG:
+		for x in InfoBarShowHide, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarShowMovies, InfoBarAudioSelection, InfoBarSimpleEventView,\
+			InfoBarServiceNotifications, InfoBarPVRState, InfoBarSubtitleSupport, InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport,\
+			InfoBarExtensions, InfoBarNotifications, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG:
 			x.__init__(self)
 
 		actionmap = "InfobarCueSheetActions"
@@ -89,13 +89,13 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 
 	def downloadCuesheet(self):
 		#print("MVC: InfoBarSupport: downloadCueSheet: self.service: %s" % (self.service.getPath() if self.service else None))
-		self.cut_list = self.fetchCutList(self.service.getPath())
+		self.cut_list = readCutList(self.service.getPath())
 		#print("MVC: InfoBarSupport: downloadCuesheet: cut_list: %s" % self.cut_list)
 
 	def uploadCuesheet(self):
 		#print("MVC: InfoBarSupport: uploadCuesheet: self.service: %s" % (self.service.getPath() if self.service else None))
 		#print("MVC: InfoBarSupport: uploadCuesheet: cut_list: %s" % self.cut_list)
-		self.writeCutList(self.service.getPath(), self.cut_list)
+		writeCutList(self.service.getPath(), self.cut_list)
 
 	def __serviceStarted(self):
 		print("MVC-I: InfoBarSupport: __serviceStarted: self.is_closing: %s" % self.is_closing)
@@ -110,7 +110,7 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 					last = getCutListLast(removeFirstMarks(self.cut_list))
 				if last > 0:
 					self.resume_point = last
-					l = ptsToSeconds(last)
+					seconds = ptsToSeconds(last)
 					val = config.usage.on_movie_start.value
 					if val in ["ask", "ask yes", "ask no"]:
 						Notifications.AddNotificationWithCallback(
@@ -118,7 +118,8 @@ class InfoBarSupport(InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShow
 							MessageBox,
 							_("Do you want to resume this playback?")
 							+ "\n"
-							+ _("Resume position at") + " " + "%d:%02d:%02d" % (l / 3600, l % 3600 / 60, l % 60),
+							+ _("Resume position at") + " "
+							+ "%d:%02d:%02d" % (seconds / 3600, seconds % 3600 / 60, seconds % 60),
 							timeout=10,
 							default=not (val == "ask no")
 						)

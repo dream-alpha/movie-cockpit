@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 import json
@@ -26,7 +26,7 @@ import cPickle
 from __init__ import _
 from Components.config import config
 from FileUtils import readFile, writeFile, deleteFile
-from Bookmarks import Bookmarks
+from Bookmarks import getBookmark
 
 SELECTION_ID = 1	# tmdb movie id
 SELECTION_TYPE = 2	# movie or tvshow
@@ -34,16 +34,17 @@ SELECTION_URL = 4	# partial cover url
 INFO_COVER_URL = 6	# full cover url
 INFO_BACKDROP_URL = 7	# full backdrop url
 
-class MovieTMDB(Bookmarks):
+
+class MovieTMDB():
 
 	def __init__(self):
-		Bookmarks.__init__(self)
+		pass
 
 	def getInfoPath(self, path):
 		#print("MVC: MovieTMDB: getInfoPath: path: " + path)
 		info_path = os.path.splitext(path)[0] + ".txt"
 		if config.plugins.moviecockpit.cover_flash.value:
-			bookmark = self.getBookmark(info_path)
+			bookmark = getBookmark(info_path)
 			if bookmark:
 				info_path = config.plugins.moviecockpit.cover_bookmark.value + info_path[len(bookmark):]
 		#print("MVC: MovieTMDB: getInfoPath: info_path: " + info_path)
@@ -101,7 +102,7 @@ class MovieTMDB(Bookmarks):
 				tvshows = response["results"]
 				for tvshow in tvshows:
 					#print("MVC: MovieTMDB: getMovieList: tvshow: " + str(tvshow))
-					if tvshow["poster_path"]:
+					if "poster_path" in tvshow and "first_air" in tvshow and "id" in tvshow and tvshow["poster_path"]:
 						tvshowslist.append((tvshow["name"].encode('utf-8') + " - " + _("TV Shows"), tvshow["id"], "tvshow", tvshow["first_air_date"].encode('utf-8'), tvshow["poster_path"].encode('utf-8')))
 			return tvshowslist
 

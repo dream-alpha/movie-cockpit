@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,7 +17,7 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 import os
 import time
@@ -35,6 +35,7 @@ def initLogFile():
 	os.system("journalctl --vacuum-time=1seconds")
 	# delete crash logs
 	os.system("rm /media/hdd/enigma2_crash_*")
+
 
 def createTarFile():
 	os.system("rm " + os.path.join(config.plugins.moviecockpit.debug_log_path.value, LOG_FILE + "*.tar.gz"))

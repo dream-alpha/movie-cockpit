@@ -1,7 +1,7 @@
 # coding=utf-8
 #
 # Copyright (C) 2011 by Coolman & Swiss-MAD
-# Copyright (C) 2018-2019 by dream-alpha
+# Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
 #
@@ -17,14 +17,13 @@
 #
 #	For more information on the GNU General Public License see:
 #	<http://www.gnu.org/licenses/>.
-#
+
 
 from __init__ import _
 from Components.config import config, ConfigText, ConfigNumber, ConfigSelection, ConfigSelectionNumber, ConfigYesNo, ConfigSubsection,\
 	ConfigNothing, NoSave, ConfigSubDict
 from Components.Language import language
 from Tools.ISO639 import ISO639Language
-from MountPoints import MountPoints
 
 
 class Autoselect639Language(ISO639Language):
@@ -120,7 +119,6 @@ choices_move = [
 choices_bqt = [
 	("", 		_("Home/End")),
 	("Skip", 	_("Skip")),
-	("Folder", 	_("Change folder"))
 ]
 
 
@@ -157,7 +155,7 @@ choices_color_mark = [
 ] + choices_color_selection
 
 
-class ConfigInit(MountPoints):
+class ConfigInit():
 
 	config = None
 
@@ -173,7 +171,6 @@ class ConfigInit(MountPoints):
 
 	def __init__(self):
 		#print("MVC: ConfigInit: __init__")
-		MountPoints.__init__(self)
 		config.plugins.moviecockpit                           = ConfigSubsection()
 		config.plugins.moviecockpit.fake_entry                = NoSave(ConfigNothing())
 		config.plugins.moviecockpit.extmenu_settings          = ConfigYesNo(default=True)

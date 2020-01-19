@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2018-2019 by dream-alpha
+Copyright (C) 2018-2020 by dream-alpha
 -->
 <skin>
 	<layouts>
@@ -114,8 +114,8 @@ Copyright (C) 2018-2019 by dream-alpha
 			position="0,0" size="1920,225" zPosition="-1"/>
 		<widget backgroundColor="background" font="Regular;40" noWrap="1"
 			position="230,13" render="Label" size="1100,45"
-			source="session.Event_Now" transparent="1">
-			<convert type="MVCEventName">Name</convert>
+			source="session.CurrentService" transparent="1">
+			<convert type="ServiceName">Name</convert>
 		</widget>
 		<ePixmap pixmap="skin_default/icons/ico_dolby_off.png"
 			position="1460,40" size="74,35"/>
@@ -330,9 +330,9 @@ Copyright (C) 2018-2019 by dream-alpha
 		<ePixmap position="0,0" size="400,240"
 			pixmap="skin_default/display_bg.png" zPosition="-1"/>
 		<widget font="Display;60" halign="center" position="5,5"
-			render="Label" size="390,120" source="session.Event_Now"
+			render="Label" size="390,120" source="session.CurrentService"
 			valign="center" transparent="1">
-			<convert type="MVCEventName">Name</convert>
+			<convert type="ServiceName">Name</convert>
 		</widget>
 		<widget source="Service" render="Progress"
 			position="center,140" size="380,15" borderWidth="1" zPosition="1"

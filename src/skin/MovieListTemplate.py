@@ -7,12 +7,12 @@
 #  2: tags
 #  3: service name
 #  4: short description
-#  5: date string
-#  6: duration string
+#  5: date
+#  6: length
 #  7: color
 #  8: color_sel
 #  9: progress percent (-1 = don't show progress bar)
-# 10: progress string (xx%)
+# 10: progress (xx%)
 # 11: progress bar png
 # 12: status icon png
 # 13: picon png
@@ -34,7 +34,7 @@
 		"icon_size": (45, 35),
 		"picon_size": (55, 35),
 		"date_width": 230,
-		"duration_width": 230,
+		"length_width": 230,
 		"progress_width": 150,
 		"yoffs": 3,
 		# optional: color, color_sel, recording_color, recording_color_sel, selection_color, selection_color_sel
@@ -45,7 +45,7 @@
 			# +-----------------------------------------------------+
 			# | name				| date		|
 			# +-----------------------------------------------------+
-			# | description				| duration	|
+			# | description				| length	|
 			# +-----------------------------------------------------+
 			# | service name			| progress bar	|
 			# +-----------------------------------------------------+
@@ -59,14 +59,14 @@
 				size=(date_width, font_height[2]),
 				font=2, flags=RT_HALIGN_RIGHT, text=5, color=0xFF000007, color_sel=0xFF000008), 				# date
 
-			# line 2 of 3: | description | duration |
+			# line 2 of 3: | description | length |
 			MultiContentEntryText(
 				pos=(start, (line_height[0] * 1 + (line_height[0] - font_height[2]) / 2)),
-				size=(width - start - duration_width, font_height[2]),
+				size=(width - start - length_width, font_height[2]),
 				text=4, font=2, flags=RT_HALIGN_LEFT, color=0xFF000007, color_sel=0xFF000008), 					# description
-			MultiContentEntryText(pos=(width - duration_width, (line_height[0] * 1 + (line_height[0] - font_height[2]) / 2)),
-				size=(duration_width, font_height[2]),
-				text=6, font=2, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008), 				# duration
+			MultiContentEntryText(pos=(width - length_width, (line_height[0] * 1 + (line_height[0] - font_height[2]) / 2)),
+				size=(length_width, font_height[2]),
+				text=6, font=2, flags=RT_HALIGN_RIGHT, color=0xFF000007, color_sel=0xFF000008), 				# length
 
 			# line 3 of 3: | service name | progress bar|
 			MultiContentEntryText(
