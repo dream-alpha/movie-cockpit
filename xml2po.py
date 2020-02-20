@@ -11,6 +11,7 @@ except ImportError:
 		pass
 	no_comments = True
 
+
 class parseXML(ContentHandler, LexicalHandler, object):
 	def __init__(self, _attrlist):
 		ContentHandler.__init__(self)
@@ -31,9 +32,7 @@ class parseXML(ContentHandler, LexicalHandler, object):
 
 
 parser = make_parser()
-
 attrlist = set()
-
 contentHandler = parseXML(attrlist)
 parser.setContentHandler(contentHandler)
 if not no_comments:

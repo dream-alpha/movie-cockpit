@@ -20,11 +20,12 @@
 
 
 from __init__ import _
-from Bookmarks import getBookmarks
+from Bookmarks import getHomeDir
 from FileProgress import FileProgress
-from FileCache import FileCache, FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
+from FileCache import FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
 from MovieCoverDownload import MovieCoverDownload
 from DelayTimer import DelayTimer
+from FileListUtils import createFileList
 
 
 class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress):
@@ -65,6 +66,6 @@ class MovieCoverDownloadProgress(MovieCoverDownload, FileProgress):
 		print("MVC-I: MovieCoverDownloadProgress: execMovieCoverDownloadProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
-		self.execution_list = FileCache.getInstance().getFileList(getBookmarks())
+		self.execution_list = createFileList(getHomeDir())
 		self.total_files = len(self.execution_list)
 		DelayTimer(10, self.nextFileOp)

@@ -20,35 +20,32 @@
 
 
 import os
-from Components.config import config
 from MovieCover import MovieCover
 from MovieTMDB import MovieTMDB
-from Tasker import tasker
+from Tasker import Tasker
 from MountPoints import getMountPoint, getDiskSpaceInfo
-from Bookmarks import getBookmarksSpaceInfo
 from FileCache import FileCache, FILE_TYPE_FILE, FILE_TYPE_DIR
-from FileCacheLoad import FileCacheLoad
+
 
 FILE_OP_DELETE = 1
 FILE_OP_MOVE = 2
 FILE_OP_COPY = 3
 
 
-class FileOps(MovieTMDB, MovieCover):
+class FileOps(MovieTMDB, MovieCover, Tasker):
 
 	def __init__(self):
 		MovieTMDB.__init__(self)
 		MovieCover.__init__(self)
+		Tasker.__init__(self)
 		self.execution_list = []
 
 	def reloadList(self, path):
-		print("MVC-I: FileOps: reloadList: path: %s" % path)
-		print("MVC-E: FileOps: reloadList: should not be called at all, as overwritten by child")
+		print("MVC-E: FileOps: reloadList: path: %s" % path)
+		print("MVC-E: FileOps: reloadList: should not be called at all, as overridden by child")
 
 	def updateSpaceInfo(self):
-		config.plugins.moviecockpit.disk_space_info.value = getBookmarksSpaceInfo()
-		config.plugins.moviecockpit.disk_space_info.save()
-		#print("MVC: MovieSelection: updateSpaceInfo: config.plugins.moviecockpit.disk_space_info.value: %s" % config.plugins.moviecockpit.disk_space_info.value)
+		print("MVC-I: FileOps: updateSpaceInfo: Noop")
 
 	def execFileOpsNoProgress(self, execution_list):
 		print("MVC-I: FileOps: execFileOpsNoProgress: execution_list: " + str(execution_list))
@@ -108,31 +105,22 @@ class FileOps(MovieTMDB, MovieCover):
 			#print("MVC: FileOps: execFileOp: cmd: %s" % cmd)
 			association.append((self.execFileOpCallback, op, path, target_path, filetype))
 			# Sync = True: Run script for one file do association and continue with next file
-			tasker.shellExecute(cmd, association, True)
+			self.shellExecute(cmd, association, True)
 
 	def __deleteCallback(self, path, target_path, filetype):
 		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
-		if filetype == FILE_TYPE_FILE:
-			FileCache.getInstance().delete(path)
-		if filetype == FILE_TYPE_DIR:
-			FileCacheLoad.getInstance().deleteDir(path)
+		FileCache.getInstance().delete(path, filetype)
 		self.updateSpaceInfo()
 
 	def __moveCallback(self, path, target_path, filetype):
 		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
-		if filetype == FILE_TYPE_FILE:
-			FileCache.getInstance().move(path, target_path)
-		if filetype == FILE_TYPE_DIR:
-			FileCacheLoad.getInstance().moveDir(path, target_path)
+		FileCache.getInstance().move(path, target_path, filetype)
 		if path != target_path:
 			self.updateSpaceInfo()
 
 	def __copyCallback(self, path, target_path, filetype):
 		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
-		if filetype == FILE_TYPE_FILE:
-			FileCache.getInstance().copy(path, target_path)
-		if filetype == FILE_TYPE_DIR:
-			FileCacheLoad.getInstance().copyDir(path, target_path)
+		FileCache.getInstance().copy(path, target_path, filetype)
 		self.updateSpaceInfo()
 
 	def __execFileDelete(self, path, filetype):

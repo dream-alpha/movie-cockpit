@@ -133,9 +133,6 @@ class MovieList(TemplatedMultiContentComponent):
 	def setList(self, filelist):
 		self.l.setList(filelist)
 
-	def getCurrent(self):
-		return self.l.getCurrentSelection()
-
 	def getCurrentPath(self):
 		return self.l.getCurrentSelection()[FILE_IDX_PATH]
 
@@ -217,27 +214,26 @@ class MovieList(TemplatedMultiContentComponent):
 				if os.path.basename(path) == "..":
 					date_text = _("up")
 				else:
-					if info_value:
-						if info_value == "D":
-							if os.path.basename(path) == "trashcan":
-								date_text = _("trashcan")
-							else:
-								date_text = _("directory")
+					if info_value == "D":
+						if os.path.basename(path) == "trashcan":
+							date_text = _("trashcan")
 						else:
-							count, size = FileCache.getInstance().getCountSize(path)
-							counttext = "%d" % count
+							date_text = _("directory")
+					else:
+						count, size = FileCache.getInstance().getCountSize(path)
+						counttext = "%d" % count
 
-							size /= (1024 * 1024 * 1024)  # GB
-							sizetext = "%.0f GB" % size
-							if size >= 1024:
-								sizetext = "%.1f TB" % size / 1024
+						size /= (1024 * 1024 * 1024)  # GB
+						sizetext = "%.0f GB" % size
+						if size >= 1024:
+							sizetext = "%.1f TB" % size / 1024
 
-							if info_value == "C":
-								date_text = "(%s)" % counttext
-							elif info_value == "S":
-								date_text = "(%s)" % sizetext
-							elif info_value == "CS":
-								date_text = "(%s/%s)" % (counttext, sizetext)
+						if info_value == "C":
+							date_text = "(%s)" % counttext
+						elif info_value == "S":
+							date_text = "(%s)" % sizetext
+						elif info_value == "CS":
+							date_text = "(%s/%s)" % (counttext, sizetext)
 			#print("MVC: MovieList: getValues: count: %s, date_text: %s" % (count, date_text))
 			return date_text
 

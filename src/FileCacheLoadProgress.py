@@ -23,7 +23,7 @@ import os
 from __init__ import _
 from Bookmarks import getBookmarks
 from DelayTimer import DelayTimer
-from FileCacheLoad import FileCacheLoad
+from FileCache import FileCache
 from FileProgress import FileProgress
 
 
@@ -46,14 +46,14 @@ class FileCacheLoadProgress(FileProgress):
 		self.file_name = os.path.basename(path)
 		self.status = _("Please wait") + " ..."
 		self.updateProgress()
-		FileCacheLoad.getInstance().loadDatabaseFile(path, filetype)
+		FileCache.getInstance().loadDatabaseFile(path, filetype)
 		DelayTimer(10, self.nextFileOp)
 
 	def execFileCacheLoadProgress(self):
 		print("MVC-I: FileCacheLoadProgress: execFileCacheLoadProgress")
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
-		FileCacheLoad.getInstance().clearDatabase()
-		self.execution_list = FileCacheLoad.getInstance().getDirsLoadList(getBookmarks())
+		FileCache.getInstance().clearDatabase()
+		self.execution_list = FileCache.getInstance().getDirsLoadList(getBookmarks())
 		self.total_files = len(self.execution_list)
 		DelayTimer(10, self.nextFileOp)

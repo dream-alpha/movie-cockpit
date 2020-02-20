@@ -26,6 +26,7 @@ from FileOps import FileOps
 from FileProgress import FileProgress
 from FileOps import FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 
+
 ACTIVITY_TIMER_DELAY = 1000
 
 

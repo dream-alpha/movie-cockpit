@@ -20,17 +20,19 @@
 
 
 import os
+import time
 from Components.config import config
 from DelayTimer import DelayTimer
 from FileCache import FileCache, FILE_IDX_PATH, FILE_IDX_TYPE
-from FileCacheLoad import FileCacheLoad
 from FileOps import FileOps, FILE_OP_DELETE
-from Bookmarks import getBookmarks, getHomeDir, getBookmarksSpaceInfo
+from Bookmarks import getBookmarks, getHomeDir
 from FileUtils import createDirectory
+from FileListUtils import createFileList
 
 
 RC_TRASHCAN_CREATED = 0
 RC_TRASHCAN_CREATE_DIR_FAILED = 1
+
 
 instance = None
 
@@ -40,7 +42,6 @@ class Trashcan(FileOps):
 	def __init__(self):
 		FileOps.__init__(self)
 		self.__schedulePurge()
-		config.plugins.moviecockpit.disk_space_info.value = getBookmarksSpaceInfo()
 
 	@staticmethod
 	def getInstance():
@@ -61,35 +62,32 @@ class Trashcan(FileOps):
 			DelayTimer(5000, self.purgeTrashcan)
 			print("MVC-I: Trashcan: scheduleCleanup: next trashcan cleanup in %s minutes" % (seconds / 60))
 
-	def __createTrashcan(self):
-		print("MVC-I: Trashcan: __createTrashcan")
+	def enableTrashcan(self):
+		print("MVC-I: Trashcan: enableTrashcan")
+		config.plugins.moviecockpit.trashcan_enable.value = False
+		rc = RC_TRASHCAN_CREATE_DIR_FAILED
 		for bookmark in getBookmarks():
 			path = bookmark + "/trashcan"
-			if not FileCache.getInstance().exists(path):
+			if FileCache.getInstance().exists(path):
+				rc = RC_TRASHCAN_CREATED
+				config.plugins.moviecockpit.trashcan_enable.value = True
+			else:
 				rc = createDirectory(path)
 				if not rc:
-					print("MVC-I: Trashcan: __createTrashcan: successful")
-					FileCacheLoad.getInstance().makeDir(path)
+					print("MVC-I: Trashcan: enableTrashcan: successful: %s" % path)
+					FileCache.getInstance().loadDatabase([path], sync=True)
 					config.plugins.moviecockpit.trashcan_enable.value = True
 				else:
-					print("MVC-E: Trashcan: __createTrashcan: failed")
+					print("MVC-E: Trashcan: enableTrashcan: failed: %s" % path)
 					config.plugins.moviecockpit.trashcan_enable.value = False
-					return RC_TRASHCAN_CREATE_DIR_FAILED
-		return RC_TRASHCAN_CREATED
-
-	def enableTrashcan(self):
-		print("MVC-I: Trashcan: enable")
-		rc = 0
-		if not config.plugins.moviecockpit.trashcan_enable.value:
-			rc = self.__createTrashcan()
+					break
 		return rc
 
 	def purgeTrashcan(self):
-		import time
 		print("MVC-I: Trashcan: purgeTrashcan")
 		file_ops_list = []
 		now = time.localtime()
-		filelist = FileCache.getInstance().getFileList([getHomeDir() + "/trashcan"])
+		filelist = createFileList(getHomeDir() + "/trashcan")
 		for afile in filelist:
 			path = afile[FILE_IDX_PATH]
 			filetype = afile[FILE_IDX_TYPE]

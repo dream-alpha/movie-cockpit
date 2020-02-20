@@ -39,6 +39,7 @@ from MovieCoverDownload import MovieCoverDownload
 from MovieTMDB import SELECTION_ID, SELECTION_TYPE, INFO_COVER_URL, INFO_BACKDROP_URL
 from MovieCoverDownloadProgress import MovieCoverDownloadProgress
 
+
 PAGE_DETAILS = 0   # details
 PAGE_SELECTION = 1 # selection list
 TEMP_COVER_PATH = "/tmp/preview_cover.jpg"

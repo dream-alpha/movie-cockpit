@@ -22,11 +22,14 @@
 import struct
 from bisect import insort
 
+
 cutsParser = struct.Struct('>QI')  # big-endian, 64-bit PTS and 32-bit type
+
 
 # cut_list data structure
 # cut_list[x][0] = pts  = long long
 # cut_list[x][1] = what = long
+
 
 # InfoBarCueSheetSupport types
 CUT_TYPE_IN = 0

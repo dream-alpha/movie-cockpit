@@ -26,6 +26,7 @@
 
 from Components.config import config, ConfigSubDict, ConfigText
 
+
 KEYS = ((".", "\s01"), ("=", "\s02"))
 
 

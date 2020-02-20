@@ -27,10 +27,6 @@ from ServiceUtils import getService
 from ConfigInit import sort_modes
 
 
-def getEntry4Index(filelist, index):
-	return filelist[index]
-
-
 def getEntry4Path(filelist, path):
 	list_entry = None
 	for entry in filelist:
@@ -49,15 +45,6 @@ def getIndex4Path(filelist, path):
 	return index
 
 
-def loadedDirs(filelist):
-	loaded_dirs = []
-	for afile in filelist:
-		adir = afile[FILE_IDX_DIR]
-		if adir not in loaded_dirs:
-			loaded_dirs.append(adir)
-	return loaded_dirs
-
-
 def getService4Path(filelist, path):
 	service = None
 	for entry in filelist:
@@ -65,6 +52,15 @@ def getService4Path(filelist, path):
 			service = getService(path, entry[FILE_IDX_NAME])
 			break
 	return service
+
+
+def loadedDirs(filelist):
+	loaded_dirs = []
+	for afile in filelist:
+		adir = afile[FILE_IDX_DIR]
+		if adir not in loaded_dirs:
+			loaded_dirs.append(adir)
+	return loaded_dirs
 
 
 def createFileList(path):

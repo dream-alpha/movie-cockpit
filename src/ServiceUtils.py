@@ -22,42 +22,36 @@
 import os
 from enigma import eServiceReference
 
-# DVB types
-sidDVB = eServiceReference.idDVB	# eServiceFactoryDVB::id   enum { id = 0x1 };
-sidDVD = 4369				# eServiceFactoryDVD::id   enum { id = 0x1111 };
-sidM2TS = 3				# eServiceFactoryM2TS::id  enum { id = 0x3 };
-sidDefault = 4097			# eServiceFactoryGST::id   enum { id = 0x1001 };
 
-# ext types
-extTS = frozenset([".ts", ".trp"])
-extM2ts = frozenset([".m2ts"])
-extIfo = frozenset([".ifo"])
-extIso = frozenset([".iso", ".img"])
-extDvd = extIfo | extIso
-extVideo = frozenset([".ts", ".trp", ".avi", ".divx", ".f4v", ".flv", ".img", ".ifo", ".iso", ".m2ts", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".mts", ".vob", ".wmv", ".bdmv", ".asf", ".stream", ".webm"])
-extBlu = frozenset([".bdmv"])
+SID_DVB = eServiceReference.idDVB	# eServiceFactoryDVB::id  enum{id = 0x0001};
+SID_DVD = eServiceReference.idDVD	# eServiceFactoryDVD::id  enum{id = 0x1111};
+SID_M2TS = eServiceReference.idM2TS	# eServiceFactoryM2TS::id enum{id = 0x0003};
+SID_GST = eServiceReference.idGST	# eServiceFactoryGST::id  enum{id = 0x1001};
 
-# Player types
-plyDVB = extTS				# ServiceDVB
-plyM2TS = extM2ts			# ServiceM2TS
-plyDVD = extDvd				# ServiceDVD
-plyAll = plyDVB | plyM2TS | plyDVD | extBlu
+
+EXT_TS = frozenset([".ts", ".trp"])
+EXT_M2TS = frozenset([".m2ts"])
+EXT_DVD = frozenset([".ifo", ".iso", ".img"])
+EXT_VIDEO = frozenset([".ts", ".trp", ".avi", ".divx", ".f4v", ".flv", ".img", ".ifo", ".iso", ".m2ts", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".mts", ".vob", ".wmv", ".bdmv", ".asf", ".stream", ".webm"])
+EXT_BLU = frozenset([".bdmv"])
+
+
+DEFAULT_VIDEO_PID = 0x44
+DEFAULT_AUDIO_PID = 0x45
 
 
 def getService(path, name=""):
 	service = None
 	ext = os.path.splitext(path)[1].lower()
 	if path:
-		if ext in plyDVB:
-			service = eServiceReference(sidDVB, 0, path)
-		elif ext in plyDVD:
-			service = eServiceReference(sidDVD, 0, path)
-		elif ext in plyM2TS:
-			service = eServiceReference(sidM2TS, 0, path)
+		if ext in EXT_TS:
+			service = eServiceReference(SID_DVB, 0, path)
+		elif ext in EXT_DVD:
+			service = eServiceReference(SID_DVD, 0, path)
+		elif ext in EXT_M2TS:
+			service = eServiceReference(SID_M2TS, 0, path)
 		else:
-			DEFAULT_VIDEO_PID = 0x44
-			DEFAULT_AUDIO_PID = 0x45
-			service = eServiceReference(sidDefault, 0, path)
+			service = eServiceReference(SID_GST, 0, path)
 			service.setData(0, DEFAULT_VIDEO_PID)
 			service.setData(1, DEFAULT_AUDIO_PID)
 		service.setName(name)

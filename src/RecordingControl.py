@@ -28,7 +28,6 @@ from DelayTimer import DelayTimer
 from CutList import mergeBackupCutList
 from ParserMetaFile import ParserMetaFile
 from FileCache import FileCache, FILE_IDX_NAME
-from FileCacheLoad import FileCacheLoad
 from MovieSelection import MovieSelection
 from MovieCoverDownload import MovieCoverDownload
 
@@ -65,7 +64,7 @@ class RecordingControl():
 					"recording_margin_before": config.recording.margin_before.value * 60,
 					"recording_margin_after": config.recording.margin_after.value * 60,
 				})
-				DelayTimer(250, FileCacheLoad.getInstance().loadDatabaseFile, timer.Filename)
+				DelayTimer(250, FileCache.getInstance().loadDatabaseFile, timer.Filename)
 				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
 				if config.plugins.moviecockpit.cover_auto_download.value:
 					DelayTimer(1000, self.autoCoverDownload, timer.Filename)
@@ -74,7 +73,7 @@ class RecordingControl():
 				#print("MVC: RecordingControl: recordingEvent: REC END for: " + timer.Filename)
 				if os.path.exists(timer.Filename):
 					ParserMetaFile(timer.Filename).updateXMeta({"recording_stop_time": int(time.time())})
-					FileCacheLoad.getInstance().reloadDatabaseFile(timer.Filename)
+					FileCache.getInstance().reloadDatabaseFile(timer.Filename)
 					mergeBackupCutList(timer.Filename + ".cuts")  # merge cutlists
 				DelayTimer(500, self.reloadList, os.path.dirname(timer.Filename))
 
@@ -97,7 +96,7 @@ class RecordingControl():
 						"recording_margin_before": config.recording.margin_before.value * 60,
 						"recording_margin_after": config.recording.margin_after.value * 60
 					})
-					FileCacheLoad.getInstance().loadDatabaseFile(timer.Filename)
+					FileCache.getInstance().loadDatabaseFile(timer.Filename)
 
 	def reloadList(self, path):
 		#print("MVC: RecordingControl: reloadList")

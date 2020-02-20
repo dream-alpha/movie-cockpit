@@ -26,6 +26,7 @@ from MovieTMDB import MovieTMDB, SELECTION_ID, SELECTION_TYPE, SELECTION_URL, IN
 from MovieCover import MovieCover
 from FileUtils import deleteFile
 
+
 substitutelist = [(".", " "), ("_", " "), ("1080p", ""), ("720p", ""), ("x264", ""), ("h264", ""), ("1080i", ""), ("AC3", "")]
 
 

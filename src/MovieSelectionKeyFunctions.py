@@ -26,10 +26,12 @@ from Components.config import config
 from Components.ActionMap import HelpableActionMap
 from Tools.BoundFunction import boundFunction
 
+
 KEY_RED = 0
 KEY_GREEN = 1
 KEY_YELLOW = 2
 KEY_BLUE = 3
+
 
 KEY_LABEL = 0
 KEY_FUNCTION = 1

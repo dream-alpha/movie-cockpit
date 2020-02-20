@@ -124,8 +124,7 @@ class FileProgress(Screen):
 		return _("Done")
 
 	def doFileOp(self, _entry):
-		# is overridden in parent class
-		return
+		print("MVC-E: FileProgress: doFileOp: should not be called at all, as overridden by child")
 
 	def nextFileOp(self):
 		#print("MVC: FileProgress: nextFileOp")

@@ -23,6 +23,7 @@ import os
 from FileUtils import readFile, writeFile
 from Components.config import config
 
+
 META_IDX_SERVICE = 0
 META_IDX_NAME = 1
 META_IDX_DESC = 2

@@ -26,13 +26,12 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from Tools.BoundFunction import boundFunction
-from FileCacheLoad import FileCacheLoad
+from FileCache import FileCache, SQL_DB_NAME
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from SkinUtils import initPluginSkinPath, loadPluginSkin
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
-from FileCacheSQL import SQL_DB_NAME
 from Debug import initLogFile, createLogFile
 from FileUtils import deleteFile
 from StylesOps import applyPluginStyle
@@ -82,7 +81,7 @@ def autostart(reason, **kwargs):
 				config.plugins.moviecockpit.debug.value = False
 				config.plugins.moviecockpit.debug.save()
 				deleteFile("/etc/enigma2/.moviecockpit")
-				FileCacheLoad.getInstance().loadDatabase(sync=True)
+				FileCache.getInstance().loadDatabase(sync=True)
 			else:
 				print("MVC-I: plugin: database is already loaded.")
 			Trashcan.getInstance()
@@ -92,7 +91,7 @@ def autostart(reason, **kwargs):
 	elif reason == 1:  # shutdown
 		print("MVC-I: plugin: --- shutdown")
 		if not os.path.exists("/etc/enigma2/.moviecockpit"):
-			FileCacheLoad.getInstance().closeDatabase()
+			FileCache.getInstance().closeDatabase()
 		if config.plugins.moviecockpit.debug.value:
 			createLogFile()
 	else:

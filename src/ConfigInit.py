@@ -1,6 +1,5 @@
 # coding=utf-8
 #
-# Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
@@ -20,8 +19,7 @@
 
 
 from __init__ import _
-from Components.config import config, ConfigText, ConfigNumber, ConfigSelection, ConfigSelectionNumber, ConfigYesNo, ConfigSubsection,\
-	ConfigNothing, NoSave, ConfigSubDict
+from Components.config import config, ConfigText, ConfigNumber, ConfigSelection, ConfigSelectionNumber, ConfigYesNo, ConfigSubsection, ConfigNothing, NoSave, ConfigSubDict
 from Components.Language import language
 from Tools.ISO639 import ISO639Language
 
@@ -225,7 +223,6 @@ class ConfigInit():
 		config.plugins.moviecockpit.launch_key                = ConfigSelection(default="showMovies", choices=choices_launch_key)
 		config.plugins.moviecockpit.list_bouquet_keys         = ConfigSelection(default="", choices=choices_bqt)
 		config.plugins.moviecockpit.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
-		config.plugins.moviecockpit.disk_space_info           = ConfigText(default="", fixed_size=False, visible_width=0)
 		config.plugins.moviecockpit.debug                     = ConfigYesNo(default=False)
 		config.plugins.moviecockpit.debug_log_path            = ConfigText(default="/media/hdd", fixed_size=False, visible_width=35)
 

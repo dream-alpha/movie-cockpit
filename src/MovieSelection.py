@@ -42,7 +42,7 @@ from FileOps import FileOps, FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 from FileCache import FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME, FILE_TYPE_DIR
 from FileOpsProgress import FileOpsProgress
 from FileCacheLoadProgress import FileCacheLoadProgress
-from ServiceUtils import extVideo
+from ServiceUtils import EXT_VIDEO
 from ConfigInit import sort_modes
 from MovieInfoEPG import MovieInfoEPG
 from MovieInfoTMDB import MovieInfoTMDB
@@ -53,8 +53,9 @@ from FileListUtils import getIndex4Path, getService4Path, getEntry4Path, loadedD
 from ConfigScreen import ConfigScreen
 from StylesScreen import StylesScreen
 from MovieSelectionKeyFunctions import KeyFunctions
-from Bookmarks import getBookmark, getHomeDir
+from Bookmarks import getBookmark, getHomeDir, getBookmarksSpaceInfo
 from MountPoints import getMountPoint
+
 
 instance = None
 
@@ -102,6 +103,8 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		KeyFunctions.__init__(self, self)
 		FileOps.__init__(self)
 
+		self.bookmarks_space_info = getBookmarksSpaceInfo()
+
 		self["actions"] = self.initActions(self)
 		self["actions"].csel = self
 		self.filelist = []
@@ -127,7 +130,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 
 	def onDialogShow(self):
 		print("MVC-I: MovieSelection: onDialogShow: self.return_path: %s" % self.return_path)
-		#print("MVC: MovieSelection: onDialogShow: self[\"mini_tv\"].instance: " + str(self["mini_tv"].instance.size().width()))
+		#print("MVC: MovieSelection: onDialogShow: self[\"mini_tv\"].instance: %s" % self["mini_tv"].instance.size().width())
 		self.enable_mini_tv = self["mini_tv"].instance.size().width() > -1
 		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
 		print("MVC-I: MovieSelection: onDialogShow: self.lastservice: %s" % (self.lastservice.toString() if self.lastservice else None))
@@ -242,7 +245,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 			path = self["list"].getCurrentPath()
 			#print("MVC: MovieSelection: showMovieInfoEPG: path: %s" % path)
 			epg_available = False
-			if path and self["list"].getCurrentSelection()[FILE_IDX_EXT] in extVideo:
+			if path and self["list"].getCurrentSelection()[FILE_IDX_EXT] in EXT_VIDEO:
 				service = getService4Path(self.filelist, path)
 				if service:
 					event = ServiceCenter.getInstance().info(service).getEvent()
@@ -260,7 +263,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		self.short_key = False
 		path = self["list"].getCurrentPath()
 		entry = getEntry4Path(self.filelist, path)
-		if entry and entry[FILE_IDX_EXT] in extVideo:
+		if entry and entry[FILE_IDX_EXT] in EXT_VIDEO:
 			name = entry[FILE_IDX_NAME]
 			self.session.openWithCallback(self.showMovieInfoTMDBCallback, MovieInfoTMDB, path, name)
 
@@ -310,16 +313,21 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		#print("MVC: MovieSelection: updateInfoDelayed")
 		path = self["list"].getCurrentPath()
 		if path:
-			current_service = getService4Path(self.filelist, path)
-			self["Service"].newService(current_service)
+			service = getService4Path(self.filelist, path)
+			self["Service"].newService(service)
 
 	def resetInfo(self):
 		#print("MVC: MovieSelection: resetInfo")
 		self.delayTimer.stop()
 		self["Service"].newService(None)
 
+	def updateSpaceInfo(self):
+		#print("MVC: MovieSelection: updateSpaceInfo")
+		self.bookmarks_space_info = getBookmarksSpaceInfo()
+		self.updateSpaceInfoDisplay()
+
 	def updateSpaceInfoDisplay(self):
-		self["space_info"].setText(config.plugins.moviecockpit.disk_space_info.value)
+		self["space_info"].setText(self.bookmarks_space_info)
 
 	def updateTitle(self):
 		title = "MovieCockpit"
@@ -365,7 +373,7 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 
 	def reloadList(self, path):
 		#print("MVC: MovieSelection: loadListRecording: path: %s" % path)
-		#print("MVC: MovieSelection: loadedDirs: " + str(loadedDirs(self.filelist)))
+		#print("MVC: MovieSelection: loadedDirs: %s" % loadedDirs(self.filelist))
 		if path in loadedDirs(self.filelist):
 			self.loadList(path)
 
@@ -375,16 +383,15 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		self.resetInfo()
 		MovieList.selection_list = []
 		filelist = createFileList(path)
-		if filelist:
-			if config.plugins.moviecockpit.directories_show.value:
-				filelist += createDirList(path)
-			custom_list = createCustomList(path)
-			self.filelist = custom_list + sortList(filelist, self.current_sort_mode)
-			self["list"].setList(self.filelist)
-			if self.return_path:
-				self.moveToPath(self.return_path)
-			else:
-				self.moveTop()
+		if config.plugins.moviecockpit.directories_show.value:
+			filelist += createDirList(path)
+		custom_list = createCustomList(path)
+		self.filelist = custom_list + sortList(filelist, self.current_sort_mode)
+		self["list"].setList(self.filelist)
+		if self.return_path:
+			self.moveToPath(self.return_path)
+		else:
+			self.moveTop()
 
 ### selection functions
 
@@ -726,11 +733,11 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 			file_ops_list = []
 			self.return_path = self["list"].getCurrentPath()
 			filelist = createFileList(getHomeDir() + "/trashcan")
-			for entry in filelist:
-				path = entry[FILE_IDX_PATH]
-				if os.path.basename(path) != "..":
-					file_ops_list.append((FILE_OP_DELETE, path, None, entry[FILE_IDX_TYPE]))
-			#print("MVC: MovieSelection: emptyTrash: file_ops_list: " + str(file_ops_list))
+			for afile in filelist:
+				path = afile[FILE_IDX_PATH]
+				filetype = afile[FILE_IDX_TYPE]
+				file_ops_list.append((FILE_OP_DELETE, path, None, filetype))
+			#print("MVC: MovieSelection: emptyTrash: file_ops_list: %s" % file_ops_list)
 			self.execFileOps(file_ops_list, [], False)
 
 	### cutlist
@@ -775,6 +782,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 			#print("MVC: MovieSelection: execFileOps: self.return_path: %s" % self.return_path)
 
 		if exec_progress:
-			self.session.open(FileOpsProgress, self, file_ops_list, self.return_path)
+			self.session.openWithCallback(self.updateSpaceInfo, FileOpsProgress, self, file_ops_list, self.return_path)
 		else:
 			self.execFileOpsNoProgress(file_ops_list)

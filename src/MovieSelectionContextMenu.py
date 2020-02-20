@@ -62,7 +62,7 @@ class MovieSelectionContextMenu(Screen, HelpableScreen):
 		menu = []
 
 		if menu_mode == MENU_FUNCTIONS:
-			self.setTitle(_("Movie list menu"))
+			self.setTitle(_("Select function"))
 
 			if current_dir and not isBookmark(os.path.realpath(current_dir)):
 				menu.append((_("Movie home"), (csel.moveToMovieHome, True)))

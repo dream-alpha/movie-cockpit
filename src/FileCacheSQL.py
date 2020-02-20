@@ -22,13 +22,11 @@
 from sqlite3 import dbapi2 as sqlite
 
 
-SQL_DB_NAME = "/etc/enigma2/moviecockpit.db"
-
-
 class FileCacheSQL():
-	def __init__(self):
+
+	def __init__(self, sql_db_name):
 		print("MVC-I: FileCacheSQL: __init__")
-		self.sql_conn = sqlite.connect(SQL_DB_NAME)
+		self.sql_conn = sqlite.connect(sql_db_name)
 		self.sqlCreateTable()
 
 	def sqlCreateTable(self):

@@ -124,6 +124,3 @@ class Tasker():
 				return
 		# all were busy, just append to any task list randomly
 		self.executioners[random.randint(0, 2)].shellExecute(script, associated, sync)
-
-
-tasker = Tasker()

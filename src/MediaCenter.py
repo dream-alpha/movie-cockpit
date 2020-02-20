@@ -43,7 +43,7 @@ from CutListUtils import secondsToPts
 from InfoBarSupport import InfoBarSupport
 from Components.Sources.MVCCurrentService import MVCCurrentService
 from ServiceCenter import ServiceCenter, Info
-from ServiceUtils import sidDVB
+from ServiceUtils import SID_DVB
 from RecordingUtils import isRecording
 from MovieInfoEPG import MovieInfoEPG
 
@@ -120,7 +120,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		if os.path.exists(path):
 			self.session.nav.playService(self.service)
 
-			if self.service and self.service.type != sidDVB:
+			if self.service and self.service.type != SID_DVB:
 				self.realSeekLength = self.getSeekLength()
 
 			DelayTimer(50, self.setAudioTrack)
@@ -137,7 +137,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 
 	def getLength(self):
 		length = 0
-		if self.service.type == sidDVB:
+		if self.service.type == SID_DVB:
 			__len = self.serviceHandler.info(self.service).getLength()
 			event_start_time = self.serviceHandler.info(self.service).getEventStartTime()
 			recording_start_time = self.serviceHandler.info(self.service).getRecordingStartTime()
@@ -341,7 +341,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 
 		self.setSubtitleState(False)
 
-		if self.service and self.service.type != sidDVB:
+		if self.service and self.service.type != SID_DVB:
 			self.updateCutList(self.service)
 
 		if not reopen:
@@ -358,7 +358,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 		self.session.nav.stopService()
 
 		# Always make a backup copy when recording is running and we stopped the playback
-		if self.service and self.service.type == sidDVB:
+		if self.service and self.service.type == SID_DVB:
 			path = self.service.getPath()
 			if isRecording(path):
 				backupCutList(path + ".cuts")
@@ -390,7 +390,7 @@ class MediaCenter(Screen, HelpableScreen, InfoBarSupport):
 				self.leavePlayer(reopen=False)
 
 		else:
-			if self.service.type != sidDVB:
+			if self.service.type != SID_DVB:
 				self.updateCutList(self.service)
 
 	def updateCutList(self, service):

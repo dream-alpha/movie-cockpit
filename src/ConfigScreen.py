@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2011 by Coolman & Swiss-MAD
 # Copyright (C) 2018-2020 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
@@ -306,26 +305,20 @@ class ConfigScreen(ConfigListScreen, Screen):
 			print("MVC-E: ConfigScreen: keyOK: function execution failed")
 
 	def keySaveNew(self):
+		#print("MVC: ConfigScreen: keySaveNew")
 		for i, entry in enumerate(self.list):
 			if len(entry) > 1:
 				if entry[1].isChanged():
 					if entry[2]:
-						# execute value changed -function
+						# execute value changed function
 						if not entry[2](entry[1]):
-							print("MVC-E: ConfigScreen: keySaveNew: function called on save failed")
-							# Stop exiting, user has to correct the config
-							return
+							print("MVC-E: ConfigScreen: keySaveNew: value function error: %s" % entry[2])
 					# Check parent entries
 					for parent in entry[5]:
-						try:
-							if self.list[i + parent][2]:
-								# execute parent value changed -function
-								if self.list[i + parent][2](self.MVCConfig[i + parent][1]):
-									# Stop exiting, user has to correct the config
-									return
-						except Exception as e:
-							print("MVC-E: ConfigScreen: keySaveNew: i: %s, exception: %s" % (i, e))
-							continue
+						if self.list[i + parent][2]:
+							# execute parent value changed function
+							if not self.list[i + parent][2](self.MVCConfig[i + parent][1]):
+								print("MVC-E: ConfigScreen: keySaveNew: parent value function error: %s" % self.list[i + parent][2])
 					entry[1].save()
 		configfile.save()
 

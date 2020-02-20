@@ -27,6 +27,7 @@ from PixmapDisplay import PixmapDisplay
 
 
 class MovieCover(PixmapDisplay):
+
 	def __init__(self):
 		PixmapDisplay.__init__(self)
 
