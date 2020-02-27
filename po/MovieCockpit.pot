@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MovieCockpit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-20 10:26+0100\n"
-"PO-Revision-Date: 2020-02-20 10:26+0100\n"
+"POT-Creation-Date: 2020-02-25 12:57+0100\n"
+"PO-Revision-Date: 2020-02-25 12:58+0100\n"
 "Last-Translator: dream alpha\n"
 "Language-Team: German (Germany)\n"
 "Language: de_DE\n"
@@ -704,7 +704,7 @@ msgstr ""
 msgid "Select location"
 msgstr ""
 
-#: ConfigScreen.py:383 MovieSelection.py:570
+#: ConfigScreen.py:383 MovieSelection.py:557
 msgid "Select directory"
 msgstr ""
 
@@ -910,7 +910,7 @@ msgstr ""
 msgid "up"
 msgstr ""
 
-#: MovieList.py:219 MovieSelection.py:337
+#: MovieList.py:219 MovieSelection.py:325
 msgid "trashcan"
 msgstr ""
 
@@ -918,60 +918,60 @@ msgstr ""
 msgid "directory"
 msgstr ""
 
-#: MovieSelection.py:118
+#: MovieSelection.py:116
 msgid "Skin resolution other than Full HD is not supported yet"
 msgstr ""
 
-#: MovieSelection.py:166
+#: MovieSelection.py:163
 msgid "Information"
 msgstr ""
 
-#: MovieSelection.py:258
+#: MovieSelection.py:255
 msgid "No EPG info available"
 msgstr ""
 
-#: MovieSelection.py:286 MovieSelectionContextMenu.py:84
+#: MovieSelection.py:283 MovieSelectionContextMenu.py:84
 #: MovieSelectionKeyFunctions.py:125
 msgid "Bookmarks"
 msgstr ""
 
-#: MovieSelection.py:337
+#: MovieSelection.py:325
 msgid "Recordings"
 msgstr ""
 
-#: MovieSelection.py:343 MovieSelectionKeyFunctions.py:111
+#: MovieSelection.py:331 MovieSelectionKeyFunctions.py:111
 msgid "Sort mode"
 msgstr ""
 
-#: MovieSelection.py:544
+#: MovieSelection.py:532
 msgid "Do you really want to reload the SQL cache?"
 msgstr ""
 
-#: MovieSelection.py:605 MovieSelectionKeyFunctions.py:97
+#: MovieSelection.py:592 MovieSelectionKeyFunctions.py:97
 msgid "Stop recording(s)"
 msgstr ""
 
-#: MovieSelection.py:656
+#: MovieSelection.py:643
 msgid "Permanently delete the selected video file(s) or dir(s)"
 msgstr ""
 
-#: MovieSelection.py:678
+#: MovieSelection.py:665
 msgid "Move file(s)"
 msgstr ""
 
-#: MovieSelection.py:687
+#: MovieSelection.py:674
 msgid "Copy file(s)"
 msgstr ""
 
-#: MovieSelection.py:706
+#: MovieSelection.py:693
 msgid "Can't move recordings"
 msgstr ""
 
-#: MovieSelection.py:706
+#: MovieSelection.py:693
 msgid "Can't copy recordings"
 msgstr ""
 
-#: MovieSelection.py:727
+#: MovieSelection.py:714
 msgid "Permanently delete all files in trashcan?"
 msgstr ""
 

@@ -19,11 +19,11 @@
 #	<http://www.gnu.org/licenses/>.
 
 
-from Components.Sources.CurrentService import CurrentService
-from Components.Renderer.Renderer import Renderer
 from enigma import ePixmap
-from Plugins.Extensions.MovieCockpit.MovieCover import MovieCover
 from enigma import eServiceReference
+from Components.Renderer.Renderer import Renderer
+from Components.Sources.CurrentService import CurrentService
+from Plugins.Extensions.MovieCockpit.MovieCover import MovieCover
 
 
 class MVCCover(Renderer, MovieCover):

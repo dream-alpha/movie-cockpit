@@ -53,7 +53,7 @@ from FileListUtils import getIndex4Path, getService4Path, getEntry4Path, loadedD
 from ConfigScreen import ConfigScreen
 from StylesScreen import StylesScreen
 from MovieSelectionKeyFunctions import KeyFunctions
-from Bookmarks import getBookmark, getHomeDir, getBookmarksSpaceInfo
+from Bookmarks import getBookmark, getHomeDir
 from MountPoints import getMountPoint
 
 
@@ -103,8 +103,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		KeyFunctions.__init__(self, self)
 		FileOps.__init__(self)
 
-		self.bookmarks_space_info = getBookmarksSpaceInfo()
-
 		self["actions"] = self.initActions(self)
 		self["actions"].csel = self
 		self.filelist = []
@@ -116,7 +114,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		self.cursor_direction = 0
 		self.lastservice = None
 		self["no_support"] = Label(_("Skin resolution other than Full HD is not supported yet"))
-		self["space_info"] = Label()
 		self["sort_mode"] = Label()
 		if self.current_sort_mode is None:
 			self.current_sort_mode = config.plugins.moviecockpit.list_sort.value
@@ -306,7 +303,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 			self.resetInfo()
 			self.updateTitle()
 			self.updateSortModeDisplay()
-			self.updateSpaceInfoDisplay()
 			self.delayTimer.start(int(config.plugins.moviecockpit.movie_description_delay.value), True)
 
 	def updateInfoDelayed(self):
@@ -320,14 +316,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		#print("MVC: MovieSelection: resetInfo")
 		self.delayTimer.stop()
 		self["Service"].newService(None)
-
-	def updateSpaceInfo(self):
-		#print("MVC: MovieSelection: updateSpaceInfo")
-		self.bookmarks_space_info = getBookmarksSpaceInfo()
-		self.updateSpaceInfoDisplay()
-
-	def updateSpaceInfoDisplay(self):
-		self["space_info"].setText(self.bookmarks_space_info)
 
 	def updateTitle(self):
 		title = "MovieCockpit"
@@ -556,7 +544,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 		if self.return_path:
 			reload_dir = os.path.dirname(self.return_path)
 		self.loadList(reload_dir)
-		self.updateSpaceInfo()
 
 ### movie ops
 
@@ -782,6 +769,6 @@ class MovieSelection(Screen, HelpableScreen, KeyFunctions, FileOps):
 			#print("MVC: MovieSelection: execFileOps: self.return_path: %s" % self.return_path)
 
 		if exec_progress:
-			self.session.openWithCallback(self.updateSpaceInfo, FileOpsProgress, self, file_ops_list, self.return_path)
+			self.session.open(FileOpsProgress, self, file_ops_list, self.return_path)
 		else:
 			self.execFileOpsNoProgress(file_ops_list)

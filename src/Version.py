@@ -20,4 +20,4 @@
 
 
 PLUGIN = "MovieCockpit"
-VERSION = "4.6.3"
+VERSION = "4.7.0"
