@@ -29,7 +29,6 @@ class MVCDiskSpaceInfo(Poll, Converter):
 	SPACEINFO = 0
 
 	def __init__(self, atype):
-		#print("MVC: MVCDiskSpaceInfo: __init__")
 		Converter.__init__(self, atype)
 		Poll.__init__(self)
 
@@ -38,7 +37,6 @@ class MVCDiskSpaceInfo(Poll, Converter):
 		self.poll_enabled = True
 
 	def doSuspend(self, suspended):
-		#print("MVC: MVCDiskSpaceInfo: doSuspend: %s" % suspended)
 		if suspended:
 			self.poll_enabled = False
 		else:
@@ -47,7 +45,6 @@ class MVCDiskSpaceInfo(Poll, Converter):
 
 	@cached
 	def getText(self):
-		#print("MVC: MVCDiskSpaceInfo: getText")
 		return getBookmarksSpaceInfo()
 
 	text = property(getText)
