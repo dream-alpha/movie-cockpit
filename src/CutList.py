@@ -80,26 +80,25 @@ def reloadCutList(path):
 
 def readCutList(path):
 	cut_list = []
-	if path:
-		#print("MVC: CutList: readCutList: reading cut_list from cache: %s" % path)
-		filedata = FileCache.getInstance().getFile(path)
+	#print("MVC: CutList: readCutList: reading cut_list from cache: %s" % path)
+	filedata = FileCache.getInstance().getFile(path)
+	if filedata:
 		data = filedata[FILE_IDX_CUTS]
 		cut_list = unpackCutList(data)
-		#print("MVC: CutList: readCutList: cut_list: %s" % cut_list)
+	#print("MVC: CutList: readCutList: cut_list: %s" % cut_list)
 	return cut_list
 
 
 def writeCutList(path, cut_list):
 	#print("MVC: CutList: writeCutList: %s, cut_list: %s" % (path, cut_list))
-	if path:
-		data = packCutList(cut_list)
-		writeFile(path + ".cuts", data)
+	data = packCutList(cut_list)
+	writeFile(path + ".cuts", data)
 
-		# update file in cache
-		#print("MVC: CutList: writeCutList: updating cut_list in cache: %s" % path)
-		FileCache.getInstance().update(path, cuts=data)
+	# update file in cache
+	#print("MVC: CutList: writeCutList: updating cut_list in cache: %s" % path)
+	FileCache.getInstance().update(path, cuts=data)
 
-		# Always make a backup-copy when recording, it will be merged with enigma cutfile after recording has ended
-		if isRecording(path):
-			#print("MVC: CutList: writeCutList: creating backup file: %s" % (path + ".cuts"))
-			backupCutList(path + ".cuts")
+	# Always make a backup-copy when recording, it will be merged with enigma cutfile after recording has ended
+	if isRecording(path):
+		#print("MVC: CutList: writeCutList: creating backup file: %s" % (path + ".cuts"))
+		backupCutList(path + ".cuts")

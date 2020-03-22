@@ -26,14 +26,13 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from Tools.BoundFunction import boundFunction
-from FileCache import FileCache, SQL_DB_NAME
+from FileCache import FileCache
 from ConfigInit import ConfigInit
 from RecordingControl import RecordingControl
 from SkinUtils import initPluginSkinPath, loadPluginSkin
 from Trashcan import Trashcan
 from ConfigScreen import ConfigScreen
-from Debug import initLogFile, createLogFile
-from FileUtils import deleteFile
+from Debug import createLogFile
 from StylesOps import applyPluginStyle
 
 
@@ -58,7 +57,7 @@ def autostart(reason, **kwargs):
 	if reason == 0:  # startup
 		if "session" in kwargs:
 			if config.plugins.moviecockpit.debug.value:
-				initLogFile()
+				createLogFile()
 			print("MVC-I: plugin: +++ Version: " + VERSION + " starts...")
 			print("MVC-I: plugin: autostart: reason: %s" % reason)
 			session = kwargs["session"]
@@ -76,14 +75,7 @@ def autostart(reason, **kwargs):
 					InfoBar.startTimeshift = boundFunction(openMovieSelection, session)
 			ConfigScreen.setEPGLanguage()
 			RecordingControl()
-			if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
-				print("MVC-I: plugin: loading database...")
-				config.plugins.moviecockpit.debug.value = False
-				config.plugins.moviecockpit.debug.save()
-				deleteFile("/etc/enigma2/.moviecockpit")
-				FileCache.getInstance().loadDatabase(sync=True)
-			else:
-				print("MVC-I: plugin: database is already loaded.")
+			FileCache.getInstance()
 			Trashcan.getInstance()
 			initPluginSkinPath()
 			applyPluginStyle()
@@ -92,8 +84,6 @@ def autostart(reason, **kwargs):
 		print("MVC-I: plugin: --- shutdown")
 		if not os.path.exists("/etc/enigma2/.moviecockpit"):
 			FileCache.getInstance().closeDatabase()
-		if config.plugins.moviecockpit.debug.value:
-			createLogFile()
 	else:
 		print("MVC-I: plugin: autostart: reason not handled: %s" % reason)
 

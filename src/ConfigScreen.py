@@ -351,6 +351,7 @@ class ConfigScreen(ConfigListScreen, Screen):
 			#print("MVC: ConfigScreen: setDebugMode: cmd: %s" % cmd)
 			os.system(cmd)
 		self.needsRestart()
+		return True
 
 	@staticmethod
 	def setEPGLanguage(_element=None):

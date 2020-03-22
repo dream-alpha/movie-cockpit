@@ -28,7 +28,7 @@ from ParserEitFile import ParserEitFile
 from ParserMetaFile import ParserMetaFile
 from CutListUtils import unpackCutList, ptsToSeconds, getCutListLength
 from ServiceUtils import EXT_TS, EXT_VIDEO
-from FileUtils import readFile
+from FileUtils import readFile, deleteFile
 from DelayTimer import DelayTimer
 from UnicodeUtils import convertToUtf8
 
@@ -48,7 +48,7 @@ FILE_IDX_RECORDING_START_TIME = 7
 FILE_IDX_RECORDING_STOP_TIME = 8
 FILE_IDX_LENGTH = 9
 FILE_IDX_DESCRIPTION = 10
-FILE_IDX_EXTENTED_DESCRIPTION = 11
+FILE_IDX_EXTENDED_DESCRIPTION = 11
 FILE_IDX_SERVICE_REFERENCE = 12
 FILE_IDX_SIZE = 13
 FILE_IDX_CUTS = 14
@@ -68,6 +68,12 @@ class FileCache(FileCacheSQL):
 	def __init__(self):
 		print("MVC-I: FileCache: __init__")
 		FileCacheSQL.__init__(self, SQL_DB_NAME)
+		if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
+			print("MVC-I: FileCache: __init__: loading database...")
+			deleteFile("/etc/enigma2/.moviecockpit")
+			self.loadDatabase(sync=True)
+		else:
+			print("MVC-I: FileCache: __init__: database is already loaded.")
 
 	@staticmethod
 	def getInstance():

@@ -22,7 +22,7 @@
 from __init__ import _
 from datetime import datetime
 from enigma import eServiceCenter, iServiceInformation
-from FileCache import FileCache, FILE_TYPE_FILE
+from FileCache import FileCache, FILE_TYPE_FILE, FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_RECORDING_START_TIME, FILE_IDX_LENGTH, FILE_IDX_DESCRIPTION, FILE_IDX_EXTENDED_DESCRIPTION, FILE_IDX_SERVICE_REFERENCE, FILE_IDX_SIZE, FILE_IDX_CUTS, FILE_IDX_TAGS
 from CutListUtils import unpackCutList
 from Components.config import config
 
@@ -92,67 +92,66 @@ class ServiceInfo():
 class Info():
 
 	def __init__(self, path):
-		filetype, name, event_start_time, description, extended_description, service_reference, cuts, tags = "", "", "", "", "", "", "", ""
-		size = length = recording_start_time = 0
+		self.filetype, self.name, self.event_start_time, self.short_description, self.extended_description, self.service_reference, self.cuts, self.tags = "", "", "", "", "", "", "", ""
+		self.size = self.length = self.recording_start_time = 0
 		self.path = path
 		if self.path:
 			filedata = FileCache.getInstance().getFile(self.path)
 			if filedata is not None:
-				_dirname, filetype, _path, _filename, _ext, name, event_start_time, recording_start_time, _recording_stop_time, length, description, extended_description, service_reference, size, cuts, tags = filedata
-		self.__filetype = filetype
-		self.__event_start_time = event_start_time
-		self.__recording_start_time = recording_start_time
-		self.__name = name if name != "trashcan" else _(name)
-		self.__shortdescription = description
-		self.__extendeddescription = extended_description
-		self.__length = length
-		self.__service_reference = service_reference
-		self.__size = size
-		self.__tags = tags
-		self.__cut_list = unpackCutList(cuts)
+				self.filetype = filedata[FILE_IDX_TYPE]
+				self.event_start_time = filedata[FILE_IDX_EVENT_START_TIME]
+				self.recording_start_time = filedata[FILE_IDX_RECORDING_START_TIME]
+				self.name = filedata[FILE_IDX_NAME] if filedata[FILE_IDX_NAME] != "trashcan" else _(filedata[FILE_IDX_NAME])
+				self.short_description = filedata[FILE_IDX_DESCRIPTION]
+				self.extended_description = filedata[FILE_IDX_EXTENDED_DESCRIPTION]
+				self.length = filedata[FILE_IDX_LENGTH]
+				self.service_reference = filedata[FILE_IDX_SERVICE_REFERENCE]
+				self.size = filedata[FILE_IDX_SIZE]
+				self.tags = filedata[FILE_IDX_TAGS]
+				self.cut_list = unpackCutList(filedata[FILE_IDX_CUTS])
 
 	def getName(self):
 		#EventName NAME
-		return self.__name
+		return self.name
 
 	def getServiceReference(self):
-		return self.__service_reference
+		return self.service_reference
 
 	def getTags(self):
-		return self.__tags
+		return self.tags
 
 	def getEventId(self):
 		return 0
 
 	def getEventName(self):
-		return self.__name
+		return self.name
 
 	def getShortDescription(self):
 		#EventName SHORT_DESCRIPTION
-		return self.__shortdescription
+		return self.short_description
 
 	def getExtendedDescription(self):
 		#EventName EXTENDED_DESCRIPTION
-		return self.__extendeddescription
+		return self.extended_description
 
 	def getBeginTimeString(self):
-		return datetime.fromtimestamp(self.__event_start_time).strftime(config.plugins.moviecockpit.movie_date_format.value)
+		return datetime.fromtimestamp(self.event_start_time).strftime(config.plugins.moviecockpit.movie_date_format.value)
 
 	def getEventStartTime(self):
-		return self.__event_start_time
+		return self.event_start_time
 
 	def getRecordingStartTime(self):
-		return self.__recording_start_time
+		return self.recording_start_time
 
 	def getDuration(self):
-		return self.__length
+		return self.length
 
 	def getLength(self):
-		return self.__length
+		return self.length
 
 	def getSize(self):
-		if self.__filetype == FILE_TYPE_FILE:
-			size = self.__size
+		if self.filetype == FILE_TYPE_FILE:
+			size = self.size
 		else:
 			_count, size = FileCache.getInstance().getCountSize(self.path)
 		return size

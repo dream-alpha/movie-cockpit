@@ -44,9 +44,6 @@ class FileOps(MovieTMDB, MovieCover, Tasker):
 		print("MVC-E: FileOps: reloadList: path: %s" % path)
 		print("MVC-E: FileOps: reloadList: should not be called at all, as overridden by child")
 
-	def updateSpaceInfo(self):
-		print("MVC-I: FileOps: updateSpaceInfo: Noop")
-
 	def execFileOpsNoProgress(self, execution_list):
 		print("MVC-I: FileOps: execFileOpsNoProgress: execution_list: " + str(execution_list))
 		self.execution_list = execution_list
@@ -110,18 +107,14 @@ class FileOps(MovieTMDB, MovieCover, Tasker):
 	def __deleteCallback(self, path, target_path, filetype):
 		print("MVC-I: MovieSelection: __deleteCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		FileCache.getInstance().delete(path, filetype)
-		self.updateSpaceInfo()
 
 	def __moveCallback(self, path, target_path, filetype):
 		print("MVC-I: FileOps: __moveCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		FileCache.getInstance().move(path, target_path, filetype)
-		if path != target_path:
-			self.updateSpaceInfo()
 
 	def __copyCallback(self, path, target_path, filetype):
 		print("MVC-I: FileOps: __copyCallback: path: %s, target_path: %s, filetype: %s" % (path, target_path, filetype))
 		FileCache.getInstance().copy(path, target_path, filetype)
-		self.updateSpaceInfo()
 
 	def __execFileDelete(self, path, filetype):
 		print("MVC-I: FileOps: __execFileDelete: path: %s, filetype: %s" % (path, filetype))

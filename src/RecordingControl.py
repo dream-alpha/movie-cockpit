@@ -104,4 +104,3 @@ class RecordingControl():
 		if movie_selection:
 			#print("MVC: RecordingControl: reloadList: calling movie_selection.reloadList")
 			movie_selection.reloadList(path)
-			movie_selection.updateSpaceInfo()
