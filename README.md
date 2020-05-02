@@ -10,6 +10,8 @@
 - MVC imports all movies located in the E2 movie directories, which can be located on multiple physical disks.
 - MVC only supports DreamOS
 - MVC is being tested on DM920 only
+- MVC only supports FHD (Full HD) skins. It will not work on a "HD" skin.
+
 ## Installation
 To install MovieCockpit execute the following command in a console on your dreambox:
 - wget https://dream-alpha.github.io/MovieCockpit/moviecockpit.sh -O - | /bin/sh
