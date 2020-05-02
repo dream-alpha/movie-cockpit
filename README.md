@@ -20,7 +20,8 @@ To install MovieCockpit execute the following command in a console on your dream
 The installation script will also install a feed source that enables a convenient upgrade to the latest version with the following commands or automatically as part of a DreamOS upgrade:
 - apt-get update
 - apt-get upgrade
-## MovieCockpit Doxygen
-http://moviecockpit.000webhostapp.com/index.html
-## MovieCockpit Feed
-https://gemfury.com/dream-alpha
+
+## Links
+- Dreambox board discussion: https://dreambox.de/board/index.php?thread/23864-moviecockpit/
+- Doxygen API documentation: http://moviecockpit.000webhostapp.com/index.html
+- .deb package feed: https://gemfury.com/dream-alpha
