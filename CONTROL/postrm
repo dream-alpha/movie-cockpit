@@ -1,0 +1,23 @@
+#!/bin/sh
+if [ "$1" = "remove" ]; then
+	rm -rf /usr/lib/enigma2/python/Plugins/Extensions/MovieCockpit > /dev/null 2>&1
+	rm /usr/lib/enigma2/python/Components/Renderer/MVC* > /dev/null 2>&1
+	rm /usr/lib/enigma2/python/Components/Converter/MVC* > /dev/null 2>&1
+	rm /usr/lib/enigma2/python/Components/Sources/MVC* > /dev/null 2>&1
+	if [ -f /etc/enigma2/moviecockpit.db ]; then
+		rm /etc/enigma2/moviecockpit.db > /dev/null 2>&1
+	fi
+	if [ -f /etc/enigma2/.moviecockpit ]; then
+		rm /etc/enigma2/.moviecockpit > /dev/null 2>&1
+	fi
+	if [ -f /etc/enigma2/.mvc ]; then
+		rm /etc/enigma2/.mvc > /dev/null 2>&1
+	fi
+	echo "MovieCockpit plugin removed successfully."
+else
+	find /usr/lib/enigma2/python/Plugins/Extensions/MovieCockpit -type f -name "*.pyo" -exec rm -f {} \; > /dev/null 2>&1
+	find /usr/lib/enigma2/python/Plugins/Components/Renderer -type f -name "MVC*.pyo" -exec rm -f {} \; > /dev/null 2>&1
+	find /usr/lib/enigma2/python/Plugins/Components/Converter -type f -name "MVC*.pyo" -exec rm -f {} \; > /dev/null 2>&1
+	find /usr/lib/enigma2/python/Plugins/Components/Sources -type f -name "MVC*.pyo" -exec rm -f {} \; > /dev/null 2>&1
+fi
+exit 0

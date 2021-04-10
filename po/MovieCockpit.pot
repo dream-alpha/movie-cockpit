@@ -1,0 +1,1361 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"#-#-#-#-#  de.po  #-#-#-#-#\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-19 10:49+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: dream-alpha\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Poedit 2.4.2\n"
+"X-Loco-Source-Locale: en-US\n"
+"X-Loco-Project-Id: 47158\n"
+"X-Loco-Api-Version: 1.0.19 20180501-1\n"
+"X-Poedit-Basepath: ../src\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: skin\n"
+"#-#-#-#-#  de.po (Common)  #-#-#-#-#\n"
+"Project-Id-Version: Common\n"
+"POT-Creation-Date: 2021-03-19 11:09+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: dream-alpha\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.2\n"
+"X-Poedit-Basepath: ../src\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: CockpitPlayer.py:80 CockpitPlayer.py:81
+msgid "Stop playback"
+msgstr ""
+
+#: CockpitPlayer.py:82
+msgid "Skip forward"
+msgstr ""
+
+#: CockpitPlayer.py:83
+msgid "Skip backward"
+msgstr ""
+
+#: CockpitPlayer.py:288 ConfigScreenInit.py:61
+msgid "Zap to live TV of recording"
+msgstr ""
+
+#: ConfigInit.py:42
+msgid "No override"
+msgstr ""
+
+#: ConfigInit.py:43
+msgid "Video-button"
+msgstr ""
+
+#: ConfigInit.py:44
+msgid "TV-button"
+msgstr ""
+
+#: ConfigInit.py:45
+msgid "Radio-button"
+msgstr ""
+
+#: ConfigInit.py:46
+msgid "Quick-button"
+msgstr ""
+
+#: ConfigInit.py:47
+msgid "Timeshift-button"
+msgstr ""
+
+#: ConfigInit.py:53
+msgid "DD.MM.YYYY"
+msgstr ""
+
+#: ConfigInit.py:54
+msgid "WD DD.MM.YYYY"
+msgstr ""
+
+#: ConfigInit.py:56
+msgid "DD.MM.YYYY HH:MM"
+msgstr ""
+
+#: ConfigInit.py:57
+msgid "WD DD.MM.YYYY HH:MM"
+msgstr ""
+
+#: ConfigInit.py:59
+msgid "DD.MM. HH:MM"
+msgstr ""
+
+#: ConfigInit.py:60
+msgid "WD DD.MM. HH:MM"
+msgstr ""
+
+#: ConfigInit.py:62
+msgid "YYYY/MM/DD"
+msgstr ""
+
+#: ConfigInit.py:63
+msgid "WD YYYY/MM/DD"
+msgstr ""
+
+#: ConfigInit.py:65
+msgid "YYYY/MM/DD HH:MM"
+msgstr ""
+
+#: ConfigInit.py:66
+msgid "WD YYYY/MM/DD HH:MM"
+msgstr ""
+
+#: ConfigInit.py:68
+msgid "MM/DD HH:MM"
+msgstr ""
+
+#: ConfigInit.py:69
+msgid "WD MM/DD HH:MM"
+msgstr ""
+
+#: ConfigInit.py:74
+msgid "off"
+msgstr ""
+
+#: ConfigInit.py:75
+msgid "Description"
+msgstr ""
+
+#: ConfigInit.py:76
+msgid "(#)"
+msgstr ""
+
+#: ConfigInit.py:77
+msgid "(#/GB)"
+msgstr ""
+
+#: ConfigInit.py:78
+msgid "(GB)"
+msgstr ""
+
+#: ConfigInit.py:83
+msgid "Home/End"
+msgstr ""
+
+#: ConfigInit.py:84
+msgid "Skip"
+msgstr ""
+
+#: ConfigInit.py:89
+msgid "Date sort down"
+msgstr ""
+
+#: ConfigInit.py:90
+msgid "Date sort up"
+msgstr ""
+
+#: ConfigInit.py:91
+msgid "Alpha sort up"
+msgstr ""
+
+#: ConfigInit.py:92
+msgid "Alpha sort down"
+msgstr ""
+
+#: ConfigInit.py:100
+msgid "red"
+msgstr ""
+
+#: ConfigInit.py:101
+msgid "light red"
+msgstr ""
+
+#: ConfigInit.py:102
+msgid "dark red"
+msgstr ""
+
+#: ConfigInit.py:107
+msgid "white"
+msgstr ""
+
+#: ConfigInit.py:108
+msgid "light grey"
+msgstr ""
+
+#: ConfigInit.py:109
+msgid "grey"
+msgstr ""
+
+#: ConfigInit.py:110
+msgid "dark grey"
+msgstr ""
+
+#: ConfigInit.py:111
+msgid "black"
+msgstr ""
+
+#: ConfigInit.py:116
+msgid "dark yellow"
+msgstr ""
+
+#: ConfigInit.py:117
+msgid "yellow"
+msgstr ""
+
+#: ConfigInit.py:170
+msgid "beginning"
+msgstr ""
+
+#: ConfigInit.py:170
+msgid "first mark"
+msgstr ""
+
+#: ConfigInit.py:170
+msgid "event start"
+msgstr ""
+
+#: ConfigInit.py:171
+msgid "yes, without Message"
+msgstr ""
+
+#: ConfigInit.py:171
+msgid "yes, with Message"
+msgstr ""
+
+#: ConfigInit.py:171
+msgid "no"
+msgstr ""
+
+#: ConfigScreenInit.py:48
+msgid "GENERAL"
+msgstr ""
+
+#: ConfigScreenInit.py:49
+msgid "Start plugin with key"
+msgstr ""
+
+#: ConfigScreenInit.py:49
+msgid "Select the key that will invoke the plugin."
+msgstr ""
+
+#: ConfigScreenInit.py:50
+msgid "Show settings in extensions menu"
+msgstr ""
+
+#: ConfigScreenInit.py:50
+msgid "Select whether to show the configuration screen in the extensions menu."
+msgstr ""
+
+#: ConfigScreenInit.py:51
+msgid "Show plugin in extensions menu"
+msgstr ""
+
+#: ConfigScreenInit.py:51
+msgid "Select whether the plugin is to be shown in the extensions menu."
+msgstr ""
+
+#: ConfigScreenInit.py:52
+msgid "Video home at start"
+msgstr ""
+
+#: ConfigScreenInit.py:52
+msgid ""
+"Select whether Video home is to be displayed at plugin start or the last "
+"directory."
+msgstr ""
+
+#: ConfigScreenInit.py:53
+msgid "Default sort mode"
+msgstr ""
+
+#: ConfigScreenInit.py:53
+msgid "Select the start mode to be used at startup."
+msgstr ""
+
+#: ConfigScreenInit.py:54
+msgid "KEYS"
+msgstr ""
+
+#: ConfigScreenInit.py:55
+msgid "Bouquet buttons behavior"
+msgstr ""
+
+#: ConfigScreenInit.py:55
+msgid "Select the behavior of the bouquet buttons in the configuration menu."
+msgstr ""
+
+#: ConfigScreenInit.py:56
+msgid "List entries to skip"
+msgstr ""
+
+#: ConfigScreenInit.py:56
+msgid "Select the number of list entries to be skipped."
+msgstr ""
+
+#: ConfigScreenInit.py:57
+msgid "PLAYBACK"
+msgstr ""
+
+#: ConfigScreenInit.py:58
+msgid "No resume below 10 seconds"
+msgstr ""
+
+#: ConfigScreenInit.py:58
+msgid ""
+"Select whether whether the resume dialog should be displayed for elapse "
+"times smaller than 10 seconds."
+msgstr ""
+
+#: ConfigScreenInit.py:59
+msgid "Resume video at last position"
+msgstr ""
+
+#: ConfigScreenInit.py:59
+msgid "Select whether video should be resumed at last stop position."
+msgstr ""
+
+#: ConfigScreenInit.py:60
+msgid "Video start at"
+msgstr ""
+
+#: ConfigScreenInit.py:60
+msgid "Select at which position video is started at."
+msgstr ""
+
+#: ConfigScreenInit.py:61
+msgid ""
+"Select whether to switch to TV channel when a time-shifted video reaches the "
+"end."
+msgstr ""
+
+#: ConfigScreenInit.py:62
+msgid "Automatic timers list cleaning"
+msgstr ""
+
+#: ConfigScreenInit.py:62
+msgid ""
+"Select whether covers should be downloaded automatically for recordings."
+msgstr ""
+
+#: ConfigScreenInit.py:63
+msgid "DISPLAY"
+msgstr ""
+
+#: ConfigScreenInit.py:64
+msgid "Show directories"
+msgstr ""
+
+#: ConfigScreenInit.py:64
+msgid "Select whether directories should be displayed."
+msgstr ""
+
+#: ConfigScreenInit.py:65
+msgid "Show directories within video list"
+msgstr ""
+
+#: ConfigScreenInit.py:65
+msgid "Select whether directories should be displayed within video list."
+msgstr ""
+
+#: ConfigScreenInit.py:66
+msgid "Show directories information"
+msgstr ""
+
+#: ConfigScreenInit.py:66
+msgid "Select which information should be displayed for directories."
+msgstr ""
+
+#: ConfigScreenInit.py:67
+msgid "SKIN"
+msgstr ""
+
+#: ConfigScreenInit.py:68
+msgid "Show mount points"
+msgstr ""
+
+#: ConfigScreenInit.py:68
+msgid "Select whether to show mount_points or not."
+msgstr ""
+
+#: ConfigScreenInit.py:69
+msgid "Date format"
+msgstr ""
+
+#: ConfigScreenInit.py:69
+msgid "Select the date format."
+msgstr ""
+
+#: ConfigScreenInit.py:70
+msgid "Path to recording picons"
+msgstr ""
+
+#: ConfigScreenInit.py:70
+msgid "Select the recording picon path."
+msgstr ""
+
+#: ConfigScreenInit.py:71
+msgid "Watching in progress percent"
+msgstr ""
+
+#: ConfigScreenInit.py:71
+msgid "Select percentage for videos that areconsidered being watched."
+msgstr ""
+
+#: ConfigScreenInit.py:72
+msgid "Finished watching percent"
+msgstr ""
+
+#: ConfigScreenInit.py:72
+msgid "Select percentage for videos that areconsidered finished."
+msgstr ""
+
+#: ConfigScreenInit.py:73
+msgid "Default color for video"
+msgstr ""
+
+#: ConfigScreenInit.py:73
+msgid "Select the color for video."
+msgstr ""
+
+#: ConfigScreenInit.py:74
+msgid "Default color for highlighted video"
+msgstr ""
+
+#: ConfigScreenInit.py:74
+msgid "Select the color for videos that are highlighted."
+msgstr ""
+
+#: ConfigScreenInit.py:75
+msgid "Default color for recording"
+msgstr ""
+
+#: ConfigScreenInit.py:75
+msgid "Select the color for recording."
+msgstr ""
+
+#: ConfigScreenInit.py:76
+msgid "Default color for highlighted recording"
+msgstr ""
+
+#: ConfigScreenInit.py:76
+msgid "Select the color for highlighted recording."
+msgstr ""
+
+#: ConfigScreenInit.py:77
+msgid "Default color for selected video"
+msgstr ""
+
+#: ConfigScreenInit.py:77
+msgid "Select the color for selected video."
+msgstr ""
+
+#: ConfigScreenInit.py:78
+msgid "Default color for highlighted selected video"
+msgstr ""
+
+#: ConfigScreenInit.py:78
+msgid "Select the color for selected and highlighted video."
+msgstr ""
+
+#: ConfigScreenInit.py:82
+msgid "VIDEO-COVER"
+msgstr ""
+
+#: ConfigScreenInit.py:83
+msgid "Show fallback cover"
+msgstr ""
+
+#: ConfigScreenInit.py:83
+msgid ""
+"Select whether a \"no cover available\" cover should be displayed when no "
+"cover is available."
+msgstr ""
+
+#: ConfigScreenInit.py:84
+msgid "Search cover language"
+msgstr ""
+
+#: ConfigScreenInit.py:84
+msgid "Select the preferred language for cover search."
+msgstr ""
+
+#: ConfigScreenInit.py:85
+msgid "Search cover size"
+msgstr ""
+
+#: ConfigScreenInit.py:85
+msgid "Select the size that should be used for cover download."
+msgstr ""
+
+#: ConfigScreenInit.py:86
+msgid "Search backdrop size"
+msgstr ""
+
+#: ConfigScreenInit.py:86
+msgid "Select the size for backdrop download."
+msgstr ""
+
+#: ConfigScreenInit.py:87
+msgid "Download replace existing cover"
+msgstr ""
+
+#: ConfigScreenInit.py:87
+msgid "Select whether existing covers should be replaced or not."
+msgstr ""
+
+#: ConfigScreenInit.py:88
+msgid "Download cover to flash"
+msgstr ""
+
+#: ConfigScreenInit.py:88
+msgid "Select whether covers should be stored in flash storage."
+msgstr ""
+
+#: ConfigScreenInit.py:89
+msgid "Download cover bookmark"
+msgstr ""
+
+#: ConfigScreenInit.py:89
+msgid "Select the mount point where the covers are to be stored."
+msgstr ""
+
+#: ConfigScreenInit.py:90
+msgid "Download cover automatically for recording"
+msgstr ""
+
+#: ConfigScreenInit.py:90
+msgid ""
+"Select whether a cover should be automatically downloaded when recording a "
+"movie."
+msgstr ""
+
+#: ConfigScreenInit.py:91
+msgid "TRASHCAN"
+msgstr ""
+
+#: ConfigScreenInit.py:92
+msgid "Enable trashcan"
+msgstr ""
+
+#: ConfigScreenInit.py:92
+msgid "Select whether the trashcan should be activated."
+msgstr ""
+
+#: ConfigScreenInit.py:93
+msgid "Show trashcan directory"
+msgstr ""
+
+#: ConfigScreenInit.py:93
+msgid "Select whether the trashcan should be displayed in the video list."
+msgstr ""
+
+#: ConfigScreenInit.py:94
+msgid "Show trashcan information"
+msgstr ""
+
+#: ConfigScreenInit.py:94
+msgid "Select the trashcan information to be shown."
+msgstr ""
+
+#: ConfigScreenInit.py:95
+msgid "Enable auto trashcan cleanup"
+msgstr ""
+
+#: ConfigScreenInit.py:95
+msgid "Select whether the trashcan should be cleaned automatically ."
+msgstr ""
+
+#: ConfigScreenInit.py:96
+msgid "File retention period in trashcan"
+msgstr ""
+
+#: ConfigScreenInit.py:96
+msgid ""
+"Select how many days the files should be kept in the trashcan before they "
+"are cleaned automatically."
+msgstr ""
+
+#: ConfigScreenInit.py:97
+msgid "ARCHIVE"
+msgstr ""
+
+#: ConfigScreenInit.py:98
+msgid "Enable"
+msgstr ""
+
+#: ConfigScreenInit.py:98
+msgid "Select whether archiving should be activated."
+msgstr ""
+
+#: ConfigScreenInit.py:99
+msgid "Source"
+msgstr ""
+
+#: ConfigScreenInit.py:99
+msgid "Select the source bookmark for archiving."
+msgstr ""
+
+#: ConfigScreenInit.py:100
+msgid "Target"
+msgstr ""
+
+#: ConfigScreenInit.py:100
+msgid "Select the target bookmark for archiving."
+msgstr ""
+
+#: ConfigScreenInit.py:101
+msgid "LANGUAGE"
+msgstr ""
+
+#: ConfigScreenInit.py:102
+msgid "Preferred EPG language"
+msgstr ""
+
+#: ConfigScreenInit.py:102
+msgid "Select the preferred EPG language."
+msgstr ""
+
+#: ConfigScreenInit.py:103
+msgid "Enable playback auto-subtitling"
+msgstr ""
+
+#: ConfigScreenInit.py:103
+msgid "Select whether playback auto-subtitling should be enabled."
+msgstr ""
+
+#: ConfigScreenInit.py:104
+msgid "Primary playback subtitle language"
+msgstr ""
+
+#: ConfigScreenInit.py:104
+msgid "Select the primary playback subtitle language."
+msgstr ""
+
+#: ConfigScreenInit.py:105
+msgid "Secondary playback subtitle language"
+msgstr ""
+
+#: ConfigScreenInit.py:105
+msgid "Select the secondary playback subtitle language."
+msgstr ""
+
+#: ConfigScreenInit.py:106
+msgid "Tertiary playback subtitle language"
+msgstr ""
+
+#: ConfigScreenInit.py:106
+msgid "Select the tertiary subtitle language."
+msgstr ""
+
+#: ConfigScreenInit.py:107
+msgid "Enable playback auto-language selection"
+msgstr ""
+
+#: ConfigScreenInit.py:107
+msgid "Select whether auto-language selection should be enabled for playback."
+msgstr ""
+
+#: ConfigScreenInit.py:108
+msgid "Enable playback AC3-track first"
+msgstr ""
+
+#: ConfigScreenInit.py:108
+msgid "Select whether select the AC3 audio track first."
+msgstr ""
+
+#: ConfigScreenInit.py:109
+msgid "Primary playback audio language"
+msgstr ""
+
+#: ConfigScreenInit.py:109
+msgid "Select the primary language for audio."
+msgstr ""
+
+#: ConfigScreenInit.py:110
+msgid "Secondary playback audio language"
+msgstr ""
+
+#: ConfigScreenInit.py:110
+msgid "Select the secondary language for audio."
+msgstr ""
+
+#: ConfigScreenInit.py:111
+msgid "Tertiary playback audio language"
+msgstr ""
+
+#: ConfigScreenInit.py:111
+msgid "Select the tertiary language for audio."
+msgstr ""
+
+#: ConfigScreenInit.py:112
+msgid "MOUNT MANAGER"
+msgstr ""
+
+#: ConfigScreenInit.py:113
+msgid "Enable mount manager"
+msgstr ""
+
+#: ConfigScreenInit.py:113
+msgid "Select whether mount manager should be enabled."
+msgstr ""
+
+#: ConfigScreenInit.py:114
+msgid "DEBUG"
+msgstr ""
+
+#: ConfigScreenInit.py:115
+msgid "Log level"
+msgstr ""
+
+#: ConfigScreenInit.py:115
+msgid "Select debug log level."
+msgstr ""
+
+#: ConfigScreenInit.py:116
+msgid "Log file path"
+msgstr ""
+
+#: ConfigScreenInit.py:116
+msgid "Select the path to be used for the debug log file."
+msgstr ""
+
+#: ConfigStylesScreenInit.py:77
+msgid "Style presets contain errors"
+msgstr ""
+
+#: ConfigStylesScreenInit.py:105
+msgid "PRESET"
+msgstr ""
+
+#: ConfigStylesScreenInit.py:145
+msgid "Select an option for"
+msgstr ""
+
+#: ConfigStylesScreenInit.py:145
+msgid "Press OK for previews"
+msgstr ""
+
+#: ConfigStylesSelection.py:49 ConfigStylesSelection.py:52
+#: ConfigStylesSelection.py:53 MovieCockpitActions.py:85
+#: MovieCockpitActions.py:106 MovieCockpitContextMenu.py:59 MovieInfoTMDB.py:91
+msgid "Exit"
+msgstr ""
+
+#: ConfigStylesSelection.py:50
+msgid "Next style"
+msgstr ""
+
+#: ConfigStylesSelection.py:51
+msgid "Previous style"
+msgstr ""
+
+#: ConfigStylesSelection.py:54 ConfigStylesSelection.py:71
+msgid "Selection"
+msgstr ""
+
+#: ConfigStylesSelection.py:68
+msgid "Style Selection"
+msgstr ""
+
+#: ConfigStylesSelection.py:72 MovieCockpitContextMenu.py:61 ConfigScreen.py:81
+#: FileProgress.py:45
+msgid "Cancel"
+msgstr ""
+
+#: FileCacheLoadProgress.py:37
+msgid "File cache reload"
+msgstr ""
+
+#: FileCacheLoadProgress.py:48 FileOpManagerProgress.py:108
+#: MovieCoverDownloadProgress.py:54 FileProgress.py:145
+msgid "Please wait"
+msgstr ""
+
+#: FileCacheLoadProgress.py:55 MovieCoverDownloadProgress.py:68
+msgid "Initializing"
+msgstr ""
+
+#: FileOpManagerProgress.py:40
+msgid "File operation(s)"
+msgstr ""
+
+#: FileOpManagerProgress.py:93
+msgid "Remaining files"
+msgstr ""
+
+#: FileOpManagerProgress.py:99
+msgid "Cancelling"
+msgstr ""
+
+#: FileOpManagerProgress.py:104 FileProgress.py:139 FileProgress.py:155
+msgid "Cancelled"
+msgstr ""
+
+#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+msgid "Deleting"
+msgstr ""
+
+#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+msgid "Moving"
+msgstr ""
+
+#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+msgid "Copying"
+msgstr ""
+
+#: FileOpManagerProgress.py:117 MovieCoverDownloadProgress.py:64
+#: FileProgress.py:123
+msgid "Done"
+msgstr ""
+
+#: FileOpManagerProgress.py:119
+msgid "No file operation in process"
+msgstr ""
+
+#: FileOpManagerTask.py:37
+msgid "File task"
+msgstr ""
+
+#: InfoBarSupport.py:61
+msgid "Jump to previous marked position"
+msgstr ""
+
+#: InfoBarSupport.py:62
+msgid "Jump to next marked position"
+msgstr ""
+
+#: InfoBarSupport.py:63
+msgid "Toggle cut mark at current position"
+msgstr ""
+
+#: InfoBarSupport.py:213
+msgid "Do you want to resume this playback?"
+msgstr ""
+
+#: InfoBarSupport.py:215
+msgid "Resume position at"
+msgstr ""
+
+#: MovieCockpit.py:199
+msgid "No EPG info available"
+msgstr ""
+
+#: MovieCockpit.py:223 MovieCockpitActions.py:138 MovieCockpitContextMenu.py:87
+#: ConfigScreen.py:314
+msgid "Bookmarks"
+msgstr ""
+
+#: MovieCockpit.py:268 MovieList.py:356
+msgid "trashcan"
+msgstr ""
+
+#: MovieCockpit.py:268
+msgid "Recordings"
+msgstr ""
+
+#: MovieCockpit.py:272 MovieCockpitActions.py:124
+msgid "Sort mode"
+msgstr ""
+
+#: MovieCockpit.py:322
+msgid "Video filex  does not exist"
+msgstr ""
+
+#: MovieCockpit.py:387
+msgid "Do you really want to reload the SQL cache?"
+msgstr ""
+
+#: MovieCockpit.py:412 ConfigScreen.py:315
+msgid "Select directory"
+msgstr ""
+
+#: MovieCockpit.py:446 MovieCockpitActions.py:98
+msgid "Stop recording(s)"
+msgstr ""
+
+#: MovieCockpit.py:496
+msgid "Permanently delete the selected video file(s) or dir(s)"
+msgstr ""
+
+#: MovieCockpit.py:534
+msgid "Move file(s)"
+msgstr ""
+
+#: MovieCockpit.py:543
+msgid "Copy file(s)"
+msgstr ""
+
+#: MovieCockpit.py:554
+msgid "is not mounted"
+msgstr ""
+
+#: MovieCockpit.py:571
+msgid "Can't move recordings"
+msgstr ""
+
+#: MovieCockpit.py:571
+msgid "Can't copy recordings"
+msgstr ""
+
+#: MovieCockpit.py:591
+msgid ""
+"Archive source and/or target directory does not exist, please configure "
+"directories in setup."
+msgstr ""
+
+#: MovieCockpit.py:605
+msgid "Permanently delete all files in trashcan?"
+msgstr ""
+
+#: MovieCockpit.py:651
+msgid "Not enough space in target directory for video file"
+msgstr ""
+
+#: MovieCockpitActions.py:80
+msgid "Color key red"
+msgstr ""
+
+#: MovieCockpitActions.py:81
+msgid "Color key green"
+msgstr ""
+
+#: MovieCockpitActions.py:82
+msgid "Color key yellow"
+msgstr ""
+
+#: MovieCockpitActions.py:83
+msgid "Color key blue"
+msgstr ""
+
+#: MovieCockpitActions.py:84
+msgid "Play"
+msgstr ""
+
+#: MovieCockpitActions.py:86
+msgid "Context menu"
+msgstr ""
+
+#: MovieCockpitActions.py:87
+msgid "Plugins menu"
+msgstr ""
+
+#: MovieCockpitActions.py:88
+msgid "EPG info"
+msgstr ""
+
+#: MovieCockpitActions.py:89
+msgid "TMDB info"
+msgstr ""
+
+#: MovieCockpitActions.py:90 MovieInfoTMDB.py:92
+msgid "Cursor page up"
+msgstr ""
+
+#: MovieCockpitActions.py:91 MovieInfoTMDB.py:93
+msgid "Cursor page down"
+msgstr ""
+
+#: MovieCockpitActions.py:92
+msgid "Cursor up"
+msgstr ""
+
+#: MovieCockpitActions.py:93
+msgid "Cursor down"
+msgstr ""
+
+#: MovieCockpitActions.py:94
+msgid "Bouquet up"
+msgstr ""
+
+#: MovieCockpitActions.py:95
+msgid "Bouquet down"
+msgstr ""
+
+#: MovieCockpitActions.py:96
+msgid "Selection on/off"
+msgstr ""
+
+#: MovieCockpitActions.py:97
+msgid "Selection off"
+msgstr ""
+
+#: MovieCockpitActions.py:99
+msgid "Color buttons next"
+msgstr ""
+
+#: MovieCockpitActions.py:100
+msgid "Color buttons previous"
+msgstr ""
+
+#: MovieCockpitActions.py:101 MovieCockpitActions.py:126
+#: MovieCockpitActions.py:132 MovieCockpitActions.py:155
+#: MovieCockpitActions.py:161 MovieCockpitContextMenu.py:72
+msgid "Home"
+msgstr ""
+
+#: MovieCockpitActions.py:102
+msgid "File operations progress"
+msgstr ""
+
+#: MovieCockpitActions.py:123 MovieCockpitActions.py:129
+#: MovieCockpitContextMenu.py:77
+msgid "Delete"
+msgstr ""
+
+#: MovieCockpitActions.py:125 MovieCockpitActions.py:157
+#: MovieCockpitContextMenu.py:78
+msgid "Move"
+msgstr ""
+
+#: MovieCockpitActions.py:130
+msgid "Sort order"
+msgstr ""
+
+#: MovieCockpitActions.py:131 MovieCockpitContextMenu.py:79
+msgid "Copy"
+msgstr ""
+
+#: MovieCockpitActions.py:135 MovieCockpitContextMenu.py:94
+msgid "Reload cache"
+msgstr ""
+
+#: MovieCockpitActions.py:136
+msgid "List type"
+msgstr ""
+
+#: MovieCockpitActions.py:137 MovieCockpitActions.py:150
+#: MovieCockpitContextMenu.py:93
+msgid "Archive"
+msgstr ""
+
+#: MovieCockpitActions.py:141
+msgid "Reset progress"
+msgstr ""
+
+#: MovieCockpitActions.py:142
+msgid "Date/Mount"
+msgstr ""
+
+#: MovieCockpitActions.py:143
+msgid "Timer list"
+msgstr ""
+
+#: MovieCockpitActions.py:144 MovieCockpitContextMenu.py:62 plugin.py:139
+msgid "Open setup"
+msgstr ""
+
+#: MovieCockpitActions.py:148 MovieCockpitContextMenu.py:82
+msgid "Empty trashcan"
+msgstr ""
+
+#: MovieCockpitActions.py:154
+msgid "Restore"
+msgstr ""
+
+#: MovieCockpitActions.py:159
+msgid "Trashcan"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:60 MovieCockpitContextMenu.py:69
+msgid "Select function"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:73
+msgid "Directory up"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:75
+msgid "Select all"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:83
+msgid "Open trashcan"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:85
+msgid "Remove cutlist marker"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:95 plugin.py:138 ConfigScreen.py:187
+msgid "Setup"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:96
+msgid "About"
+msgstr ""
+
+#: MovieCockpitContextMenu.py:98
+msgid "Select plugin"
+msgstr ""
+
+#: MovieCoverDownloadProgress.py:41
+msgid "Download covers"
+msgstr ""
+
+#: MovieCoverDownloadProgress.py:64 FileProgress.py:115
+msgid "of"
+msgstr ""
+
+#: MovieCoverDownloadProgress.py:64
+msgid "new covers"
+msgstr ""
+
+#: MovieInfoEPG.py:42 MovieList.py:448
+msgid "min"
+msgstr ""
+
+#: MovieInfoTMDB.py:70
+msgid "Runtime"
+msgstr ""
+
+#: MovieInfoTMDB.py:72
+msgid "Genre"
+msgstr ""
+
+#: MovieInfoTMDB.py:74
+msgid "Production Countries"
+msgstr ""
+
+#: MovieInfoTMDB.py:76
+msgid "Release Date"
+msgstr ""
+
+#: MovieInfoTMDB.py:78
+msgid "Vote"
+msgstr ""
+
+#: MovieInfoTMDB.py:94
+msgid "Select cover"
+msgstr ""
+
+#: MovieInfoTMDB.py:95 MovieInfoTMDB.py:104
+msgid "Save cover"
+msgstr ""
+
+#: MovieInfoTMDB.py:96 MovieInfoTMDB.py:106
+msgid "Get cover"
+msgstr ""
+
+#: MovieInfoTMDB.py:97 MovieInfoTMDB.py:105
+msgid "Get covers"
+msgstr ""
+
+#: MovieInfoTMDB.py:98 MovieInfoTMDB.py:103
+msgid "Delete cover"
+msgstr ""
+
+#: MovieInfoTMDB.py:111
+msgid "The Movie DB"
+msgstr ""
+
+#: MovieInfoTMDB.py:171 MovieInfoTMDB.py:214 MovieInfoTMDB.py:316
+msgid "Search results for"
+msgstr ""
+
+#: MovieInfoTMDB.py:192
+msgid "Minutes"
+msgstr ""
+
+#: MovieInfoTMDB.py:215
+msgid "No cover found"
+msgstr ""
+
+#: MovieInfoTMDB.py:228
+msgid "Cover/TMDB Info already exists"
+msgstr ""
+
+#: MovieInfoTMDB.py:228
+msgid "Do you want to replace the existing cover/TMDB info?"
+msgstr ""
+
+#: MovieInfoTMDB.py:256
+msgid "Cover/TMDB info saved successfully"
+msgstr ""
+
+#: MovieInfoTMDB.py:258
+msgid "Saving Cover/TMDB info failed"
+msgstr ""
+
+#: MovieInfoTMDB.py:281
+msgid "Cover/TMDB Info deleted successfully"
+msgstr ""
+
+#: MovieList.py:333
+msgid "COPYING"
+msgstr ""
+
+#: MovieList.py:335
+msgid "MOVING"
+msgstr ""
+
+#: MovieList.py:337
+msgid "DELETING"
+msgstr ""
+
+#: MovieList.py:352
+msgid "up"
+msgstr ""
+
+#: MovieList.py:358
+msgid "directory"
+msgstr ""
+
+#: MovieTMDB.py:97
+msgid "Videos"
+msgstr ""
+
+#: MovieTMDB.py:108
+msgid "TV Shows"
+msgstr ""
+
+#: Standby.py:26
+msgid "Really reboot into Recovery Mode?\n"
+msgstr ""
+
+#: Standby.py:29
+msgid "Really shutdown now?"
+msgstr ""
+
+#: Standby.py:33
+msgid "Really reboot now?"
+msgstr ""
+
+#: Standby.py:39
+msgid ""
+"You won't be able to leave Recovery Mode without physical access to the "
+"device!"
+msgstr ""
+
+#: Standby.py:43
+msgid "Really restart now?"
+msgstr ""
+
+#: Standby.py:64
+msgid "jobs are running in the background!"
+msgstr ""
+
+#: Standby.py:74
+msgid "Recording(s) are in progress or coming up in few seconds!"
+msgstr ""
+
+#: plugin.py:153
+msgid "Manage recordings"
+msgstr ""
+
+#: skin/MovieListTemplate.py:23
+msgid "List style: default"
+msgstr ""
+
+#: skin/MovieListTemplate.py:24
+msgid "List style: compact with description"
+msgstr ""
+
+#: skin/MovieListTemplate.py:25
+msgid "List style: compact"
+msgstr ""
+
+#: skin/MovieListTemplate.py:26
+msgid "List style: compact single line"
+msgstr ""
+
+#: skin/MovieListTemplate.py:27
+msgid "List style: minimal"
+msgstr ""
+
+#: About.py:30
+msgid "Plugin"
+msgstr ""
+
+#: About.py:31
+msgid "Version"
+msgstr ""
+
+#: About.py:32
+msgid "Copyright"
+msgstr ""
+
+#: About.py:33
+msgid "License"
+msgstr ""
+
+#: ConfigScreen.py:82
+msgid "Save"
+msgstr ""
+
+#: ConfigScreen.py:83
+msgid "Defaults"
+msgstr ""
+
+#: ConfigScreen.py:144
+msgid "Really close without saving settings?"
+msgstr ""
+
+#: ConfigScreen.py:193
+msgid "Loading default settings will overwrite all settings, really load them?"
+msgstr ""
+
+#: ConfigScreen.py:285
+msgid "Some changes require a GUI restart"
+msgstr ""
+
+#: ConfigScreen.py:285
+msgid "Restart GUI now?"
+msgstr ""
+
+#: ConfigScreen.py:331
+msgid "Path does not exist"
+msgstr ""
+
+#: FileProgress.py:46
+msgid "Close"
+msgstr ""
+
+#: FileProgress.py:48
+msgid "Hide"
+msgstr ""
+
+#: FileProgress.py:86
+msgid "Cancelling, please wait"
+msgstr ""
+
+#: FileProgress.py:115
+msgid "Processing"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Buttons"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Cover"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Default"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Design"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Horizontal Buttons"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Layouts"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Mini-TV"
+msgstr ""
+
+#: src/skin/styles.xml
+msgid "Vertical Buttons"
+msgstr ""

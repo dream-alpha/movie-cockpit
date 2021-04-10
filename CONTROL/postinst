@@ -1,0 +1,16 @@
+#!/bin/sh
+if [ -f /etc/enigma2/moviecockpit.db ]; then
+	mv /etc/enigma2/moviecockpit.db /etc/enigma2/moviecockpit.db.bak
+fi
+touch /etc/enigma2/.moviecockpit
+
+echo "***********************************"
+echo "*          MovieCockpit           *"
+echo "*               by                *"
+echo "*          dream-alpha            *"
+echo "***********************************"
+echo ""
+echo "MovieCockpit plugin installed successfully."
+echo "Please restart DreamOS now!"
+echo ""
+exit 0
