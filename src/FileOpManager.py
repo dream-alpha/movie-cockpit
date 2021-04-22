@@ -29,7 +29,7 @@ from RecordingUtils import isRecording
 from Components.Task import Job, job_manager
 from FileOpManagerTask import FileOpManagerTask
 from FileOp import FileOp, FILE_OP_MOVE, FILE_OP_COPY
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 
 instance = None
 

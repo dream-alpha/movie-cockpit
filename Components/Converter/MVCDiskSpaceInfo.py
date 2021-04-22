@@ -22,7 +22,7 @@
 from Poll import Poll
 from Components.Element import cached
 from Components.Converter.Converter import Converter
-from Plugins.Extensions.MovieCockpit.MountManager import MountManager
+from Plugins.Extensions.MovieCockpit.MovieCockpit import MovieCockpit
 
 
 class MVCDiskSpaceInfo(Poll, Converter):
@@ -45,6 +45,6 @@ class MVCDiskSpaceInfo(Poll, Converter):
 
 	@cached
 	def getText(self):
-		return MountManager.getInstance().getBookmarksSpaceInfo()
+		return MovieCockpit.getInstance().getBookmarksSpaceInfo()
 
 	text = property(getText)

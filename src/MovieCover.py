@@ -24,7 +24,7 @@ import os
 from Components.config import config
 from SkinUtils import getSkinPath
 from PixmapDisplay import PixmapDisplay
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 
 
 class MovieCover(PixmapDisplay):

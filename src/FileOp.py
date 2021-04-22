@@ -25,8 +25,8 @@ from pipes import quote
 from MovieCover import MovieCover
 from MovieTMDB import MovieTMDB
 from Shell import Shell
-from MountManager import MountManager
-from MountManagerUtils import getBookmarkSpaceInfo
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManagerUtils import getBookmarkSpaceInfo
 from FileCache import FileCache, FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileUtils import createDirectory
 

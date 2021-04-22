@@ -32,7 +32,7 @@ from FileUtils import readFile, deleteFile
 from DelayTimer import DelayTimer
 from UnicodeUtils import convertToUtf8
 from FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_SIZE, SQL_DB_NAME
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 from Tools.BoundFunction import boundFunction
 
 

@@ -55,7 +55,7 @@ from ConfigScreen import ConfigScreen
 from MovieCockpitActions import Actions
 from FileOpManager import FileOpManager
 from FileOpManagerProgress import FileOpManagerProgress
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 from SkinUtils import getSkinName
 
 
@@ -223,6 +223,7 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 
 	def openBookmarksCallback(self, path):
 		logger.debug("path: %s", path)
+		MountManager.getInstance().onMountsChange()
 		current_dir = self.movie_list.getCurrentDir()
 		mount_point = MountManager.getInstance().getMountPoint(current_dir)
 		if not mount_point:
@@ -658,3 +659,10 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		logger.debug("leave_moviecockpit: %s", leave_moviecockpit)
 		if leave_moviecockpit:
 			self.exit()
+
+### bookmark utils
+
+	def getBookmarksSpaceInfo(self):
+		bookmarks = config.plugins.moviecockpit.bookmarks.value
+		space_info = MountManager.getInstance().getBookmarksSpaceInfo(bookmarks)
+		return space_info

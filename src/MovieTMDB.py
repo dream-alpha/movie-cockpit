@@ -28,7 +28,7 @@ from __init__ import _
 from time import sleep
 from Components.config import config
 from FileUtils import readFile, writeFile, deleteFile
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 
 
 SELECTION_ID = 1	# tmdb movie id

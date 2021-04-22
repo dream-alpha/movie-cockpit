@@ -25,7 +25,7 @@ from __init__ import _
 from DelayTimer import DelayTimer
 from FileCache import FileCache
 from FileProgress import FileProgress
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 
 
 class FileCacheLoadProgress(FileProgress):

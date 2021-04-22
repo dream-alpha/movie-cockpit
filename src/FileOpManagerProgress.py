@@ -26,7 +26,7 @@ from enigma import eTimer
 from FileProgress import FileProgress
 from FileOp import FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY
 from FileOpManager import FileOpManager
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 
 ACTIVITY_TIMER_DELAY = 1000
 

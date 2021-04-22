@@ -41,8 +41,17 @@ import Standby
 from FileOpManager import FileOpManager
 from FileUtils import deleteFile, touchFile
 from ConfigInit import ConfigInit
-from MountManager import MountManager
-from MountManagerUtils import getBookmarkSpaceInfo
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManagerUtils import getBookmarkSpaceInfo
+
+
+def initBookmarks():
+	logger.info("...")
+	bookmarks = []
+	for video_dir in config.movielist.videodirs.value:
+		bookmarks.append(os.path.normpath(video_dir))
+	logger.debug("bookmarks: %s", bookmarks)
+	return bookmarks
 
 
 def openSettings(session, **__):
@@ -116,7 +125,9 @@ def autostart(reason, **kwargs):
 def Plugins(**__):
 	logger.info("+++ Plugins")
 	ConfigInit()
-	MountManager.getInstance()
+	if not config.plugins.moviecockpit.bookmarks.value:
+		config.plugins.moviecockpit.bookmarks.value = initBookmarks()
+	MountManager.getInstance().registerBookmarks(config.plugins.moviecockpit.bookmarks.value)
 	if os.path.exists("/etc/enigma2/.mvc"):
 		createLogFile()
 	config.misc.standbyCounter.addNotifier(enteringStandby, initial_call=False)

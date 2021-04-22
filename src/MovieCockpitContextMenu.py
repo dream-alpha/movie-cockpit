@@ -28,7 +28,7 @@ from Components.Sources.List import List
 from Components.PluginComponent import plugins
 from Screens.Screen import Screen
 from Components.Sources.StaticText import StaticText
-from MountManager import MountManager
+from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 from FileCache import FileCache
 from MovieList import MovieList
 from Screens.HelpMenu import HelpableScreen
