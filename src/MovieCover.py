@@ -34,7 +34,7 @@ class MovieCover(PixmapDisplay):
 
 	def getCoverPath(self, path):
 		logger.debug("path: %s", path)
-		bookmarks = MountManager.getInstance().getMountedBookmarks()
+		bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 		cover_path = os.path.splitext(path)[0] + ".jpg"
 		if config.plugins.moviecockpit.cover_flash.value:
 			for bookmark in bookmarks:

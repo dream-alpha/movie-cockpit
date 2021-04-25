@@ -191,7 +191,6 @@ class ConfigInit():
 		config.plugins.moviecockpit.list_skip_size            = ConfigSelectionNumber(3, 10, 1, default=5)
 		config.plugins.moviecockpit.debug_log_level           = ConfigSelection(default="INFO", choices=log_levels.keys())
 		config.plugins.moviecockpit.debug_log_path            = ConfigText(default="/media/hdd", fixed_size=False, visible_width=35)
-		config.plugins.moviecockpit.mount_manager_enabled     = ConfigYesNo(default=False)
 		config.plugins.moviecockpit.bookmarks                 = ConfigSet([], [])
 		config.plugins.moviecockpit.style                     = ConfigSubDict()
 		config.plugins.moviecockpit.preset                    = ConfigSubDict()

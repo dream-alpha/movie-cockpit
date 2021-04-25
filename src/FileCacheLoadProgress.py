@@ -22,6 +22,7 @@
 from Debug import logger
 import os
 from __init__ import _
+from Components.config import config
 from DelayTimer import DelayTimer
 from FileCache import FileCache
 from FileProgress import FileProgress
@@ -55,7 +56,7 @@ class FileCacheLoadProgress(FileProgress):
 		self.status = _("Initializing") + " ..."
 		self.updateProgress()
 		FileCache.getInstance().clearDatabase()
-		bookmarks = MountManager.getInstance().getMountedBookmarks()
+		bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 		self.execution_list = FileCache.getInstance().getDirsLoadList(bookmarks)
 		self.total_files = len(self.execution_list)
 		DelayTimer(10, self.nextFileOp)

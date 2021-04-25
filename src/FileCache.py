@@ -34,6 +34,7 @@ from UnicodeUtils import convertToUtf8
 from FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_SIZE, SQL_DB_NAME
 from Plugins.SystemPlugins.CockpitMountManager.MountManager import MountManager
 from Tools.BoundFunction import boundFunction
+from Components.config import config
 
 
 # file_type values
@@ -49,7 +50,7 @@ class FileCache(FileCacheSQL):
 	def __init__(self):
 		logger.info("...")
 		FileCacheSQL.__init__(self)
-		self.bookmarks = MountManager.getInstance().getMountedBookmarks()
+		self.bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 		if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
 			logger.info("loading database...")
 			deleteFile("/etc/enigma2/.moviecockpit")
@@ -156,7 +157,7 @@ class FileCache(FileCacheSQL):
 
 	def __resolveVirtualDirs(self, dirs):
 		logger.debug("dirs: %s", dirs)
-		self.bookmarks = MountManager.getInstance().getMountedBookmarks()
+		self.bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 		all_dirs = []
 		for adir in dirs:
 			if adir in self.bookmarks:
@@ -255,7 +256,7 @@ class FileCache(FileCacheSQL):
 
 	def loadDatabase(self, dirs=None, sync=False, callback=None):
 		if dirs is None:
-			self.bookmarks = MountManager.getInstance().getMountedBookmarks()
+			self.bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 			dirs = self.bookmarks
 		logger.info("dirs: %s", dirs)
 		if dirs:
@@ -468,7 +469,7 @@ class FileCache(FileCacheSQL):
 
 	def getHomeDir(self):
 		home = ""
-		self.bookmarks = MountManager.getInstance().getMountedBookmarks()
+		self.bookmarks = MountManager.getInstance().getMountedBookmarks(config.plugins.moviecockpit.bookmarks.value)
 		if self.bookmarks:
 			home = self.bookmarks[0]
 		logger.debug("home: %s", home)
