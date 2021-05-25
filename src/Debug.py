@@ -19,7 +19,7 @@
 # <http://www.gnu.org/licenses/>.
 
 
-from Version import ID, PLUGIN
+from Version import ID, PLUGIN, VERSION
 import logging
 import os
 import sys
@@ -42,9 +42,7 @@ def initLogging():
 		logger.addHandler(streamer)
 		logger.propagate = False
 		setLogLevel(getDebugLogLevel())
-		logger.info("**********")
-		logger.info("********** %s", PLUGIN)
-		logger.info("**********")
+		logger.info("********** %s %s **********", PLUGIN, VERSION)
 
 
 def setLogLevel(level):

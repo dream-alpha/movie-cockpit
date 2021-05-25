@@ -23,6 +23,7 @@ from Debug import logger
 import os
 import shutil
 from pipes import quote
+import glob
 
 
 def readFile(path):
@@ -48,6 +49,14 @@ def writeFile(path, data):
 def deleteFile(path):
 	try:
 		os.remove(path)
+	except Exception as e:
+		logger.error("exception: path: %s, exception: %s", path, e)
+
+
+def deleteFiles(path):
+	try:
+		for afile in glob.glob(path):
+			os.popen("rm " + quote(afile))
 	except Exception as e:
 		logger.error("exception: path: %s, exception: %s", path, e)
 

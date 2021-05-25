@@ -62,7 +62,7 @@ class Recording():
 
 	def recordingEvent(self, timer):
 		TIMER_STATES = ["StateWaiting", "StatePrepared", "StateRunning", "StateEnded"]
-		if timer and not timer.justplay:
+		if timer and not timer.justplay and not hasattr(timer, "timeshift"):
 			logger.debug(
 				"timer.Filename: %s, timer.state: %s",
 				timer.Filename, (TIMER_STATES[timer.state] if timer.state in range(0, len(TIMER_STATES)) else timer.state)

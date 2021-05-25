@@ -31,5 +31,4 @@ The installation script will also install a feed source that enables a convenien
 
 ## Links
 - Support thread: https://dreambox.de/board/index.php?thread/23864-moviecockpit/
-- Doxygen API documentation: http://moviecockpit.000webhostapp.com/index.html
 - Package feed: https://gemfury.com/dream-alpha

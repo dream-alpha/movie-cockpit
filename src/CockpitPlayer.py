@@ -92,9 +92,7 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 		self.allowPiPSwap = False
 		self.realSeekLength = None
 		self.servicelist = InfoBar.instance.servicelist
-		self.last_service = self.session.nav.getCurrentlyPlayingServiceReference()
-		if not self.last_service:
-			self.last_service = InfoBar.instance.servicelist.servicelist.getCurrent()
+		self.last_service = None
 
 		self.onShown.append(self.__onShow)
 		self.onClose.append(self.__onClose)
@@ -108,6 +106,7 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 		self.evEOF()  # begin playback
 
 	def __onClose(self):
+		logger.info("...")
 		if self.last_service:
 			self.zapToService(self.last_service)
 
@@ -283,7 +282,7 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 
 		if not reopen:
 			logger.debug("closed due to EOF")
-			if config.plugins.moviecockpit.record_eof_zap.value == "1":
+			if int(config.plugins.moviecockpit.record_eof_zap.value) == 1:
 				AddPopup(
 					_("Zap to live TV of recording"),
 					MessageBox.TYPE_INFO,
@@ -304,7 +303,7 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 			logger.debug("cut_list before reload: %s", self.cut_list)
 			cut_list = reloadCutList(path)
 			logger.info("cut_list after reload: %s", cut_list)
-		self.close(reopen)
+		self.close(reopen, self.last_service)
 
 	### functions for InfoBarGenerics.py
 	# InfoBarShowMovies
@@ -315,19 +314,16 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 		logger.info("playing: %s, self.execing: %s", playing, self.execing)
 		self.is_closing = True
 
-		if not self.execing:
-			return
-
-		timer = self.service and isRecording(self.service.getPath())
-		if timer:
-			if int(config.plugins.moviecockpit.record_eof_zap.value) < 2:
-				self.last_service = timer.service_ref.ref
-				logger.info("self.last_service: %s", self.last_service.toString() if self.last_service else None)
-				self.leavePlayer(reopen=False)
-
-		else:
-			if self.service.type != SID_DVB:
-				self.updateCutList(self.service)
+		if self.execing:
+			timer = self.service and isRecording(self.service.getPath())
+			if timer:
+				if int(config.plugins.moviecockpit.record_eof_zap.value) < 2:
+					self.last_service = timer.service_ref.ref
+					logger.info("self.last_service: %s", self.last_service.toString() if self.last_service else None)
+					self.leavePlayer(reopen=False)
+			else:
+				if self.service.type != SID_DVB:
+					self.updateCutList(self.service)
 
 	def updateCutList(self, service):
 		logger.info("...")
