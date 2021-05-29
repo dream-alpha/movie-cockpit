@@ -168,7 +168,6 @@ class ConfigInit():
 		config.plugins.moviecockpit.movie_ignore_first_marks  = ConfigYesNo(default=True)
 		config.plugins.moviecockpit.movie_resume_at_last_pos  = ConfigYesNo(default=True)
 		config.plugins.moviecockpit.movie_start_position      = ConfigSelection(default="event_start", choices=[("beginning", _("beginning")), ("first_mark", _("first mark")), ("event_start", _("event start"))])
-		config.plugins.moviecockpit.record_eof_zap            = ConfigSelection(default='1', choices=[('0', _("yes, without Message")), ('1', _("yes, with Message")), ('2', _("no"))])
 		config.plugins.moviecockpit.trashcan_enable           = ConfigYesNo(default=False)
 		config.plugins.moviecockpit.trashcan_show             = ConfigYesNo(default=True)
 		config.plugins.moviecockpit.trashcan_info             = ConfigSelection(default="C", choices=choices_dir_info)

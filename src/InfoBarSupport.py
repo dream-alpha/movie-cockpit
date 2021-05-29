@@ -172,13 +172,6 @@ class InfoBarSupport(
 
 	### Override from InfoBarGenerics.py
 
-	def zapToService(self, service):
-		logger.info("service: %s", service.toString() if service else None)
-		if service is not None:
-			self.servicelist.setCurrentSelection(service) #select the service in servicelist
-			self.servicelist.zap()
-			self.session.nav.playService(service)
-
 	# InfoBarCueSheetSupport
 
 	def getCutList(self):

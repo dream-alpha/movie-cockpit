@@ -146,7 +146,7 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		logger.info("self.return_path: %s", self.return_path)
 		if self.enable_mini_tv:
 			self.pigWorkaround()
-		self.session.nav.playService(self.last_service)
+			self.session.nav.playService(self.last_service)
 		self.hide()
 
 	def pigWorkaround(self):
@@ -329,15 +329,9 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 
 	### player
 
-	def playerCallback(self, reload_moviecockpit, last_service):
-		logger.info("reload_moviecockpit: %s, last_service:: %s", reload_moviecockpit, last_service.toString() if last_service else None)
-		if last_service:
-			self.last_service = last_service
-		if not reload_moviecockpit:
-			self.exit(reload_moviecockpit)
-		else:
-			logger.info("return_path: %s", self.return_path)
-			self.movie_list.loadList(self.movie_list.getCurrentDir(), self.return_path)
+	def playerCallback(self):
+		logger.info("return_path: %s", self.return_path)
+		self.movie_list.loadList(self.movie_list.getCurrentDir(), self.return_path)
 
 	def openPlayer(self, path):
 		logger.info("path: %s", path)
