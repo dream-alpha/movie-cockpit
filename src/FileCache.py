@@ -49,14 +49,17 @@ class FileCache(FileCacheSQL):
 
 	def __init__(self):
 		logger.info("...")
+		self.database_is_loaded = False
+		self.callback = None
 		FileCacheSQL.__init__(self)
 		self.bookmarks = MountCockpit.getInstance().getMountedBookmarks(ID)
 		if not os.path.exists(SQL_DB_NAME) or os.path.exists("/etc/enigma2/.moviecockpit"):
 			logger.info("loading database...")
 			deleteFile("/etc/enigma2/.moviecockpit")
-			MountCockpit.getInstance().onInitComplete(boundFunction(self.loadDatabase, None, True))
+			MountCockpit.getInstance().onInitComplete(boundFunction(self.loadDatabase, None, False))
 		else:
 			logger.info("database is already loaded.")
+			self.database_is_loaded = True
 
 	@staticmethod
 	def getInstance():
@@ -65,7 +68,16 @@ class FileCache(FileCacheSQL):
 			instance = FileCache()
 		return instance
 
-	### cache functions
+	def onDatabaseIsLoaded(self, callback):
+		logger.info("...")
+		if self.database_is_loaded:
+			logger.debug("calling callback")
+			callback()
+		else:
+			logger.debug("waiting for database_is_loaded...")
+			self.callback = callback
+
+### cache functions
 
 	def add(self, file_data):
 		self.sqlInsert(file_data)
@@ -254,7 +266,7 @@ class FileCache(FileCacheSQL):
 		logger.debug("...")
 		self.sqlClearTable()
 
-	def loadDatabase(self, dirs=None, sync=False, callback=None):
+	def loadDatabase(self, dirs=None, sync=False):
 		if dirs is None:
 			self.bookmarks = MountCockpit.getInstance().getMountedBookmarks(ID)
 			dirs = self.bookmarks
@@ -266,18 +278,20 @@ class FileCache(FileCacheSQL):
 				for path, file_type in self.load_list:
 					self.loadDatabaseFile(path, file_type)
 			else:
-				DelayTimer(10, self.nextFileOp, callback)
+				DelayTimer(10, self.nextFileOp)
 
-	def nextFileOp(self, callback):
+	def nextFileOp(self):
 		logger.debug("...")
 		if self.load_list:
 			path, file_type = self.load_list.pop(0)
 			self.loadDatabaseFile(path, file_type)
-			DelayTimer(10, self.nextFileOp, callback)
+			DelayTimer(10, self.nextFileOp)
 		else:
 			logger.debug("done.")
-			if callback:
-				callback()
+			self.database_is_loaded = True
+			if self.callback:
+				self.callback()
+				self.callback = None
 
 	### database load file/dir functions
 

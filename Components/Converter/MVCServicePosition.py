@@ -32,38 +32,27 @@ class MVCServicePosition(ServicePosition):
 	@cached
 	def getCutlist(self):
 		cutlist = []
-		try:
-			service = self.source.service
-			if service is not None:
-				cut = service and service.cutList()
-				if cut:
-					cutlist = cut.getCutList()
-		except Exception:
-			cutlist = ServicePosition.getCutlist(self)
+		service = self.source.service
+		if service is not None:
+			cut = service.cutList()
+			if cut:
+				cutlist = cut.getCutList()
 		return cutlist
 
 	cutlist = property(getCutlist)
 
 	@cached
 	def getLength(self):
-		length = 0
-		try:
-			player = self.source.player
-			length = player.getLength()
-		except Exception:
-			length = ServicePosition.getLength(self)
+		player = self.source.player
+		length = player.getLength()
 		return length
 
 	length = property(getLength)
 
 	@cached
 	def getPosition(self):
-		position = 0
-		try:
-			player = self.source.player
-			position = player.getPosition()
-		except Exception:
-			position = ServicePosition.getPosition(self)
+		player = self.source.player
+		position = player.getPosition()
 		return position
 
 	position = property(getPosition)
@@ -83,25 +72,29 @@ class MVCServicePosition(ServicePosition):
 					if not self.showNoSeconds:
 						text += ":%02d" % t.tm_sec
 			else:
-				sign_format = "%+d"
 				if self.type == self.TYPE_LENGTH:
 					pos = self.length
-					sign_format = "%d"
 				elif self.type == self.TYPE_POSITION:
 					pos = self.position
 				elif self.type == self.TYPE_REMAINING:
 					pos = self.length - self.position
 
 				pos = -pos if self.negate else pos
-				milliseconds = (abs(pos) % 90000) / 90
+				if self.type == self.length:
+					sign = ""
+				else:
+					sign = "-" if pos < 0 else "+"
+
+				pos = abs(pos)
+				milliseconds = (pos % 90000) / 90
 				pos /= 90000
 				if self.showHours:
-					text += sign_format % (pos / 3600)  # hours
-					text += "%02d" % (abs(pos) % 3600 / 60)  # minutes
+					text += sign + "%d" % (pos / 3600)  # hours
+					text += ":%02d" % (pos % 3600 / 60)  # minutes
 				else:
-					text += sign_format % (pos / 60)  # minutes
+					text += sign + "%d" % (pos / 60)  # minutes
 				if not self.showNoSeconds:
-					text += ":%02d" % (abs(pos) % 60)  # seconds
+					text += ":%02d" % (pos % 60)  # seconds
 					if self.detailed:
 						text += ":%03d" % milliseconds  # milliseconds
 		return text

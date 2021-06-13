@@ -4,7 +4,7 @@ msgstr ""
 "#-#-#-#-#  de.po  #-#-#-#-#\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-27 11:26+0200\n"
+"POT-Creation-Date: 2021-06-09 13:55+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: dream-alpha\n"
 "Language-Team: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Loco-Source-Locale: en-US\n"
 "X-Loco-Project-Id: 47158\n"
 "X-Loco-Api-Version: 1.0.19 20180501-1\n"
@@ -36,20 +36,20 @@ msgstr ""
 "X-Poedit-Basepath: ../src\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: CockpitPlayer.py:80 CockpitPlayer.py:81
+#: CockpitPlayer.py:67 CockpitPlayer.py:68
 msgid "Stop playback"
 msgstr ""
 
-#: CockpitPlayer.py:82
+#: CockpitPlayer.py:69
 msgid "Skip forward"
 msgstr ""
 
-#: CockpitPlayer.py:83
+#: CockpitPlayer.py:70
 msgid "Skip backward"
 msgstr ""
 
-#: CockpitPlayer.py:288 ConfigScreenInit.py:61
-msgid "Zap to live TV of recording"
+#: CockpitPlayer.py:71
+msgid "EPG Info"
 msgstr ""
 
 #: ConfigInit.py:42
@@ -220,18 +220,6 @@ msgstr ""
 msgid "event start"
 msgstr ""
 
-#: ConfigInit.py:171
-msgid "yes, without Message"
-msgstr ""
-
-#: ConfigInit.py:171
-msgid "yes, with Message"
-msgstr ""
-
-#: ConfigInit.py:171
-msgid "no"
-msgstr ""
-
 #: ConfigScreenInit.py:48
 msgid "GENERAL"
 msgstr ""
@@ -329,387 +317,381 @@ msgid "Select at which position video is started at."
 msgstr ""
 
 #: ConfigScreenInit.py:61
-msgid ""
-"Select whether to switch to TV channel when a time-shifted video reaches the "
-"end."
+msgid "Automatic cleanup of timers list"
 msgstr ""
 
-#: ConfigScreenInit.py:62
-msgid "Automatic timers list cleaning"
-msgstr ""
-
-#: ConfigScreenInit.py:62
+#: ConfigScreenInit.py:61
 msgid ""
 "Select whether covers should be downloaded automatically for recordings."
 msgstr ""
 
-#: ConfigScreenInit.py:63
+#: ConfigScreenInit.py:62
 msgid "DISPLAY"
 msgstr ""
 
-#: ConfigScreenInit.py:64
+#: ConfigScreenInit.py:63
 msgid "Show directories"
 msgstr ""
 
-#: ConfigScreenInit.py:64
+#: ConfigScreenInit.py:63
 msgid "Select whether directories should be displayed."
 msgstr ""
 
-#: ConfigScreenInit.py:65
+#: ConfigScreenInit.py:64
 msgid "Show directories within video list"
 msgstr ""
 
-#: ConfigScreenInit.py:65
+#: ConfigScreenInit.py:64
 msgid "Select whether directories should be displayed within video list."
 msgstr ""
 
-#: ConfigScreenInit.py:66
+#: ConfigScreenInit.py:65
 msgid "Show directories information"
 msgstr ""
 
-#: ConfigScreenInit.py:66
+#: ConfigScreenInit.py:65
 msgid "Select which information should be displayed for directories."
 msgstr ""
 
-#: ConfigScreenInit.py:67
+#: ConfigScreenInit.py:66
 msgid "SKIN"
 msgstr ""
 
-#: ConfigScreenInit.py:68
+#: ConfigScreenInit.py:67
 msgid "Show mount points"
 msgstr ""
 
-#: ConfigScreenInit.py:68
+#: ConfigScreenInit.py:67
 msgid "Select whether to show mount_points or not."
 msgstr ""
 
-#: ConfigScreenInit.py:69
+#: ConfigScreenInit.py:68
 msgid "Date format"
 msgstr ""
 
-#: ConfigScreenInit.py:69
+#: ConfigScreenInit.py:68
 msgid "Select the date format."
 msgstr ""
 
-#: ConfigScreenInit.py:70
+#: ConfigScreenInit.py:69
 msgid "Path to recording picons"
 msgstr ""
 
-#: ConfigScreenInit.py:70
+#: ConfigScreenInit.py:69
 msgid "Select the recording picon path."
 msgstr ""
 
-#: ConfigScreenInit.py:71
+#: ConfigScreenInit.py:70
 msgid "Watching in progress percent"
 msgstr ""
 
-#: ConfigScreenInit.py:71
+#: ConfigScreenInit.py:70
 msgid "Select percentage for videos that areconsidered being watched."
 msgstr ""
 
-#: ConfigScreenInit.py:72
+#: ConfigScreenInit.py:71
 msgid "Finished watching percent"
 msgstr ""
 
-#: ConfigScreenInit.py:72
+#: ConfigScreenInit.py:71
 msgid "Select percentage for videos that areconsidered finished."
 msgstr ""
 
-#: ConfigScreenInit.py:73
+#: ConfigScreenInit.py:72
 msgid "Default color for video"
 msgstr ""
 
-#: ConfigScreenInit.py:73
+#: ConfigScreenInit.py:72
 msgid "Select the color for video."
 msgstr ""
 
-#: ConfigScreenInit.py:74
+#: ConfigScreenInit.py:73
 msgid "Default color for highlighted video"
 msgstr ""
 
-#: ConfigScreenInit.py:74
+#: ConfigScreenInit.py:73
 msgid "Select the color for videos that are highlighted."
 msgstr ""
 
-#: ConfigScreenInit.py:75
+#: ConfigScreenInit.py:74
 msgid "Default color for recording"
 msgstr ""
 
-#: ConfigScreenInit.py:75
+#: ConfigScreenInit.py:74
 msgid "Select the color for recording."
 msgstr ""
 
-#: ConfigScreenInit.py:76
+#: ConfigScreenInit.py:75
 msgid "Default color for highlighted recording"
 msgstr ""
 
-#: ConfigScreenInit.py:76
+#: ConfigScreenInit.py:75
 msgid "Select the color for highlighted recording."
 msgstr ""
 
-#: ConfigScreenInit.py:77
+#: ConfigScreenInit.py:76
 msgid "Default color for selected video"
 msgstr ""
 
-#: ConfigScreenInit.py:77
+#: ConfigScreenInit.py:76
 msgid "Select the color for selected video."
 msgstr ""
 
-#: ConfigScreenInit.py:78
+#: ConfigScreenInit.py:77
 msgid "Default color for highlighted selected video"
 msgstr ""
 
-#: ConfigScreenInit.py:78
+#: ConfigScreenInit.py:77
 msgid "Select the color for selected and highlighted video."
 msgstr ""
 
-#: ConfigScreenInit.py:82
+#: ConfigScreenInit.py:81
 msgid "VIDEO-COVER"
 msgstr ""
 
-#: ConfigScreenInit.py:83
+#: ConfigScreenInit.py:82
 msgid "Show fallback cover"
 msgstr ""
 
-#: ConfigScreenInit.py:83
+#: ConfigScreenInit.py:82
 msgid ""
 "Select whether a \"no cover available\" cover should be displayed when no "
 "cover is available."
 msgstr ""
 
-#: ConfigScreenInit.py:84
+#: ConfigScreenInit.py:83
 msgid "Search cover language"
 msgstr ""
 
-#: ConfigScreenInit.py:84
+#: ConfigScreenInit.py:83
 msgid "Select the preferred language for cover search."
 msgstr ""
 
-#: ConfigScreenInit.py:85
+#: ConfigScreenInit.py:84
 msgid "Search cover size"
 msgstr ""
 
-#: ConfigScreenInit.py:85
+#: ConfigScreenInit.py:84
 msgid "Select the size that should be used for cover download."
 msgstr ""
 
-#: ConfigScreenInit.py:86
+#: ConfigScreenInit.py:85
 msgid "Search backdrop size"
 msgstr ""
 
-#: ConfigScreenInit.py:86
+#: ConfigScreenInit.py:85
 msgid "Select the size for backdrop download."
 msgstr ""
 
-#: ConfigScreenInit.py:87
+#: ConfigScreenInit.py:86
 msgid "Download replace existing cover"
 msgstr ""
 
-#: ConfigScreenInit.py:87
+#: ConfigScreenInit.py:86
 msgid "Select whether existing covers should be replaced or not."
 msgstr ""
 
-#: ConfigScreenInit.py:88
+#: ConfigScreenInit.py:87
 msgid "Download cover to flash"
 msgstr ""
 
-#: ConfigScreenInit.py:88
+#: ConfigScreenInit.py:87
 msgid "Select whether covers should be stored in flash storage."
 msgstr ""
 
-#: ConfigScreenInit.py:89
+#: ConfigScreenInit.py:88
 msgid "Download cover bookmark"
 msgstr ""
 
-#: ConfigScreenInit.py:89
+#: ConfigScreenInit.py:88
 msgid "Select the mount point where the covers are to be stored."
 msgstr ""
 
-#: ConfigScreenInit.py:90
+#: ConfigScreenInit.py:89
 msgid "Download cover automatically for recording"
 msgstr ""
 
-#: ConfigScreenInit.py:90
+#: ConfigScreenInit.py:89
 msgid ""
 "Select whether a cover should be automatically downloaded when recording a "
 "movie."
 msgstr ""
 
-#: ConfigScreenInit.py:91
+#: ConfigScreenInit.py:90
 msgid "TRASHCAN"
 msgstr ""
 
-#: ConfigScreenInit.py:92
+#: ConfigScreenInit.py:91
 msgid "Enable trashcan"
 msgstr ""
 
-#: ConfigScreenInit.py:92
+#: ConfigScreenInit.py:91
 msgid "Select whether the trashcan should be activated."
 msgstr ""
 
-#: ConfigScreenInit.py:93
+#: ConfigScreenInit.py:92
 msgid "Show trashcan directory"
 msgstr ""
 
-#: ConfigScreenInit.py:93
+#: ConfigScreenInit.py:92
 msgid "Select whether the trashcan should be displayed in the video list."
 msgstr ""
 
-#: ConfigScreenInit.py:94
+#: ConfigScreenInit.py:93
 msgid "Show trashcan information"
 msgstr ""
 
-#: ConfigScreenInit.py:94
+#: ConfigScreenInit.py:93
 msgid "Select the trashcan information to be shown."
 msgstr ""
 
-#: ConfigScreenInit.py:95
+#: ConfigScreenInit.py:94
 msgid "Enable auto trashcan cleanup"
 msgstr ""
 
-#: ConfigScreenInit.py:95
+#: ConfigScreenInit.py:94
 msgid "Select whether the trashcan should be cleaned automatically ."
 msgstr ""
 
-#: ConfigScreenInit.py:96
+#: ConfigScreenInit.py:95
 msgid "File retention period in trashcan"
 msgstr ""
 
-#: ConfigScreenInit.py:96
+#: ConfigScreenInit.py:95
 msgid ""
 "Select how many days the files should be kept in the trashcan before they "
 "are cleaned automatically."
 msgstr ""
 
-#: ConfigScreenInit.py:97
+#: ConfigScreenInit.py:96
 msgid "ARCHIVE"
 msgstr ""
 
-#: ConfigScreenInit.py:98
+#: ConfigScreenInit.py:97
 msgid "Enable"
 msgstr ""
 
-#: ConfigScreenInit.py:98
+#: ConfigScreenInit.py:97
 msgid "Select whether archiving should be activated."
 msgstr ""
 
-#: ConfigScreenInit.py:99
+#: ConfigScreenInit.py:98
 msgid "Source"
 msgstr ""
 
-#: ConfigScreenInit.py:99
+#: ConfigScreenInit.py:98
 msgid "Select the source bookmark for archiving."
 msgstr ""
 
-#: ConfigScreenInit.py:100
+#: ConfigScreenInit.py:99
 msgid "Target"
 msgstr ""
 
-#: ConfigScreenInit.py:100
+#: ConfigScreenInit.py:99
 msgid "Select the target bookmark for archiving."
 msgstr ""
 
-#: ConfigScreenInit.py:101
+#: ConfigScreenInit.py:100
 msgid "LANGUAGE"
 msgstr ""
 
-#: ConfigScreenInit.py:102
+#: ConfigScreenInit.py:101
 msgid "Preferred EPG language"
 msgstr ""
 
-#: ConfigScreenInit.py:102
+#: ConfigScreenInit.py:101
 msgid "Select the preferred EPG language."
 msgstr ""
 
-#: ConfigScreenInit.py:103
+#: ConfigScreenInit.py:102
 msgid "Enable playback auto-subtitling"
 msgstr ""
 
-#: ConfigScreenInit.py:103
+#: ConfigScreenInit.py:102
 msgid "Select whether playback auto-subtitling should be enabled."
 msgstr ""
 
-#: ConfigScreenInit.py:104
+#: ConfigScreenInit.py:103
 msgid "Primary playback subtitle language"
 msgstr ""
 
-#: ConfigScreenInit.py:104
+#: ConfigScreenInit.py:103
 msgid "Select the primary playback subtitle language."
 msgstr ""
 
-#: ConfigScreenInit.py:105
+#: ConfigScreenInit.py:104
 msgid "Secondary playback subtitle language"
 msgstr ""
 
-#: ConfigScreenInit.py:105
+#: ConfigScreenInit.py:104
 msgid "Select the secondary playback subtitle language."
 msgstr ""
 
-#: ConfigScreenInit.py:106
+#: ConfigScreenInit.py:105
 msgid "Tertiary playback subtitle language"
 msgstr ""
 
-#: ConfigScreenInit.py:106
+#: ConfigScreenInit.py:105
 msgid "Select the tertiary subtitle language."
 msgstr ""
 
-#: ConfigScreenInit.py:107
+#: ConfigScreenInit.py:106
 msgid "Enable playback auto-language selection"
 msgstr ""
 
-#: ConfigScreenInit.py:107
+#: ConfigScreenInit.py:106
 msgid "Select whether auto-language selection should be enabled for playback."
 msgstr ""
 
-#: ConfigScreenInit.py:108
+#: ConfigScreenInit.py:107
 msgid "Enable playback AC3-track first"
 msgstr ""
 
-#: ConfigScreenInit.py:108
+#: ConfigScreenInit.py:107
 msgid "Select whether select the AC3 audio track first."
 msgstr ""
 
-#: ConfigScreenInit.py:109
+#: ConfigScreenInit.py:108
 msgid "Primary playback audio language"
 msgstr ""
 
-#: ConfigScreenInit.py:109
+#: ConfigScreenInit.py:108
 msgid "Select the primary language for audio."
 msgstr ""
 
-#: ConfigScreenInit.py:110
+#: ConfigScreenInit.py:109
 msgid "Secondary playback audio language"
 msgstr ""
 
-#: ConfigScreenInit.py:110
+#: ConfigScreenInit.py:109
 msgid "Select the secondary language for audio."
 msgstr ""
 
-#: ConfigScreenInit.py:111
+#: ConfigScreenInit.py:110
 msgid "Tertiary playback audio language"
 msgstr ""
 
-#: ConfigScreenInit.py:111
+#: ConfigScreenInit.py:110
 msgid "Select the tertiary language for audio."
 msgstr ""
 
-#: ConfigScreenInit.py:112
+#: ConfigScreenInit.py:111
 msgid "DEBUG"
 msgstr ""
 
-#: ConfigScreenInit.py:113
+#: ConfigScreenInit.py:112
 msgid "Log level"
 msgstr ""
 
-#: ConfigScreenInit.py:113
+#: ConfigScreenInit.py:112
 msgid "Select debug log level."
 msgstr ""
 
-#: ConfigScreenInit.py:114
+#: ConfigScreenInit.py:113
 msgid "Log file path"
 msgstr ""
 
-#: ConfigScreenInit.py:114
+#: ConfigScreenInit.py:113
 msgid "Select the path to be used for the debug log file."
 msgstr ""
 
@@ -760,7 +742,7 @@ msgstr ""
 msgid "File cache reload"
 msgstr ""
 
-#: FileCacheLoadProgress.py:49 FileOpManagerProgress.py:108
+#: FileCacheLoadProgress.py:49 FileOpManagerProgress.py:105
 #: MovieCoverDownloadProgress.py:54 FileProgress.py:145
 msgid "Please wait"
 msgstr ""
@@ -769,40 +751,40 @@ msgstr ""
 msgid "Initializing"
 msgstr ""
 
-#: FileOpManagerProgress.py:40
+#: FileOpManagerProgress.py:39
 msgid "File operation(s)"
 msgstr ""
 
-#: FileOpManagerProgress.py:93
+#: FileOpManagerProgress.py:90
 msgid "Remaining files"
 msgstr ""
 
-#: FileOpManagerProgress.py:99
+#: FileOpManagerProgress.py:96
 msgid "Cancelling"
 msgstr ""
 
-#: FileOpManagerProgress.py:104 FileProgress.py:139 FileProgress.py:155
+#: FileOpManagerProgress.py:101 FileProgress.py:139 FileProgress.py:155
 msgid "Cancelled"
 msgstr ""
 
-#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+#: FileOpManagerProgress.py:106 FileOpManagerTask.py:30
 msgid "Deleting"
 msgstr ""
 
-#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+#: FileOpManagerProgress.py:106 FileOpManagerTask.py:30
 msgid "Moving"
 msgstr ""
 
-#: FileOpManagerProgress.py:109 FileOpManagerTask.py:30
+#: FileOpManagerProgress.py:106 FileOpManagerTask.py:30
 msgid "Copying"
 msgstr ""
 
-#: FileOpManagerProgress.py:117 MovieCoverDownloadProgress.py:64
+#: FileOpManagerProgress.py:114 MovieCoverDownloadProgress.py:64
 #: FileProgress.py:123
 msgid "Done"
 msgstr ""
 
-#: FileOpManagerProgress.py:119
+#: FileOpManagerProgress.py:116
 msgid "No file operation in process"
 msgstr ""
 
@@ -810,98 +792,98 @@ msgstr ""
 msgid "File task"
 msgstr ""
 
-#: InfoBarSupport.py:61
+#: InfoBarSupport.py:71
 msgid "Jump to previous marked position"
 msgstr ""
 
-#: InfoBarSupport.py:62
+#: InfoBarSupport.py:72
 msgid "Jump to next marked position"
 msgstr ""
 
-#: InfoBarSupport.py:63
+#: InfoBarSupport.py:73
 msgid "Toggle cut mark at current position"
 msgstr ""
 
-#: InfoBarSupport.py:213
+#: InfoBarSupport.py:227
 msgid "Do you want to resume this playback?"
 msgstr ""
 
-#: InfoBarSupport.py:215
+#: InfoBarSupport.py:229
 msgid "Resume position at"
 msgstr ""
 
-#: MovieCockpit.py:197
+#: MovieCockpit.py:211
 msgid "No EPG info available"
 msgstr ""
 
-#: MovieCockpit.py:221 MovieCockpitActions.py:138 MovieCockpitContextMenu.py:87
+#: MovieCockpit.py:235 MovieCockpitActions.py:138 MovieCockpitContextMenu.py:87
 #: ConfigScreen.py:314
 msgid "Bookmarks"
 msgstr ""
 
-#: MovieCockpit.py:267 MovieList.py:356
+#: MovieCockpit.py:281 MovieList.py:353
 msgid "trashcan"
 msgstr ""
 
-#: MovieCockpit.py:267
+#: MovieCockpit.py:281
 msgid "Recordings"
 msgstr ""
 
-#: MovieCockpit.py:271 MovieCockpitActions.py:124
+#: MovieCockpit.py:285 MovieCockpitActions.py:124
 msgid "Sort mode"
 msgstr ""
 
-#: MovieCockpit.py:321
-msgid "Video filex  does not exist"
+#: MovieCockpit.py:335
+msgid "Video file does not exist"
 msgstr ""
 
-#: MovieCockpit.py:386
+#: MovieCockpit.py:396
 msgid "Do you really want to reload the SQL cache?"
 msgstr ""
 
-#: MovieCockpit.py:411 ConfigScreen.py:315
+#: MovieCockpit.py:421 ConfigScreen.py:315
 msgid "Select directory"
 msgstr ""
 
-#: MovieCockpit.py:445 MovieCockpitActions.py:98
+#: MovieCockpit.py:455 MovieCockpitActions.py:98
 msgid "Stop recording(s)"
 msgstr ""
 
-#: MovieCockpit.py:495
+#: MovieCockpit.py:505
 msgid "Permanently delete the selected video file(s) or dir(s)"
 msgstr ""
 
-#: MovieCockpit.py:533
+#: MovieCockpit.py:543
 msgid "Move file(s)"
 msgstr ""
 
-#: MovieCockpit.py:542
+#: MovieCockpit.py:552
 msgid "Copy file(s)"
 msgstr ""
 
-#: MovieCockpit.py:553
+#: MovieCockpit.py:563
 msgid "is not mounted"
 msgstr ""
 
-#: MovieCockpit.py:570
+#: MovieCockpit.py:580
 msgid "Can't move recordings"
 msgstr ""
 
-#: MovieCockpit.py:570
+#: MovieCockpit.py:580
 msgid "Can't copy recordings"
 msgstr ""
 
-#: MovieCockpit.py:590
+#: MovieCockpit.py:600
 msgid ""
 "Archive source and/or target directory does not exist, please configure "
 "directories in setup."
 msgstr ""
 
-#: MovieCockpit.py:604
+#: MovieCockpit.py:614
 msgid "Permanently delete all files in trashcan?"
 msgstr ""
 
-#: MovieCockpit.py:650
+#: MovieCockpit.py:661
 msgid "Not enough space in target directory for video file"
 msgstr ""
 
@@ -1094,7 +1076,7 @@ msgstr ""
 msgid "new covers"
 msgstr ""
 
-#: MovieInfoEPG.py:42 MovieList.py:448
+#: MovieInfoEPG.py:42 MovieList.py:445
 msgid "min"
 msgstr ""
 
@@ -1174,31 +1156,31 @@ msgstr ""
 msgid "Cover/TMDB Info deleted successfully"
 msgstr ""
 
-#: MovieList.py:333
+#: MovieList.py:330
 msgid "COPYING"
 msgstr ""
 
-#: MovieList.py:335
+#: MovieList.py:332
 msgid "MOVING"
 msgstr ""
 
-#: MovieList.py:337
+#: MovieList.py:334
 msgid "DELETING"
 msgstr ""
 
-#: MovieList.py:352
+#: MovieList.py:349
 msgid "up"
 msgstr ""
 
-#: MovieList.py:358
+#: MovieList.py:355
 msgid "directory"
 msgstr ""
 
-#: MovieTMDB.py:97
+#: MovieTMDB.py:98
 msgid "Videos"
 msgstr ""
 
-#: MovieTMDB.py:108
+#: MovieTMDB.py:109
 msgid "TV Shows"
 msgstr ""
 

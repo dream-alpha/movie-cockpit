@@ -43,6 +43,7 @@ Copyright (C) 2018-2021 by dream-alpha
 			</widget>
 		</layout>
 		<layout name="Movie_List">
+			<widget name="loading" position="560,422" size="100,100" alphatest="blend" zPosition="3"/>
 			<widget name="list" position="10,90" size="1200,765" itemHeight="45" enableWrapAround="1" scrollbarMode="showAlways"/>
 		</layout>
 		<layout name="Movie_Info">
@@ -172,14 +173,14 @@ Copyright (C) 2018-2021 by dream-alpha
 			<convert type="MVCServicePosition">Position</convert>
 		</widget>
 
-		<eLabel backgroundColor="grey" position="370,110" size="1330,2"/>
+		<eLabel backgroundColor="grey" position="370,143" size="1330,4"/>
 
-		<widget pointer="Default-FHD/MovieCockpit/skin/images/progress.png:1330,0" position="370,105"
+		<widget pointer="Default-FHD/MovieCockpit/skin/images/progress.png:1330,0" position="370,140"
 			render="MVCPositionGauge" size="1330,10" source="Service" transparent="1"
 			zPosition="2">
 			<convert type="MVCServicePosition">Gauge</convert>
 		</widget>
-		<widget pointer="Default-FHD/MovieCockpit/skin/images/progress_rec.png:1330,0" position="370,105"
+		<widget pointer="Default-FHD/MovieCockpit/skin/images/progress_rec.png:1330,0" position="370,140"
 			render="MVCPositionGauge" size="1330,10" source="Service" transparent="1" zPosition="1">
 			<convert type="MVCRecordPosition">Gauge</convert>
 		</widget>
@@ -189,21 +190,19 @@ Copyright (C) 2018-2021 by dream-alpha
 			<convert type="MVCServicePosition">Remaining</convert>
 		</widget>
 		<widget backgroundColor="background" font="Regular;34"
-			foregroundColor="yellow" halign="center" position="900,125"
+			foregroundColor="yellow" halign="center" position="900,160"
 			render="Label" size="300,40" source="Service" transparent="1">
 			<convert type="MVCServicePosition">Length</convert>
 		</widget>
 
-		<eLabel backgroundColor="foreground" position="230,175" size="1650,2"/>
-
 		<widget backgroundColor="background" font="Regular;34"
-			position="230,186" render="Label" size="120,40"
+			position="230,166" render="Label" size="120,40"
 			source="global.CurrentTime" transparent="1">
 			<convert type="ClockToText">Default</convert>
 		</widget>
 
 		<widget backgroundColor="background" font="Regular;34"
-			halign="right" position="1740,182" render="Label" size="140,40"
+			halign="right" position="1740,166" render="Label" size="140,40"
 			source="Service" transparent="1">
 			<convert type="MVCServicePosition">EndTime,ShowNoSeconds</convert>
 		</widget>

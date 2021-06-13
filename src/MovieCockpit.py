@@ -58,6 +58,7 @@ from FileOpManager import FileOpManager
 from FileOpManagerProgress import FileOpManagerProgress
 from Plugins.SystemPlugins.MountCockpit.MountCockpit import MountCockpit
 from SkinUtils import getSkinName
+from Loading import Loading
 
 
 instance = None
@@ -111,6 +112,10 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		self.skinName = getSkinName("MovieCockpit")
 		self["actions"] = self.initActions(self, self.return_path, self.skinName != "NoSupport")
 		self["mini_tv"] = Pixmap()
+		self["loading"] = Pixmap()
+		self["loading"].hide()
+		self.loading_spinner = Loading(self["loading"])
+
 		self.enable_mini_tv = False
 		self["Service"] = MVCServiceEvent(ServiceCenter.getInstance())
 		self.last_service = None
@@ -123,7 +128,6 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		self.onShow.append(self.onDialogShow)
 		self.onHide.append(self.onDialogHide)
 		self.movie_list.onSelectionChanged.append(self.selectionChanged)
-
 		FileOpManager.getInstance().setCallback(self.doFileOpCallback)
 		self.updateTitle()
 
@@ -134,12 +138,20 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		self.enable_mini_tv = self["mini_tv"].instance.size().width() > -1
 		self.last_service = self.session.nav.getCurrentlyPlayingServiceReference()
 		logger.info("self.last_service: %s", self.last_service.toString() if self.last_service else None)
-		current_dir = FileCache.getInstance().getHomeDir()
+		self.loading_spinner.start()
+		FileCache.getInstance().onDatabaseIsLoaded(self.loadList)
+
+	def loadList(self):
+		logger.info("...")
+		self.loading_spinner.stop()
 		if not self.movie_list.file_list:
+			logger.debug("file_list is empty")
+			current_dir = FileCache.getInstance().getHomeDir()
 			if not config.plugins.moviecockpit.list_start_home.value and self.return_path:
 				current_dir = os.path.dirname(self.return_path)
 			self.movie_list.loadList(current_dir, self.return_path)
 		else:
+			logger.debug("file_list is loaded")
 			MovieList.lock_list = FileOpManager.getInstance().getLockList()
 
 	def onDialogHide(self):
@@ -300,10 +312,10 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		self.movie_list.unselectAll()
 
 	def selectionChanged(self):
-		logger.debug("...")
 		return_path = self.movie_list.getCurrentPath()
 		if return_path:
 			self.return_path = return_path
+		logger.debug("self.return_path: %s", self.return_path)
 		self.updateInfo()
 
 	def selectedEntry(self):
@@ -320,7 +332,7 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 					else:
 						self.session.open(
 							MessageBox,
-							_("Video filex  does not exist") + "\n" + path,
+							_("Video file does not exist") + "\n" + path,
 							MessageBox.TYPE_ERROR,
 							10
 						)
@@ -329,14 +341,14 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 
 	### player
 
-	def playerCallback(self):
-		logger.info("return_path: %s", self.return_path)
+	def openPlayerCallback(self):
+		logger.info("...")
 		self.movie_list.loadList(self.movie_list.getCurrentDir(), self.return_path)
 
 	def openPlayer(self, path):
 		logger.info("path: %s", path)
 		self.session.openWithCallback(
-			self.playerCallback,
+			self.openPlayerCallback,
 			CockpitPlayer,
 			getService4Path(self.movie_list.file_list, path),
 		)
@@ -617,27 +629,28 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 	### cutlist
 
 	def removeCutListMarker(self):
+		logger.info("...")
 		selection_list = self.movie_list.getSelectionList()
 		for path in selection_list:
 			removeCutListMarks(path)
 			self.movie_list.unselectPath(path)
-		logger.debug("removed marker")
+		self.movie_list.loadList(self.movie_list.getCurrentDir(), self.return_path)
 
 	### file ops
 
 	def execFileOps(self, file_ops_list):
 		logger.info("file_ops_list: %s", file_ops_list)
-		if file_ops_list:
-			for file_op, path, target_dir, file_type in file_ops_list:
-				FileOpManager.getInstance().doFileOp(file_op, path, target_dir, file_type, self.doFileOpCallback)
-			MovieList.lock_list = FileOpManager.getInstance().getLockList()
-			self.movie_list.invalidateList()
-		else:
-			self.movie_list.unselectAll()
+		for file_op, path, target_dir, file_type in file_ops_list:
+			FileOpManager.getInstance().doFileOp(file_op, path, target_dir, file_type, self.doFileOpCallback)
+		MovieList.lock_list = FileOpManager.getInstance().getLockList()
+		self.movie_list.invalidateList()
 
 	def doFileOpCallback(self, file_op, path, target_dir, file_type, error):
-		logger.info("file_op: %s, path: %s, target_dir: %s, file_type: %s, error: %s", file_op, path, target_dir, file_type, error)
+		logger.info("file_op: %s, path: %s, target_dir: %s, file_type: %s, error: %s, self.return_path: %s", file_op, path, target_dir, file_type, error, self.return_path)
 		if error == FILE_OP_ERROR_NONE:
+			if file_op == FILE_OP_MOVE and path == self.return_path and not target_dir.endswith("trashcan"):
+				self.return_path = os.path.join(target_dir, os.path.basename(path))
+				logger.debug("changed self.return_path to: %s", self.return_path)
 			self.movie_list.loadList(os.path.dirname(self.return_path), self.return_path)
 		else:
 			self.movie_list.unselectPath(path)

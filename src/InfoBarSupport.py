@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 #
-# Copyright (C) 2011 by betonme
 # Copyright (C) 2018-2021 by dream-alpha
 #
 # In case of reuse of this source code please do not remove this copyright.
@@ -27,32 +26,43 @@ from Components.config import config
 from Components.ActionMap import HelpableActionMap
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from enigma import eTimer, iPlayableService
-from Screens.InfoBarGenerics import InfoBarExtensions, InfoBarSeek, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection, InfoBarSimpleEventView, \
-	InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport, InfoBarPlugins, InfoBarNumberZap, \
-	InfoBarPiP, InfoBarEPG, InfoBarShowHide, InfoBarNotifications, InfoBarServiceNotifications, Notifications
+from Screens.InfoBarGenerics import InfoBarSeek, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection, \
+	InfoBarPVRState, InfoBarCueSheetSupport, InfoBarPlugins, InfoBarNumberZap, \
+	InfoBarExtensions, InfoBarShowHide, InfoBarNotifications, Notifications
 from Screens.MessageBox import MessageBox
 from CutListUtils import secondsToPts, ptsToSeconds, removeFirstMarks, getCutListLast
-from CutList import readCutList, writeCutList
+from CutList import readCutList, writeCutList, updateCutList
 from ServiceCenter import ServiceCenter
 from ServiceUtils import SID_DVB
 from RecordingUtils import isRecording
+from CockpitPlayerAudio import CockpitPlayerAudio
+from CockpitPlayerSubtitles import CockpitPlayerSubtitles
 
 
 class InfoBarSupport(
 	InfoBarBase, InfoBarNotifications, InfoBarSeek, InfoBarShowHide, InfoBarMenu, InfoBarShowMovies, InfoBarAudioSelection,
-	InfoBarSimpleEventView, InfoBarServiceNotifications, InfoBarPVRState, InfoBarCueSheetSupport, InfoBarSubtitleSupport, InfoBarTeletextPlugin,
-	InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG):
+	InfoBarExtensions, InfoBarPVRState, InfoBarCueSheetSupport,
+	InfoBarPlugins, InfoBarNumberZap, CockpitPlayerAudio, CockpitPlayerSubtitles):
 
 	ENABLE_RESUME_SUPPORT = True
 
-	def __init__(self):
-		self.allowPiP = True
+	def __init__(self, session):
+		self.allowPiP = False
 		self.allowPiPSwap = False
 
-		for x in InfoBarShowHide, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarShowMovies, InfoBarAudioSelection, InfoBarSimpleEventView,\
-			InfoBarServiceNotifications, InfoBarPVRState, InfoBarSubtitleSupport, InfoBarTeletextPlugin, InfoBarServiceErrorPopupSupport,\
-			InfoBarExtensions, InfoBarNotifications, InfoBarPlugins, InfoBarNumberZap, InfoBarPiP, InfoBarEPG:
-			x.__init__(self)
+		InfoBarShowHide.__init__(self)
+		InfoBarMenu.__init__(self)
+		InfoBarBase.__init__(self)
+		InfoBarSeek.__init__(self)
+		InfoBarShowMovies.__init__(self)
+		InfoBarAudioSelection.__init__(self)
+		InfoBarExtensions.__init__(self)
+		InfoBarPVRState.__init__(self)
+		InfoBarNotifications.__init__(self)
+		InfoBarPlugins.__init__(self)
+		InfoBarNumberZap.__init__(self)
+		CockpitPlayerAudio.__init__(self, session)
+		CockpitPlayerSubtitles.__init__(self)
 
 		self["CueSheetActions"] = HelpableActionMap(
 			self,
@@ -65,10 +75,6 @@ class InfoBarSupport(
 			prio=1
 		)
 
-		self.cut_list = []
-		self.is_closing = False
-		self.resume_point = 0
-
 		self.__event_tracker = ServiceEventTracker(
 			screen=self,
 			eventmap={
@@ -76,6 +82,10 @@ class InfoBarSupport(
 			}
 		)
 
+		self.service_started = False
+		self.cut_list = []
+		self.is_closing = False
+		self.resume_point = 0
 		self.event_start = 0
 		self.skip_first = True
 		self.skip_forward = True
@@ -85,31 +95,33 @@ class InfoBarSupport(
 		self.skip_distance = self.skip_distance_long
 		self.reset_skip_timer = eTimer()
 		self.reset_skip_timer_conn = self.reset_skip_timer.timeout.connect(self.resetSkipTimer)
-
 		self.serviceHandler = ServiceCenter.getInstance()
-
-		self.service_started = False
 
 	### support functions for converters: MVCServicePosition and MVCRecordingPosition
 
 	def getLength(self):
 		length = 0
 		if self.service.type == SID_DVB:
-			__len = self.serviceHandler.info(self.service).getLength()
+			_len = self.serviceHandler.info(self.service).getLength()
 			event_start_time = self.serviceHandler.info(self.service).getEventStartTime()
 			recording_start_time = self.serviceHandler.info(self.service).getRecordingStartTime()
 			if event_start_time > recording_start_time:
-				__len += event_start_time - recording_start_time
-			length = secondsToPts(__len)
+				_len += event_start_time - recording_start_time
+			length = secondsToPts(_len)
 		else:
-			# non-ts movies
-			seek = self.getSeek()
-			if seek is not None:
-				__len = seek.getLength()
-				logger.debug("seek.getLength(): %s", __len)
-				if not __len[0]:
-					length = __len[1]
-		logger.info("length: %ss", ptsToSeconds(length))
+			length = self.getSeekLength()
+		logger.info("length: %ss (%s)", ptsToSeconds(length), length)
+		return length
+
+	def getSeekLength(self):
+		length = 0
+		seek = self.getSeek()
+		if seek is not None:
+			_len = seek.getLength()
+			logger.debug("seek.getLength(): %s", _len)
+			if not _len[0]:
+				length = _len[1]
+		logger.info("length: %ss (%s)", ptsToSeconds(length), length)
 		return length
 
 	def getRecordingPosition(self):
@@ -129,9 +141,9 @@ class InfoBarSupport(
 		seek = self.getSeek()
 		if seek and self.service_started:
 			pos = seek.getPlayPosition()
-			if not pos[0]:
+			if not pos[0] and pos[1] > 0:
 				position = pos[1]
-		logger.info("position: %ss", ptsToSeconds(position))
+		logger.info("position: %ss (%s)", ptsToSeconds(position), position)
 		return position
 
 	### Intelligent skip functions
@@ -170,11 +182,10 @@ class InfoBarSupport(
 			self.skip_forward = False
 		self.doSeekRelative(secondsToPts(-self.skip_distance[self.skip_index]))
 
-	### Override from InfoBarGenerics.py
-
 	# InfoBarCueSheetSupport
 
 	def getCutList(self):
+		logger.info("cut_list: %s", self.cut_list)
 		return self.cut_list
 
 	def downloadCuesheet(self):
@@ -187,10 +198,20 @@ class InfoBarSupport(
 		logger.debug("cut_list: %s", self.cut_list)
 		writeCutList(self.service.getPath(), self.cut_list)
 
+	def updateCutList(self, service):
+		logger.info("...")
+		if self.getPosition() == 0:
+			updateCutList(service.getPath(), self.getSeekLength(), self.getSeekLength())
+		else:
+			updateCutList(service.getPath(), self.getPosition(), self.getSeekLength())
+		logger.debug("pos: %s, length: %s", str(self.getPosition()), str(self.getSeekLength()))
+
 	def __serviceStarted(self):
 		logger.info("self.is_closing: %s", self.is_closing)
 		if not self.is_closing:
 			self.service_started = True
+			self.setAudioTrack()
+			self.setSubtitleState(True)
 			self.event_start = self.getEventStart()
 			self.downloadCuesheet()
 			if config.plugins.moviecockpit.movie_ignore_first_marks.value:
@@ -217,111 +238,68 @@ class InfoBarSupport(
 				self.playLastCallback(False)
 
 	def playLastCallback(self, answer):
+		logger.info("answer: %s", answer)
 		if answer:
 			self.doSeek(self.resume_point)
 		else:
 			if config.plugins.moviecockpit.movie_start_position.value == "first_mark":
 				self.jumpToFirstMark()
 			if config.plugins.moviecockpit.movie_start_position.value == "event_start":
-				resume_point = self.event_start
-				logger.debug("resume_point: %s", resume_point)
-				if resume_point > 0:
-					self.jumpTo(resume_point)
+				self.doSeek(self.event_start)
 			if config.plugins.moviecockpit.movie_start_position.value == "beginning":
-				self.jumpTo(0)
+				self.doSeek(0)
 
 	def jumpToFirstMark(self):
-		first_mark = 0
-		current_pos = self.cueGetCurrentPosition() or 0
-		# Increase current_pos by 2 seconds to make sure we get the correct mark
-		current_pos = current_pos + secondsToPts(2)
-		# increase recording margin to make sure we get the correct mark
+		logger.info("...")
+		first_mark = None
+		current_pos = self.getPosition() + secondsToPts(2)
 		margin = secondsToPts(config.recording.margin_before.value * 60) * 2 or secondsToPts(20 * 60)
 		middle = (self.getSeekLength() or secondsToPts(90 * 60)) / 2
-
 		for (pts, what) in self.cut_list:
 			if what == self.CUT_TYPE_MARK:
-				if max(current_pos, margin, middle) < pts < first_mark:
-					if first_mark and pts < first_mark:
+				if current_pos < pts < min(margin, middle):
+					if first_mark is None or pts < first_mark:
 						first_mark = pts
-		if first_mark:
-			self.jumpTo(first_mark)
+		logger.debug("first_mark: %s", first_mark)
+		if first_mark is not None:
+			self.doSeek(first_mark)
 
 	def jumpNextMark(self):
+		logger.info("...")
 		if not self.jumpPreviousNextMark(lambda x: x - secondsToPts(1)):
-			# there is no further mark
 			self.doSeekEOF()
 		else:
 			if config.usage.show_infobar_on_skip.value:
-				# InfoBarSeek
 				self.showAfterSeek()
-
-	def jumpTo(self, pos):
-		self.doSeek(pos)
 
 	def getEventStart(self):
 		event_start_time = self.serviceHandler.info(self.service).getEventStartTime()
 		recording_start_time = self.serviceHandler.info(self.service).getRecordingStartTime()
 		event_start = event_start_time - recording_start_time
+		if event_start < 0:
+			event_start = 0
 		logger.info("event_start: %ds", event_start)
 		return secondsToPts(event_start)
 
 	# InfoBarSeek
-	# Seekbar workaround
-	def seekFwdManual(self):
-		InfoBarSeek.seekFwdManual(self)
-
-	# Seekbar workaround
-	def seekBackManual(self):
-		InfoBarSeek.seekBackManual(self)
-
-	def doSeekRelative(self, pts):
-		if self.getSeekLength() < self.getSeekPlayPosition() + pts:
-			# Relative jump is behind the movie length
-			self.doSeekEOF()
-		else:
-			InfoBarSeek.doSeekRelative(self, pts)
 
 	def doSeek(self, pts):
+		logger.info("pts: %s", pts)
 		length = self.getSeekLength()
 		if length and length < pts:
 			# PTS is behind the movie length
 			self.doSeekEOF()
 		else:
-			# call base class function
 			InfoBarSeek.doSeek(self, pts)
 			if pts and config.usage.show_infobar_on_skip.value:
 				self.showAfterSeek()
 
-	def getSeekPlayPosition(self):
-		logger.debug("...")
-		try:
-			# InfoBarCueSheetSupport
-			return self.cueGetCurrentPosition() or 0
-		except Exception as e:
-			logger.error("exception: %s", e)
-		return 0
-
-	def getSeekLength(self):
-		logger.debug("...")
-		length = 0
-		try:
-			# call private InfoBarCueSheetSupport function
-			seek = InfoBarCueSheetSupport._InfoBarCueSheetSupport__getSeekable(self)
-		except Exception as e:
-			logger.error("exception: %s", e)
-		if seek is not None:
-			__len = seek.getLength()
-			if not __len[0]:
-				length = __len[1]
-		return length
-
 	def doSeekEOF(self):
-		# stop 2 seconds before eof
-		play = self.getSeekPlayPosition()
-		end  = self.getSeekLength() - secondsToPts(2)
-		if play < end:
+		logger.info("...")
+		position = self.getPosition()
+		end  = self.getSeekLength() - secondsToPts(1)
+		logger.debug("position: %s, end: %s", position, end)
+		if position < end:
 			InfoBarSeek.doSeek(self, end)
-		# if player is in pause mode do not call eof
 		elif self.seekstate != self.SEEK_STATE_PAUSE:
 			InfoBarSeek._InfoBarSeek__evEOF(self)

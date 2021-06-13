@@ -13,7 +13,7 @@
 - MVC provides 5 predefined list styles which can be modified easily.
 - MVC provides a smart jump function that conventiently allows to skip advertisements using the bouquet keys by adapting the skip distance automatically.
 - MVC provides a manual/automatic backup function that allows to record movies to an internal disk and then move it to external backup media (USB/NAS)
-- MVC implements an auto-mount manager that dynamically recognizes and mounts network drives powering on/off
+- MVC uses the plugin MountCockpit that dynamically recognizes and mounts network drives powering on/off
 
 ## Limitations
 - MVC supports DreamOS only

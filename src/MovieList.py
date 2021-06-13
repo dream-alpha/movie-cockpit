@@ -185,12 +185,12 @@ class MovieList(TemplatedMultiContentComponent):
 			self.invalidateEntry(index)
 
 	def selectAll(self):
-		logger.debug("selectAll")
+		logger.debug("...")
 		for afile in self.file_list:
 			self.selectPath(afile[FILE_IDX_PATH])
 
 	def unselectAll(self):
-		logger.debug("unselectAll")
+		logger.debug("...")
 		selection_list = MovieList.selection_list[:]
 		for path in selection_list:
 			self.unselectPath(path)
@@ -244,11 +244,8 @@ class MovieList(TemplatedMultiContentComponent):
 	def getCurrentSelection(self):
 		return self.l.getCurrentSelection()
 
-	def invalidate(self):
-		self.l.invalidate()
-
 	def invalidateList(self):
-		self.invalidate()
+		self.l.invalidate()
 
 	def invalidateEntry(self, i):
 		self.l.invalidateEntry(i)

@@ -34,6 +34,7 @@ class CockpitPlayerSubtitles(InfoBarSubtitleSupport):
 		self.selected_subtitle = None
 
 	def trySubEnable(self, slist, match):
+		logger.info("...")
 		for e in slist:
 			logger.debug("e: %s", e)
 			logger.debug("match %s", langC[match][0])
@@ -49,6 +50,7 @@ class CockpitPlayerSubtitles(InfoBarSubtitleSupport):
 		return False
 
 	def setSubtitleState(self, enabled):
+		logger.info("enabled: %s", enabled)
 		try:
 			if not config.plugins.moviecockpit.autosubs.value or not enabled:
 				return

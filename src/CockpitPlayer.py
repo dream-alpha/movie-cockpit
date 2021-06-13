@@ -23,11 +23,9 @@ from Debug import logger
 from __init__ import _
 from Components.ActionMap import HelpableActionMap
 from Screens.Screen import Screen
-from Screens.InfoBar import InfoBar
 from Screens.HelpMenu import HelpableScreen
 from ServiceReference import ServiceReference
-from DelayTimer import DelayTimer
-from CutList import reloadCutList, backupCutList, updateCutList
+from CutList import reloadCutList, backupCutList
 from CutListUtils import secondsToPts
 from InfoBarSupport import InfoBarSupport
 from Components.Sources.MVCCurrentService import MVCCurrentService
@@ -35,8 +33,6 @@ from ServiceCenter import ServiceCenter
 from RecordingUtils import isRecording
 from MovieInfoEPG import MovieInfoEPG
 from ServiceUtils import SID_DVB
-from CockpitPlayerAudio import CockpitPlayerAudio
-from CockpitPlayerSubtitles import CockpitPlayerSubtitles
 
 
 class CockpitPlayerSummary(Screen):
@@ -47,18 +43,17 @@ class CockpitPlayerSummary(Screen):
 		self["Service"] = MVCCurrentService(session.nav, parent)
 
 
-class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport, CockpitPlayerAudio, CockpitPlayerSubtitles):
+class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport):
 
 	ENABLE_RESUME_SUPPORT = True
 	ALLOW_SUSPEND = True
 
 	def __init__(self, session, service):
 
+		self.service = service
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
-		InfoBarSupport.__init__(self)
-		CockpitPlayerAudio.__init__(self, session)
-		CockpitPlayerSubtitles.__init__(self)
+		InfoBarSupport.__init__(self, session)
 
 		self.execing = None
 		self.skinName = "CockpitPlayer"
@@ -73,55 +68,39 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport, CockpitPlayerAudio, 
 				"EXIT":		(self.leavePlayer,	_("Stop playback")),
 				"CHANNELUP":	(self.skipForward,	_("Skip forward")),
 				"CHANNELDOWN":	(self.skipBackward,	_("Skip backward")),
+				"INFOS":	(self.infoMovie, 	_("EPG Info")),
 			},
 			-2
 		)
 
 		self["NumberActions"].prio = 2
-
-		self.service = service
-		self.allowPiP = True
-		self.allowPiPSwap = False
-		self.realSeekLength = None
-		self.servicelist = InfoBar.instance.servicelist
-
 		self.onShown.append(self.__onShow)
-		self.onClose.append(self.__onClose)
+
+	def createSummary(self):
+		return CockpitPlayerSummary
 
 	def infoMovie(self):
-		event = self.service and self.serviceHandler.info(self.service).getEvent()
+		event = self.serviceHandler.info(self.service).getEvent()
 		if event:
 			self.session.open(MovieInfoEPG, event, ServiceReference(self.service))
 
 	def __onShow(self):
-		self.evEOF()  # begin playback
-
-	def __onClose(self):
-		logger.info("...")
-
-	def evEOF(self):
 		logger.info("...")
 		self.session.nav.playService(self.service)
-
-		if self.service and self.service.type != SID_DVB:
-			self.realSeekLength = self.getSeekLength()
-
-		DelayTimer(50, self.setAudioTrack)
-		DelayTimer(50, self.setSubtitleState, True)
 
 	def leavePlayer(self):
 		logger.info("...")
 
 		self.setSubtitleState(False)
 
-		if self.service and self.service.type != SID_DVB:
+		if self.service.type != SID_DVB:
 			self.updateCutList(self.service)
 
 		logger.debug("stopping service")
 		self.session.nav.stopService()
 
 		# always make a backup copy when recording and we stopped playback
-		if self.service and self.service.type == SID_DVB:
+		if self.service.type == SID_DVB:
 			path = self.service.getPath()
 			if isRecording(path):
 				backupCutList(path + ".cuts")
@@ -137,7 +116,7 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport, CockpitPlayerAudio, 
 	def doEofInternal(self, playing):
 		logger.info("playing: %s, self.execing: %s", playing, self.execing)
 		if self.execing:
-			timer = self.service and isRecording(self.service.getPath())
+			timer = isRecording(self.service.getPath())
 			if timer:
 				self.session.nav.playService(self.service)
 				self.doSeekRelative(secondsToPts(-1))
@@ -145,17 +124,3 @@ class CockpitPlayer(Screen, HelpableScreen, InfoBarSupport, CockpitPlayerAudio, 
 				self.is_closing = True
 				if self.service.type != SID_DVB:
 					self.updateCutList(self.service)
-
-	def updateCutList(self, service):
-		logger.info("...")
-		if self.getSeekPlayPosition() == 0:
-			if self.realSeekLength:
-				updateCutList(service.getPath(), self.realSeekLength, self.realSeekLength)
-			else:
-				updateCutList(service.getPath(), self.getSeekLength(), self.getSeekLength())
-		else:
-			updateCutList(service.getPath(), self.getSeekPlayPosition(), self.getSeekLength())
-		logger.debug("pos: %s, length: %s", str(self.getSeekPlayPosition()), str(self.getSeekLength()))
-
-	def createSummary(self):
-		return CockpitPlayerSummary
