@@ -41,8 +41,8 @@ from MovieCockpitContextMenu import MovieCockpitContextMenu
 from RecordingUtils import isRecording, stopRecording
 from CutList import updateCutList, removeCutListMarks
 from FileOp import FILE_OP_DELETE, FILE_OP_MOVE, FILE_OP_COPY, FILE_OP_ERROR_NONE, FILE_OP_ERROR_NO_DISKSPACE
-from FileCacheSQL import FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME
-from FileCache import FileCache, FILE_TYPE_DIR
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_PATH, FILE_IDX_TYPE, FILE_IDX_EXT, FILE_IDX_NAME
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_DIR
 from FileCacheLoadProgress import FileCacheLoadProgress
 from ServiceUtils import EXT_VIDEO
 from ConfigInit import sort_modes
@@ -112,9 +112,9 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		self.skinName = getSkinName("MovieCockpit")
 		self["actions"] = self.initActions(self, self.return_path, self.skinName != "NoSupport")
 		self["mini_tv"] = Pixmap()
-		self["loading"] = Pixmap()
-		self["loading"].hide()
-		self.loading_spinner = Loading(self["loading"])
+		self["pic_loading"] = Pixmap()
+		self["pic_loading"].hide()
+		self.loading_spinner = Loading(self["pic_loading"])
 
 		self.enable_mini_tv = False
 		self["Service"] = MVCServiceEvent(ServiceCenter.getInstance())
@@ -134,7 +134,6 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 	def onDialogShow(self):
 		logger.info("self.return_path: %s", self.return_path)
 		logger.debug("self[\"mini_tv\"].instance: %s", self["mini_tv"].instance.size().width())
-		self.show()
 		self.enable_mini_tv = self["mini_tv"].instance.size().width() > -1
 		self.last_service = self.session.nav.getCurrentlyPlayingServiceReference()
 		logger.info("self.last_service: %s", self.last_service.toString() if self.last_service else None)
@@ -159,7 +158,6 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 		if self.enable_mini_tv:
 			self.pigWorkaround()
 			self.session.nav.playService(self.last_service)
-		self.hide()
 
 	def pigWorkaround(self):
 		logger.info("...")
@@ -172,7 +170,6 @@ class MovieCockpit(Screen, HelpableScreen, Actions):
 
 	def exit(self, reload_moviecockpit=False):
 		logger.info("reload_moviecockpit: %s", reload_moviecockpit)
-		self.hide()
 		self.delay_timer.stop()
 		FileOpManager.getInstance().setCallback(None)
 		self.close(self.session, reload_moviecockpit)

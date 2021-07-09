@@ -29,8 +29,8 @@ from timer import TimerEntry
 from DelayTimer import DelayTimer
 from CutList import mergeBackupCutList
 from ParserMetaFile import ParserMetaFile
-from FileCache import FileCache, FILE_TYPE_FILE
-from FileCacheSQL import FILE_IDX_NAME
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_FILE
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_NAME
 from MovieCockpit import MovieCockpit
 from MovieCoverDownload import MovieCoverDownload
 from FileOpManager import FileOpManager

@@ -22,8 +22,8 @@
 from Debug import logger
 import os
 from Components.config import config
-from FileCache import FileCache, FILE_TYPE_DIR
-from FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_PATH
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_DIR
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_PATH
 from ServiceUtils import getService
 from ConfigInit import sort_modes
 

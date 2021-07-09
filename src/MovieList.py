@@ -33,8 +33,8 @@ from Components.TemplatedMultiContentComponent import TemplatedMultiContentCompo
 from Tools.LoadPixmap import LoadPixmap
 from skin import parseColor  # , parseFont, parseSize
 from enigma import eListbox, loadPNG
-from FileCache import FileCache, FILE_TYPE_FILE
-from FileCacheSQL import FILE_IDX_PATH, FILE_IDX_DIR
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_FILE
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_PATH, FILE_IDX_DIR
 from RecordingUtils import isRecording
 from FileUtils import readFile
 from MovieListParseTemplate import parseTemplate

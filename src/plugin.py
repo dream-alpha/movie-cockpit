@@ -27,7 +27,7 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from Tools.BoundFunction import boundFunction
-from FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
 from Recording import Recording
 from SkinUtils import initPluginSkinPath, loadPluginSkin
 from Trashcan import Trashcan

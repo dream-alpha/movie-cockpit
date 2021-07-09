@@ -29,7 +29,7 @@ from Components.PluginComponent import plugins
 from Screens.Screen import Screen
 from Components.Sources.StaticText import StaticText
 from Plugins.SystemPlugins.MountCockpit.MountCockpit import MountCockpit
-from FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
 from MovieList import MovieList
 from Screens.HelpMenu import HelpableScreen
 from Plugins.Plugin import PluginDescriptor

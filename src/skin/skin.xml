@@ -43,7 +43,7 @@ Copyright (C) 2018-2021 by dream-alpha
 			</widget>
 		</layout>
 		<layout name="Movie_List">
-			<widget name="loading" position="560,422" size="100,100" alphatest="blend" zPosition="3"/>
+			<widget name="pic_loading" position="560,422" size="100,100" alphatest="blend" zPosition="3"/>
 			<widget name="list" position="10,90" size="1200,765" itemHeight="45" enableWrapAround="1" scrollbarMode="showAlways"/>
 		</layout>
 		<layout name="Movie_Info">

@@ -23,8 +23,8 @@ from Debug import logger
 from Version import ID
 import os
 from Components.config import config
-from FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_PATH
-from FileCache import FILE_TYPE_FILE
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_PATH
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FILE_TYPE_FILE
 from MovieListUtils import createFileList
 from RecordingUtils import isRecording
 from Components.Task import Job, job_manager

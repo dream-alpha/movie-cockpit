@@ -27,7 +27,7 @@ from Components.Label import Label
 from Components.config import config
 from Components.ActionMap import HelpableActionMap
 from Tools.BoundFunction import boundFunction
-from FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
 
 
 KEY_RED = 0

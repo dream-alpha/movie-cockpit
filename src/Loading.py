@@ -31,28 +31,28 @@ ACTIVITY_TIMER_DELAY = 125
 
 class Loading():
 
-	def __init__(self, pic):
+	def __init__(self, pic_loading):
 		logger.debug("...")
 		self.activity_timer = eTimer()
 		self.activity_timer_conn = self.activity_timer.timeout.connect(self.doActivityTimer)
 		self.pic_index = 0
-		self.pic = pic
+		self.pic_loading = pic_loading
 		self.pics = len(glob.glob(getSkinPath("images/spinner/*.png")))
 		logger.debug("self.pics: %s", self.pics)
 
 	def start(self):
 		logger.debug("...")
-		self.pic.show()
+		self.pic_loading.show()
 		self.activity_timer.start(ACTIVITY_TIMER_DELAY, False)
 
 	def stop(self):
 		logger.debug("...")
-		self.pic.hide()
+		self.pic_loading.hide()
 		self.activity_timer.stop()
 
 	def doActivityTimer(self):
 		logger.debug("...")
 		self.pic_index += 1
 		pic = "wait%s.png" % (self.pic_index + 1)
-		self.pic.instance.setPixmap(LoadPixmap(getSkinPath("images/spinner/" + pic), cached=False))
+		self.pic_loading.instance.setPixmap(LoadPixmap(getSkinPath("images/spinner/" + pic), cached=False))
 		self.pic_index = (self.pic_index + 1) % self.pics

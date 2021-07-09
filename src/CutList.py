@@ -25,8 +25,8 @@ import shutil
 from RecordingUtils import isRecording
 from CutListUtils import packCutList, unpackCutList, replaceLast, replaceLength, removeMarks, mergeCutList
 from FileUtils import readFile, writeFile, deleteFile
-from FileCache import FileCache
-from FileCacheSQL import FILE_IDX_CUTS
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_CUTS
 
 
 def backupCutList(path):

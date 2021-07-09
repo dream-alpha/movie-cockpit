@@ -85,7 +85,7 @@ class ParserMetaFile():
 
 	def readMeta(self, path):
 		meta_list = readFile(path).splitlines()
-		meta_list = [l.strip() for l in meta_list]
+		meta_list = [list_item.strip() for list_item in meta_list]
 		return meta_list
 
 	def getMeta(self):

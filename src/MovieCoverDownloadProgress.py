@@ -21,9 +21,9 @@
 
 from Debug import logger
 from __init__ import _
-from FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
 from FileProgress import FileProgress
-from FileCacheSQL import FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_FILENAME, FILE_IDX_PATH, FILE_IDX_NAME
 from MovieCoverDownload import MovieCoverDownload
 from DelayTimer import DelayTimer
 from MovieListUtils import createFileList

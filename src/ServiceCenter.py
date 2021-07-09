@@ -22,8 +22,8 @@
 from __init__ import _
 from datetime import datetime
 from enigma import eServiceCenter, iServiceInformation
-from FileCache import FileCache, FILE_TYPE_FILE
-from FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_RECORDING_START_TIME, FILE_IDX_LENGTH, FILE_IDX_DESCRIPTION, FILE_IDX_EXTENDED_DESCRIPTION, FILE_IDX_SERVICE_REFERENCE, FILE_IDX_SIZE, FILE_IDX_CUTS, FILE_IDX_TAGS
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_FILE
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_TYPE, FILE_IDX_NAME, FILE_IDX_EVENT_START_TIME, FILE_IDX_RECORDING_START_TIME, FILE_IDX_LENGTH, FILE_IDX_DESCRIPTION, FILE_IDX_EXTENDED_DESCRIPTION, FILE_IDX_SERVICE_REFERENCE, FILE_IDX_SIZE, FILE_IDX_CUTS, FILE_IDX_TAGS
 from CutListUtils import unpackCutList
 from Components.config import config
 

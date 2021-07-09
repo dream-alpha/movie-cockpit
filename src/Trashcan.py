@@ -24,8 +24,8 @@ import os
 import time
 from Components.config import config
 from DelayTimer import DelayTimer
-from FileCache import FileCache
-from FileCacheSQL import FILE_IDX_PATH, FILE_IDX_TYPE
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCacheSQL import FILE_IDX_PATH, FILE_IDX_TYPE
 from MovieListUtils import createFileList
 from FileOp import FileOp, FILE_OP_DELETE
 

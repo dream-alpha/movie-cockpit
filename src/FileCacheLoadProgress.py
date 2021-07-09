@@ -24,7 +24,7 @@ from Version import ID
 import os
 from __init__ import _
 from DelayTimer import DelayTimer
-from FileCache import FileCache
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache
 from FileProgress import FileProgress
 from Plugins.SystemPlugins.MountCockpit.MountCockpit import MountCockpit
 

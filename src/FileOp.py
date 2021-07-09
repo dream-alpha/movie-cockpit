@@ -28,7 +28,7 @@ from MovieTMDB import MovieTMDB
 from Shell import Shell
 from Plugins.SystemPlugins.MountCockpit.MountCockpit import MountCockpit
 from Plugins.SystemPlugins.MountCockpit.MountUtils import getBookmarkSpaceInfo
-from FileCache import FileCache, FILE_TYPE_FILE, FILE_TYPE_DIR
+from Plugins.SystemPlugins.CacheCockpit.FileCache import FileCache, FILE_TYPE_FILE, FILE_TYPE_DIR
 from FileUtils import createDirectory
 
 
